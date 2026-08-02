@@ -13,12 +13,23 @@ So how can I think to do this?
 
 public class StateService : . 
 {
+    private IDictionary<> _pubSub = new Dictionary<string, List<>>();
     public StateService()
     {
         // What will I want in here?
         // I know that I will want a way to communicate with my Woker.
         // Does this mean that I will want some kind of pointer (callback) from that item?
         // It is registered as a hosted service, so it will continually run that ExecuteAsync infinate while loop
+
+        // I will need a registry which I can know all of the things which have subscribed.
+        // but if we have multiple different publishers, then we will need multiple different lists for each of the subscribers.
+        // So we will need a dictionary.
+
+    }
+
+    // I would guess that this would need to return back a function pointer. but I also know that c# does not like to do that
+    public something SubscribeToMyEvents()
+    {
         
     }
 }

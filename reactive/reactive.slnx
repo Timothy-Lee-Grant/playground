@@ -1,2 +1,3 @@
 <Solution>
+  <Project Path="reactive/reactive.csproj" />
 </Solution>

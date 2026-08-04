@@ -9,9 +9,7 @@ obj/
 Documentation/
 docs/
 tests/
-*.md
 .vscode/
 .idea/
 .DS_Store
-docker-compose.yml
 .env

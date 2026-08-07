@@ -13,7 +13,7 @@ public class Worker(ILogger<Worker> logger) : BackgroundService
             if (logger.IsEnabled(LogLevel.Information))
             {
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                _stateService.Publish();
+                _stateService.Publish(); 
             }
             await Task.Delay(1000, stoppingToken);
         }

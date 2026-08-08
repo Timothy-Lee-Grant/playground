@@ -1,6 +1,9 @@
+using Confluent.Kafka;
+using System.Net;
+
 namespace MyKafkaSystem.Producer;
 
-public class Worker(ILogger<Worker> logger) : BackgroundService
+public class Producer(ILogger<Producer> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

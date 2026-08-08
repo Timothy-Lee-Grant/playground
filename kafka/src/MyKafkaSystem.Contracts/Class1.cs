@@ -1,6 +1,8 @@
 ﻿namespace MyKafkaSystem.Contracts;
 
-public class Class1
-{
-
-}
+public record TaskCreatedEvent(
+    Guid TaskId,
+    string TaskType,
+    string Payload,
+    DateTime CreatedAtUtc
+);

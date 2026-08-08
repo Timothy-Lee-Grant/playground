@@ -1,15 +1,28 @@
 using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Reflection;
+using Microsoft.Extensions.Hosting;
+using System;
+using System.IO.Pipelines;
 
 namespace MyKafkaSystem.Producer;
 
 public class Producer(ILogger<Producer> logger) : BackgroundService
 {
-    private object _producer;
-    public Producer()
+    private readonly ILogger<Producer> _logger;
+    private readonly IProducer<Null, string> _kafkaProducer;
+
+    public Producer(ILogger<Producer> logger)
     {
-        var _producer = new ProducerBuilder<NullabilityInfo, string>(config).Build();
+        _logger = logger;
+        var config = new ProducerConfig
+        {
+            BootStrapServers = "localhost:9092",
+            Acks = Acks.All
+        };
+        _kafkaProducer = new ProducerBuilder<Null, string>(config).Build();
     }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -19,7 +32,27 @@ public class Producer(ILogger<Producer> logger) : BackgroundService
             {
                 logger.LogInformation("Producer running at: {time}", DateTimeOffset.Now);
             }
-            _producer.Produce("my-topic", new Message<Null, string> {Value = "hello world"}, handler)
+
+            try
+            {
+                var message = new Message<Null, string>
+                {
+                    Value = $"Hello Kafka! {DateTimeOffset.Now}"
+                };
+                DeliveryResult<null, string> ReadResult = await _kafkaProducer.ProduceAsync(
+                    "my-topic",
+                    message,
+                    stoppingToken
+                );
+            }
+            catch (ProduceException<Null, string> ex)
+            {
+                _logger.LogError(ex, "Kafka delivery failed: {Reason}", ex.Error.Reason);
+            }
+
+
+
+            _producer.Produce("my-topic", new Message<Null, string> {Value = "hello world"}, handler);
             await Task.Delay(1000, stoppingToken);
         }
     }

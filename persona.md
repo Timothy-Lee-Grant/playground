@@ -285,9 +285,33 @@ A by-hand exploration of pub/sub and Reactive Extensions in C#, done deliberatel
 
 **Second pass (2026-08-05):** attempted the fix by splitting into two separate runnable projects (`reactive/` + a new `listener1/`), each with its own `Program.cs`/host — i.e. two separate OS processes — while still trying to bridge them with an in-process `event`/delegate (`_stateService.OnEventTrigger += ...`). This is a recurring shape worth watching for: reaching for the next architectural step (splitting publisher/subscriber into separate deployable units, which *is* the right instinct for real distributed pub/sub) before the in-process mechanism is solid, and not yet distinguishing "this abstraction lives in one process's memory" from "this needs a network transport." Also produced two fresh, very typical C#-mechanics bugs: assigning a constructor parameter to a `var` inside the constructor body (a local, not a field) while also having a primary constructor and a non-chained secondary constructor fight each other; and declaring `public delegate void OnEventTrigger(string message);` (a *type*) and then trying to `.Invoke()` it directly, conflating a delegate type declaration with a delegate instance/field. Reviewed in `lectures/reactive/002-Whats-Actually-Inside-The-Microphone.md`, which leads with the process-boundary issue before the interface deep-dive (`IObserver<T>`/`IObservable<T>`'s four methods, a from-scratch `MiniSubject<T>` reconstruction to de-mystify where `.OnNext()`/`.Subscribe()` "come from"), and recommends folding `listener1` back into one process until the in-memory version is solid, deferring real cross-process pub/sub to a deliberate later exercise (natural candidate: Redis Pub/Sub, since `redis/` already exists in this repo).
 
-## kafka/ and redis/ exercises (Aug 2026, not yet started)
+## kafka exercise (`kafka/`, .NET Worker Services + Docker Compose, Aug 2026, in progress)
 
-Two empty folders (`kafka/`, `redis/`) set up as deliberately non-useful, integration-focused C# exercises — the stated goal is learning to wire a real piece of infrastructure into a C# project (run the server, use the real client library and wire protocol), not building something practical. Directly follows from the `reactive/` exercise's cross-process wall (see above, `[[reactive exercise]]`): lecture `lectures/redis/001-The-Fast-Librarian-Setting-Up-Redis-In-CSharp.md` frames Redis Pub/Sub (`StackExchange.Redis`, `ConnectionMultiplexer`/`ISubscriber`) as the direct fix to that wall, with the load-bearing caveat that Redis Pub/Sub is fire-and-forget (no persistence/replay) — which sets up `lectures/kafka/001-The-Archivist-Setting-Up-Kafka-In-CSharp.md` as the contrasting durable/replayable/consumer-group model (`Confluent.Kafka`, topics/partitions/offsets/consumer groups, at-least-once vs. exactly-once commit semantics). Both docs give a matched build-order (single client end-to-end first, then two separate processes/console apps standing in for publisher and subscriber, then a stretch goal) and a direct side-by-side: kill the subscriber, publish while it's down, restart it — Redis loses those messages, Kafka doesn't. Neither exercise has been started yet as of this writing.
+First hands-on session 2026-08-08. Structure built: a `kafka.slnx` solution with four projects — `Producer`,
+`ConsumerOne`, `ConsumerTwo`, `Contracts` (a `TaskCreatedEvent` record) — plus a KRaft-mode `confluentinc/cp-kafka`
+Compose file with correctly-reasoned dual listeners (`PLAINTEXT` for container-to-container, `PLAINTEXT_HOST` for
+processes on the Mac). At end of session **nothing ran**: the Compose file referenced a network `taks-net` while
+defining `task-net` (so the broker never started once), and `Producer.cs` had five compile errors. Both consumers
+were still the untouched `dotnet new worker` template with no `Confluent.Kafka` reference; `Contracts` was
+referenced by nothing.
+
+Reviewed in `lectures/kafka/Problems/001-Kafka-Problem-Log.md` (17 findings, severity-graded). The C#-mechanics
+bugs: a **primary constructor colliding with an explicit constructor of the same signature** — the *second*
+occurrence of this exact shape in four days, after `reactive/` on 2026-08-05, so it's a real knowledge gap, not a
+slip; `BootStrapServers` (correct member is `BootstrapServers`); `overrride`; and a leftover
+`_producer.Produce(..., handler)` line referencing symbols deleted in an earlier attempt, left in place rather
+than replaced. Also a "using shotgun" — six unnecessary `using` directives including `System.Reflection` and
+`System.IO.Pipelines`, accepted from IDE quick-fixes while chasing an error. Notably, **none of the five blockers
+came from insufficient Kafka understanding** — the Kafka-specific choices he made (`Acks.All`, flushing before
+dispose, catching `ProduceException` specifically, wanting the `DeliveryResult` back) were correct and
+well-informed.
+
+**Skills/instincts demonstrated (mistimed, not wrong):** shared-contracts assembly for producer/consumer wire
+agreement; dual advertised listeners; `Acks.All`; `Flush` before `Dispose`; typed exception handling.
+
+## redis exercise (Aug 2026, not yet started)
+
+`redis/` is still an empty folder. Both `redis/` and `kafka/` were set up as deliberately non-useful, integration-focused C# exercises — the stated goal is learning to wire a real piece of infrastructure into a C# project (run the server, use the real client library and wire protocol), not building something practical. Directly follows from the `reactive/` exercise's cross-process wall (see above, `[[reactive exercise]]`): lecture `lectures/redis/001-The-Fast-Librarian-Setting-Up-Redis-In-CSharp.md` frames Redis Pub/Sub (`StackExchange.Redis`, `ConnectionMultiplexer`/`ISubscriber`) as the direct fix to that wall, with the load-bearing caveat that Redis Pub/Sub is fire-and-forget (no persistence/replay) — which sets up `lectures/kafka/001-The-Archivist-Setting-Up-Kafka-In-CSharp.md` as the contrasting durable/replayable/consumer-group model (`Confluent.Kafka`, topics/partitions/offsets/consumer groups, at-least-once vs. exactly-once commit semantics). Both docs give a matched build-order (single client end-to-end first, then two separate processes/console apps standing in for publisher and subscriber, then a stretch goal) and a direct side-by-side: kill the subscriber, publish while it's down, restart it — Redis loses those messages, Kafka doesn't. Redis has not been started as of this writing; Kafka was started 2026-08-08 (see above). Worth noting: the matched build-order in both lecture docs — *single client end-to-end first, then split into two processes* — is exactly the walking-skeleton discipline he then didn't follow on the Kafka attempt, which suggests the gap is about applying the rule under pressure rather than knowing it.
 
 ## Tool_Box (July 2026, starting)
 
@@ -325,7 +349,48 @@ I regularly find myself going directly into the open source code and trying to i
 
 Of course it is good to dive deep, but I have noticed that it really slows me down, and as I said, I feel I am UNABLE to move past this. So I need to learn how to be more comfortable with abstractions that I don't fully understand, but be able to utilize them correctly. As of now, if I attempt to utilize a component which I dont't fully understand, I completely break functionality and so this implies that there is a skill to learn and develop here.
 
+## Feedback from senior engineers at work (2026-08)
+
+Senior engineers on my team have told me directly that I am **too slow** and that I **get too caught up in the
+details**. This is currently my highest-priority thing to fix — it is the main obstacle between me and the
+senior-level backend roles I'm targeting. `lectures/engineering-practice/` exists specifically to work on this,
+and I want AI assistance to treat it as a standing goal, not a one-off request: when reviewing my work, always
+include process findings (how long between commits, did anything compile, was there a walking skeleton) alongside
+the technical ones.
+
 # AI's Observations About Me
+
+## The "slow" diagnosis is an open feedback loop, not excessive depth (2026-08-08)
+The Kafka session gave the first well-instrumented look at what "too slow" actually means for Timothy, and the
+evidence points somewhere other than the obvious answer. Git log: three commits in sixteen minutes
+(`bc4e6fb` → `6bc52c0` → `90aaadb`), **none of which compiled**, against a broker that had never started because
+of a one-character typo in the Compose network name. The most recent commit fixed one real error and introduced a
+new blocker — net progress zero, and unknowable, because nothing ran. Critically, **he did not lose that time to a
+deep dive**; he lost it guessing at questions `dotnet build` answers in four seconds. So the standard prescription
+("stop being a perfectionist, just ship") treats the wrong disease: it would cost him his best habits and not fix
+the actual problem, which is latency between action and signal.
+
+The second pattern, from the same session: **breadth-first scaffolding.** Four projects, a solution file, a
+contracts assembly and a Compose file built before one message ever moved — ~75% of the structure surrounding a
+path never walked once. This is the same shape as `reactive/` on 2026-08-05 (splitting into two OS processes
+before the in-process version worked), so it is now a confirmed recurring pattern, not an incident. Note the
+inversion it causes: he front-loads the *certain* work (writing a record, adding a project) and defers the
+*uncertain* work (does the broker start, can the client connect), which is exactly backwards for risk.
+
+**Framing that seems worth reusing** (from `lectures/engineering-practice/001-Closing-The-Loop.md`): his
+caution is a *correctly-learned* response to embedded work, where an experiment costs minutes, mistakes can be
+physical, and abstractions are thin enough that reading to the register is genuinely the fast path. Backend
+inverts every one of those costs; the habit isn't bad, it's mis-calibrated, and what needs to change is his
+*estimate of what an experiment costs* — not his standards or his curiosity. Also load-bearing: his stated belief
+"if I use a component I don't fully understand, I completely break functionality" is contradicted by his own
+evidence — every blocker on 2026-08-08 was in something he understood completely (constructors, casing, a typo),
+and every Kafka-specific decision he made was correct. That belief is what justifies the hyperfixation, so it's
+worth challenging with evidence whenever it resurfaces.
+
+Practical implications for future sessions: give corrected code outright (he chose this over hints), but always
+pair it with *why the mistake happened*; check the git log and report process findings as first-class findings;
+and when he's mid-task reaching for a detail, it is welcome to ask which pass he's in (Pass 1 = make it run, Pass
+2 = understand it deeply, with the system running).
 
 ## Consolidates after shipping, and asks to be audited (2026-07-26)
 Immediately after the 1.0.0 release, Timothy's instinct was not to start the next toolset but to stop and make sure he *understood everything he had built* — and when offered the choice, he explicitly chose a critical audit ("better you find them than they do") over a flattering walkthrough. That combination — consolidate before advancing, and invite adversarial review of your own work — is a senior habit and worth reinforcing. Practical implication for future sessions: when he ships something, offering a capstone/audit pass is likely to be welcome, and he wants weaknesses stated plainly with severity and a remediation, not softened.

@@ -39,7 +39,7 @@ public class Producer(ILogger<Producer> logger) : BackgroundService
                 {
                     Value = $"Hello Kafka! {DateTimeOffset.Now}"
                 };
-                DeliveryResult<null, string> ReadResult = await _kafkaProducer.ProduceAsync(
+                DeliveryResult<Null, string> ReadResult = await _kafkaProducer.ProduceAsync(
                     "my-topic",
                     message,
                     stoppingToken
@@ -55,5 +55,12 @@ public class Producer(ILogger<Producer> logger) : BackgroundService
             _producer.Produce("my-topic", new Message<Null, string> {Value = "hello world"}, handler);
             await Task.Delay(1000, stoppingToken);
         }
+    }
+
+    public overrride void Dispose()
+    {
+        _kafkaProducer.Flush(TimeSpan.FromSeconds(5));
+        _kafkaProducer.Dispose();
+        base.Dispose();
     }
 }

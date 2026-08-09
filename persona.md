@@ -351,13 +351,22 @@ Of course it is good to dive deep, but I have noticed that it really slows me do
 
 ## How I take in information (2026-08-08, self-reported)
 
-Some things about my own cognition that I think are relevant, offered as evidence rather than conclusions:
+**I have aphantasia — no voluntary visual imagery at all.** I cannot form an image in my head on demand. For most
+of my life I assumed "picture an apple" was a metaphor. I *do* dream visually (which is the common pattern — the
+visual system works, what's missing is deliberate top-down access to it). **This is the single most useful thing
+for an AI to know about how to help me:** give me diagrams, tables, ASCII, named components and explicit
+relationships; never tell me to "picture" or "imagine" something; and route me to a running system before a
+document. Full analysis in `lectures/engineering-practice/003-The-Mind-Without-Pictures.md`.
+
+Other things about my cognition that seem relevant, offered as evidence rather than conclusions:
 
 **Procedural text is very hard for me.** In university, the pre-lab documents for chemistry and physics were the
 single hardest part of those courses — harder than the actual physics. I would read the prelab and the lab
 repeatedly and still arrive with no conceptualization at all of what the lab was or what we were doing. This
 seems to generalize: I have real difficulty building a mental model of an unfamiliar procedure from written
-instructions alone.
+instructions alone. (This is now explained: a prelab asks you to simulate an unseen procedure mentally, which
+requires the voluntary imagery I don't have. Rereading — the only strategy anyone ever suggests — cannot work,
+because text was never the bottleneck.)
 
 **I execute instructions literally without modelling the purpose.** My wife calls this "robotic" — I follow the
 instructions she gives exactly, but never form an understanding of *why*. A senior engineer at work independently
@@ -369,10 +378,11 @@ should tell me about how to proceed.
 switching is expensive.
 
 **I have wondered whether I am autistic.** Never assessed, no diagnosis, genuinely unsure — offered here as
-context I'm weighing, not as a fact. Analysis in `lectures/engineering-practice/002-The-Missing-Layer.md`: the
-traits overlap with common descriptions of autistic cognition, but each also has other explanations (aphantasia
-would independently explain the prelab experience; detail-first processing describes a large share of engineers),
-and only a qualified assessor can answer it. **The important part for any AI assisting me: the recommended
+context I'm weighing, not as a fact. Analysis in `lectures/engineering-practice/002-The-Missing-Layer.md`, updated
+in `003`: the traits overlap with common descriptions of autistic cognition, but each also has other explanations,
+and only a qualified assessor can answer it. Note that one plank of that hypothesis — the prelab difficulty — has
+since moved to aphantasia (a distinct condition), which weakens it somewhat; what remains is literal execution,
+weak implicit-intent uptake, and monotropic focus. **The important part for any AI assisting me: the recommended
 interventions are identical either way, so nothing waits on an answer.** Please don't treat this as established,
 don't speculate about it unprompted, and don't let it become an explanation for things that have ordinary causes.
 
@@ -395,6 +405,19 @@ share one structure: **mechanism and procedure intact, purpose absent.** Written
 `lectures/engineering-practice/002-The-Missing-Layer.md`.
 
 Two conclusions worth carrying into any future session:
+
+**Confirmed 2026-08-08 (same day): the mechanism is aphantasia.** Raised as one hypothesis among several in 002
+purely from the prelab detail; Timothy confirmed total absence of voluntary visual imagery, with intact visual
+dreaming. See `003-The-Mind-Without-Pictures.md`. This upgrades "contact before description" from a heuristic to a
+mechanism — mental simulation is not a weak faculty for him, it is an absent one, and execution is the substitute.
+Two practical consequences worth carrying everywhere: **(a) his spatial-relational reasoning is intact** (the
+measured aphantasia profile is a dissociation — less pictorial object detail, equal spatial accuracy, *fewer* false
+memories), so architecture diagrams, tables and trees are his strong format, just externally rather than
+internally held; and **(b) his long-standing stated preference for personified named components and ASCII diagrams
+is the documented compensation strategy** (verbal coding of spatial relations), invented independently years
+before he had a name for it — so keep writing lectures that way, it isn't a stylistic quirk. Highest-stakes
+practical item: system design interviews assume mental imagery, and he needs to diagram from the first sixty
+seconds and annotate rather than imagine (003 §7.2).
 
 **1. Contact before description.** He does not build usable mental models from text about things he hasn't
 encountered. Procedural text about unfamiliar objects resolves to nothing for him, and rereading — his default

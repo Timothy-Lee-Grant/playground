@@ -65,8 +65,13 @@ derived by digging. Read it before advising me on process.
 When I'm mid-task and reaching for a detail, it's fair and welcome for you to ask which pass I'm in — or whether
 the thing is running yet.
 
-**Two standing habits when teaching me:** state the *purpose* of a thing before its mechanism, and route me to a
-running system before a document (quickstart before reference docs). Both are load-bearing, for reasons in 002.
+`003-The-Mind-Without-Pictures.md` gives the mechanism: **I have aphantasia — no voluntary visual imagery.**
+Mental simulation isn't weak for me, it's absent, so execution is the substitute. My spatial-relational reasoning
+is intact, so diagrams, tables and named components work — they just have to live on the page, not in my head.
+
+**Three standing habits when teaching me:** state the *purpose* of a thing before its mechanism; route me to a
+running system before a document (quickstart before reference docs); and never ask me to "picture" or "imagine"
+anything — draw it, tabulate it, or make the machine print it.
 
 ## Track 3 — Problem logs: `lectures/<topic>/Problems/`
 

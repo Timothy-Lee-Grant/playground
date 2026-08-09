@@ -349,6 +349,33 @@ I regularly find myself going directly into the open source code and trying to i
 
 Of course it is good to dive deep, but I have noticed that it really slows me down, and as I said, I feel I am UNABLE to move past this. So I need to learn how to be more comfortable with abstractions that I don't fully understand, but be able to utilize them correctly. As of now, if I attempt to utilize a component which I dont't fully understand, I completely break functionality and so this implies that there is a skill to learn and develop here.
 
+## How I take in information (2026-08-08, self-reported)
+
+Some things about my own cognition that I think are relevant, offered as evidence rather than conclusions:
+
+**Procedural text is very hard for me.** In university, the pre-lab documents for chemistry and physics were the
+single hardest part of those courses — harder than the actual physics. I would read the prelab and the lab
+repeatedly and still arrive with no conceptualization at all of what the lab was or what we were doing. This
+seems to generalize: I have real difficulty building a mental model of an unfamiliar procedure from written
+instructions alone.
+
+**I execute instructions literally without modelling the purpose.** My wife calls this "robotic" — I follow the
+instructions she gives exactly, but never form an understanding of *why*. A senior engineer at work independently
+describes the same thing: when he asks me a question about a task, I answer with a technical analysis of how the
+thing works, when what he was actually asking about was intent — what he was trying to get to, and what that
+should tell me about how to proceed.
+
+**I am single-threaded.** Also my wife's word. One path at a time; I don't hold multiple things concurrently and
+switching is expensive.
+
+**I have wondered whether I am autistic.** Never assessed, no diagnosis, genuinely unsure — offered here as
+context I'm weighing, not as a fact. Analysis in `lectures/engineering-practice/002-The-Missing-Layer.md`: the
+traits overlap with common descriptions of autistic cognition, but each also has other explanations (aphantasia
+would independently explain the prelab experience; detail-first processing describes a large share of engineers),
+and only a qualified assessor can answer it. **The important part for any AI assisting me: the recommended
+interventions are identical either way, so nothing waits on an answer.** Please don't treat this as established,
+don't speculate about it unprompted, and don't let it become an explanation for things that have ordinary causes.
+
 ## Feedback from senior engineers at work (2026-08)
 
 Senior engineers on my team have told me directly that I am **too slow** and that I **get too caught up in the
@@ -359,6 +386,43 @@ include process findings (how long between commits, did anything compile, was th
 the technical ones.
 
 # AI's Observations About Me
+
+## The missing layer: builds models from contact, not description (2026-08-08)
+Timothy volunteered four unrelated experiences — university prelabs being the hardest part of his science courses,
+his wife calling him "robotic," a senior engineer's recurring complaint that he answers intent questions with
+mechanism, and a Linux deployment where he executed steps correctly but couldn't recover when one failed. They
+share one structure: **mechanism and procedure intact, purpose absent.** Written up in
+`lectures/engineering-practice/002-The-Missing-Layer.md`.
+
+Two conclusions worth carrying into any future session:
+
+**1. Contact before description.** He does not build usable mental models from text about things he hasn't
+encountered. Procedural text about unfamiliar objects resolves to nothing for him, and rereading — his default
+recovery move — cannot supply the missing referent. This is the same failure as the Kafka session: he designed
+four projects from reading, against a system he had never seen run. **Practical consequence: always route him to
+a running thing before a document.** The quickstart before the reference docs; `kafka-console-producer` before
+the Confluent API surface. This makes lecture 001's walking-skeleton advice much more important for him than it
+is generically — it isn't just derisking, it's his primary comprehension mechanism. Note also a likely-underrated
+strength here: his non-comprehension alarm is unusually well calibrated (he *notices* the fuzzy model most people
+accept), which is valuable — it just needs a second strategy attached, because his only current response to it is
+to reread.
+
+**2. Intent must be supplied explicitly; he will try to reach it by digging, and digging cannot get there.** His
+instinct when lost is to descend into mechanism. For purpose questions that direction is not merely mistimed (as
+lecture 001 framed it) but structurally incapable of succeeding — purpose is not the sum of mechanisms, it lives
+in someone's head and most people receive it through an implicit social channel he receives poorly. The fix is
+mechanical: an **Intent Header** (goal / done-when / phases / not-doing / unknowns) written before the first step,
+and four questions asked of any human giving him a task ("what's this for," "what does done look like," "what
+would you cut," "what should I avoid"). This also explains the *slowness* precisely: without a goal, the first
+failed step has no fallback, so he descends into unbounded depth-first search with no termination condition —
+which is exactly what "getting caught in the details" looks like from outside. It is a missing ladder upward, not
+self-indulgence.
+
+**When assisting him:** state the purpose of a thing before its mechanism; answer one level above the question and
+*offer* to descend rather than descending by default; and when he asks a mechanism question mid-task, it's fair to
+ask whether the thing is running yet. Also note he is monotropic — deep single-threaded focus with expensive
+switching — which is where his best work comes from (the from-scratch MNA solver, the hash-code identity proof);
+don't treat it as a defect to correct, just support save/restore around interruptions.
 
 ## The "slow" diagnosis is an open feedback loop, not excessive depth (2026-08-08)
 The Kafka session gave the first well-instrumented look at what "too slow" actually means for Timothy, and the

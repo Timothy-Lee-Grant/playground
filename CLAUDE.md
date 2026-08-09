@@ -49,15 +49,24 @@ caught up in details. `001-Closing-The-Loop.md` is the foundational document; it
 feedback loop rather than excessive depth, and defines the working protocol below. Later lectures in this track
 should build on it and reference it.
 
-**The protocol from lecture 001** (worth holding in mind whenever you advise me):
+`002-The-Missing-Layer.md` extends it: I build mental models from *contact*, not from description, and I don't
+pick up intent through the implicit channel most people use — so purpose has to be stated explicitly rather than
+derived by digging. Read it before advising me on process.
 
+**The consolidated protocol** (worth holding in mind whenever you advise me):
+
+0. **Intent Header** — goal / done-when / phases / not-doing / unknowns, written *before* the first step.
 1. **Walking Skeleton** — one message travels the whole path before a second component gets built.
 2. **Signal Clock** — never more than ~10 minutes without a build/run/log result from the machine.
-3. **Question Ledger** — curiosity gets written down in 15 seconds and answered *after* the skeleton walks.
+3. **Question Ledger** — downward curiosity gets written down in 15 seconds, answered *after* the skeleton walks.
 4. **Isolate the layer** — prove the infrastructure works without my code before debugging my code.
 5. **Two-Pass Rule** — pass one: black box, make it run. Pass two: go as deep as I want, with the system running.
 
-When I'm mid-task and reaching for a detail, it's fair and welcome for you to ask which pass I'm in.
+When I'm mid-task and reaching for a detail, it's fair and welcome for you to ask which pass I'm in — or whether
+the thing is running yet.
+
+**Two standing habits when teaching me:** state the *purpose* of a thing before its mechanism, and route me to a
+running system before a document (quickstart before reference docs). Both are load-bearing, for reasons in 002.
 
 ## Track 3 — Problem logs: `lectures/<topic>/Problems/`
 

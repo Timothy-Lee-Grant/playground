@@ -12,7 +12,7 @@ namespace MyKafkaSystem.Producer;
 public class Producer(ILogger<Producer> logger) : BackgroundService
 {
     private readonly ILogger<Producer> _logger;
-    private readonly IProducer<Null, string> _kafkaProducer; 
+    private readonly IProducer<Null, string> _kafkaProducer;
 
     public Producer(ILogger<Producer> logger)
     {

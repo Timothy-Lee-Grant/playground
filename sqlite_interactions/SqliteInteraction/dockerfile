@@ -1,0 +1,16 @@
+
+# Stage 1: Runtime Base
+# Holds the lean runtime enviornment and exposes network ports
+
+FROM ://microsoft.com AS base
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+# Stage 2: Build and Restore
+# Uses the heavy sdk image to restor and compile the source code.
+
+FROM ://microsoft.com AS build
+WORKDIR /src
+
+

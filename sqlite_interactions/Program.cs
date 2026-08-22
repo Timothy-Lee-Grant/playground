@@ -21,8 +21,17 @@ while (true)
         ReadDataBase();
     }
 }
-
 void AddValueToDataBase()
+{
+    
+}
+
+void ReadDataBase()
+{
+    
+}
+
+void DocumentedExample()
 {
     using var conn = new SqliteConnection("Data Source=testing123.db");
     conn.Open();
@@ -44,7 +53,3 @@ void AddValueToDataBase()
     }
 }
 
-void ReadDataBase()
-{
-    
-}

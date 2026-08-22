@@ -34,8 +34,26 @@ void AddValueToDataBase()
 
 void ReadDataBase()
 {
-    
+    using var conn = new SqliteConnection("Data Source=testing123.db");
+    conn.Open();
+
+    // Now we have the strange reader things. I think it is like a pointer to my current index?
+    //var reader = conn.R
+    // Needed to look at example
+
+    using var command = conn.CreateCommand();
+    var reader = command.ExecuteReader();
+
+    while (reader.Read()) // I would have never gotten that just from my brain
+    {
+        // Now I want to actually get the item it is pointing at, and then move forward by one?
+        var name = reader.GetString(0);
+        Console.WriteLine($"The name is: {name}");   
+    }
 }
+
+
+
 
 void DocumentedExample()
 {

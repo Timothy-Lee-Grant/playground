@@ -1,4 +1,5 @@
 ﻿
+using System.Data;
 using Microsoft.Data.Sqlite;
 
 // I want the user to be able to enter in their items that they want to put into the database
@@ -98,9 +99,13 @@ void CreateTable()
     // """;
     // but I think this was actually a string on the conn
 
+    // I guess I now also need to make this idempotent because the library command does not do that
+    // DataTable dt = conn.GetSchema();
+    // if ()
+
     using var command = conn.CreateCommand(); // Why do I need to do it this way?
     command.CommandText = """
-        CREATE TABLE user(
+        CREATE TABLE IF NOT EXISTS user(
         name TEXT NOT NULL,
         id INTEGER PRIMARY KEY
         );

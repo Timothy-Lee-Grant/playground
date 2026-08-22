@@ -4,6 +4,8 @@ using Microsoft.Data.Sqlite;
 // I want the user to be able to enter in their items that they want to put into the database
 // They should also be able to view items.
 
+CreateTable();
+
 while (true)
 {
 
@@ -57,3 +59,37 @@ void DocumentedExample()
     }
 }
 
+
+// The idea of this one should be to create the tables inside of this database so that I can then access them
+// So I will need to look at the way in which the sqlite library expects to see a command and how to perform that command
+// I will also need to think of the actual schema which I need to use.
+// (I will attempt to do this by creating the logic without looking at the example above, but I will look to verify)
+void CreateTable()
+{
+    using var conn = new SqliteConnection("Data Source=testing123.db");
+
+    // I now want to have the library actually open the connection
+    conn.Open();
+
+    // Now the app is using the library and the library has a connection to that specific file on my harddrive and will interact with it in accordance to the 
+    // specifications of the sqlite interactions. (but I don't need to worry about that)
+
+    // Next should be to create the command that I want to do. 
+    // string command = """
+    //     CREATE TABLE
+    // """;
+    // but I think this was actually a string on the conn
+
+    using var command = conn.CreateCommand(); // Why do I need to do it this way?
+    command.CommandText = """
+        CREATE TABLE user(
+        name TEXT NOT NULL,
+        id INTEGER PRIMARY KEY
+        );
+    """;
+
+    // Next should I just execute the command?
+    command.ExecuteNonQuery();
+
+
+}

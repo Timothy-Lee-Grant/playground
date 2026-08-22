@@ -20,6 +20,10 @@ while (true)
     {
         ReadDataBase();
     }
+    if (userResult == 3)
+    {
+        DocumentedExample();
+    }
 }
 void AddValueToDataBase()
 {

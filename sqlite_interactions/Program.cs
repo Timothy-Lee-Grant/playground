@@ -48,7 +48,7 @@ void ReadDataBase()
     while (reader.Read()) // I would have never gotten that just from my brain
     {
         // Now I want to actually get the item it is pointing at, and then move forward by one?
-        var name = reader.GetString(0);
+        var name = reader.GetString(1);
         Console.WriteLine($"The name is: {name}");   
     }
 }
@@ -73,7 +73,7 @@ void DocumentedExample()
     using var reader = command.ExecuteReader();
     while (reader.Read())
     {
-        var name = reader.GetString(0);
+        var name = reader.GetString(1);
         Console.WriteLine($"Hello, {name}");
     }
 }

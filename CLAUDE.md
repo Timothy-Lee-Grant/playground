@@ -26,7 +26,7 @@ something), and my process habits to watch for.
 | Path | Purpose | Can AI write code here? |
 |---|---|---|
 | `scouting/` | Issue searches: `NNN-issue_shortlist_<month_year>.md`, one per search pass, with a progress tracker | n/a (docs only) |
-| `lectures/<topic>/` | Concept lectures reusable across issues (`lectures/websockets/`, `lectures/async/`, ...) | n/a (docs only) |
+| `lectures/` | Full, in-depth concept lectures, reusable across issues (all lectures live here, not in issue folders) | n/a (docs only) |
 | `<repo>/<issue#>_<slug>/` | One workspace per issue I've picked (e.g. `yarp/1764_websocket_idle_timeout/`) | **Yes** |
 | `hand_experiments/` | Older by-hand practice projects (Kafka, Redis, Rx, RabbitMQ, ...) | **No.** Strict review-and-teach-only rules; see `hand_experiments/CLAUDE.md` |
 | `private/` | Personal notes; gitignored, never pushed | n/a |
@@ -68,12 +68,13 @@ When an item moves from "candidate" to "working on it", create `<repo>/<issue#>_
 
 ### 4. Learn → `lectures/`
 
-Two places, depending on scope:
+All lectures live in the repo-root `lectures/` folder, never inside an issue folder. A lecture teaches a
+**concept** I'm missing (WebSockets, proxies and idle timeouts, cancellation tokens, P/Invoke struct layout, ...)
+fully and in depth, so it stays useful long after the issue that prompted it. The issue that motivated it is an
+example inside the lecture, not its subject. If the folder grows, group files into topic subfolders.
 
-| Where | When |
-|---|---|
-| `<issue folder>/lectures/` | Step-by-step write-ups of *this issue's* experiments: what we ran, what happened, what it means |
-| `lectures/<topic>/` (root) | A concept that will outlive the issue: WebSockets, cancellation tokens, P/Invoke struct layout, ... |
+The step-by-step record of an issue's own experiments (commands, observed output) belongs in that issue's
+`README.md` and `sample/evidence/`, not in a lecture.
 
 Lecture style (from `persona.md`): purpose before mechanism; high-level architecture → components → interactions
 → control flow → implementation → edge cases; personified named characters; ASCII diagrams and tables; "common
@@ -90,7 +91,7 @@ type names.
   versions, the upstream commit/tag if relevant, and the exact command(s).
 - Label anything not backed by a saved run as **unverified**, in the README and in lectures alike.
 - Always check the state you think you changed (ports, processes, env vars) before trusting a re-run.
-  `lectures/001` in the YARP folder has a concrete example with a stale `dotnet run` child process.
+  `lectures/001-yarp-websocket-activity-timeout.md` has a concrete example with a stale `dotnet run` child process.
 
 ### 6. Contribute
 

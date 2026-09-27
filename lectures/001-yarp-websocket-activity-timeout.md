@@ -1,7 +1,7 @@
 # Lecture 001 — Reproducing and Fixing YARP's WebSocket Idle Timeout
 
 > **What this is:** the hands-on follow-through on the "Next steps" checklist at the bottom of
-> `concept_notes/001-questions_from_the_issue_shortlist.md` (Q3) and the "Optional hands-on" note under item A in
+> `yarp/1764_websocket_idle_timeout/concept_notes/001-questions_from_the_issue_shortlist.md` (Q3) and the "Optional hands-on" note under item A in
 > `scouting/001-issue_shortlist_sept_2026.md` (repo root). It builds the three-piece sample described there, runs it,
 > and records what actually happened — including one thing that *didn't* happen the way the notes predicted.
 > **Code:** `yarp/1764_websocket_idle_timeout/sample/` · **Date run:** 2026-09-26, .NET SDK 10.0.302, `Yarp.ReverseProxy` 2.3.0.
@@ -233,7 +233,7 @@ settings need this same "which number is smaller" sanity check, not just "is the
 
 ## 9. Where this leaves item A (YARP #1764)
 
-Per `concept_notes/001-...md` Q2, the actual remaining gap is one missing cross-reference sentence on YARP's
+Per `yarp/1764_websocket_idle_timeout/concept_notes/001-...md` Q2, the actual remaining gap is one missing cross-reference sentence on YARP's
 `websockets.md` doc page. This sample now gives that comment/PR real, verified numbers instead of just citing
 the docs:
 

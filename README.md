@@ -34,14 +34,13 @@ Candidate issues I'm still weighing are in [`scouting/`](scouting/).
 ├── README.md                     ← you are here (public index)
 ├── CLAUDE.md                     ← workflow and conventions for working in this repo (human + AI)
 ├── scouting/                     ← issue searches: dated shortlists of candidate issues across repos
-├── lectures/<topic>/             ← concept write-ups reusable across issues (e.g. websockets, async)
+├── lectures/                     ← full, in-depth lectures on concepts, reusable across issues
 ├── <repo>/<issue#>_<slug>/       ← one folder per issue I'm actually working on
 │   ├── README.md                 ← public evidence page: claim · environment · repro steps · results
 │   ├── CLAUDE.md                 ← working notes: status, decisions, next steps
 │   ├── sample/                   ← runnable reproduction / experiment code
 │   │   └── evidence/             ← captured run output, dated, with versions
 │   ├── concept_notes/            ← append-only Q&A log while reading the issue and source
-│   ├── lectures/                 ← longer, issue-specific write-ups of experiments
 │   └── implementations/          ← plans and build logs for the fix itself
 └── hand_experiments/             ← older, hand-written practice projects (Kafka, Redis, Rx, ...); not OSS work
 ```

@@ -1,7 +1,7 @@
 # Concept Notes 001 — Questions From the Issue Shortlist
 
 > **What this is:** a running Q&A log of *concept notes*. As I read `scouting/001-issue_shortlist_sept_2026.md` (at the repo root), I ask about things I don't understand, and each answer is **appended** here, newest at the bottom.
-> **Style:** short and issue-focused. Just enough concept to unblock the next step, then concrete next steps. Not a full lecture; deep dives belong in this folder's `lectures/` (issue-specific) or the repo-root `lectures/<topic>/` (reusable concepts).
+> **Style:** short and issue-focused. Just enough concept to unblock the next step, then concrete next steps. Not a full lecture; full, in-depth lectures belong in the repo-root `lectures/` folder.
 > **Started:** 2026-09-26
 >
 > **Format for each entry:** the question (in my words) → the short answer → the explanation → what to take away / next steps.
@@ -15,6 +15,7 @@
 | Q1 | Why do maintainers open an issue for a simple docs fix instead of just doing it? | YARP #1764 (item A) | How open-source projects actually run |
 | Q2 | I found `src/TelemetryConsumption/WebSockets/` in YARP, but it's all C#. Where are the docs, and what am I misunderstanding? | YARP #1764 (item A) | Code vs. docs repos; finding a doc's source; verifying before contributing |
 | Q3 | What are sockets and WebSockets, what does YARP do with them, what is the proxy timeout, and how do keep-alives and browser heartbeats fix it? | YARP #1764 (item A) | Sockets, WebSocket handshake, proxy byte-pumping, idle timeouts, keep-alives |
+| Q4 | Getting my bearings: where does #1764 stand, what evidence do I still need, and what do I do with it? | YARP #1764 (item A) | Status check, evidence plan, comment + PR plan (**the current progress tracker**) |
 
 ---
 
@@ -364,3 +365,307 @@ It's "application-level" because it's an ordinary data message whose meaning the
 - [ ] Update your draft comment on #1764 (from Q2) with what you observed. A comment with a verified repro is much stronger than one that only cites the docs.
 
 ---
+
+## Q4. Getting my bearings: where does #1764 stand, what evidence do I still need, and what do I do with it?
+
+**Related:** [YARP #1764](https://github.com/dotnet/yarp/issues/1764), item A · **Asked:** 2026-09-27 ·
+**This entry is the current progress tracker for the issue** (checklist in §8).
+
+### The question
+
+After restructuring the repo, I want to get my bearings on #1764. What do I have so far, what's the actual state
+of the issue and the docs, what else should I do, what evidence should I collect, and what do I do with that
+evidence once I have it?
+
+### The short answer
+
+- **The issue is still open and unclaimed.** No assignee, milestone Backlog, labels `Type: Documentation` +
+  `help wanted`, no activity since 2023-01-09 (checked 2026-09-27).
+- **The docs gap is real but small.** The Timeouts page covers the core of it; the WebSockets page still doesn't
+  mention `ActivityTimeout`. **Neither page mentions that ASP.NET Core's default keep-alive (2 min) is too slow
+  for YARP's default timeout (100 s).** That gotcha is the one new thing you bring, and your repro is what proves it.
+- **You have a working repro and a solid understanding, but no saved evidence.** There isn't a single log file on
+  disk. The only recorded output is pasted into the lecture, and it's all from 8 s override runs. The real-default
+  runs (the numbers the comment will quote) were never captured.
+- **What's left is about 2–3 hours of work:** one ~30-minute evidence session, one comment, one short docs PR.
+  From here the bigger risk is over-investing, not under-investing (see §7).
+
+### Intent Header
+
+| | |
+|---|---|
+| **Goal** | Get the WebSocket idle-timeout behavior (and the default-interval gotcha) onto the page WebSocket users actually read, and get #1764 closed. |
+| **Done when** | A PR is merged in `dotnet/AspNetCore.Docs` and #1764 is closed, **or** maintainers close #1764 as already covered after my comment. Either outcome counts. |
+| **Phases** | 1. Capture evidence (real defaults) → 2. Comment on #1764 → 3. PR in AspNetCore.Docs → 4. Close the loop (update trackers). |
+| **Not doing (now)** | Telemetry wiring, browser heartbeat experiments, rewriting the lecture, touching YARP's code. All parked in §9. |
+| **Unknowns** | Whether maintainers want the text on the WebSockets page, the Timeouts page, or both; how quickly they reply. |
+
+---
+
+### 1. Current state (verified 2026-09-27)
+
+```
+ dotnet/yarp#1764 (open since 2022-06-17, opened by Tratcher, a YARP maintainer)
+   │  "100s is the default activity timeout... WebSocket or application level keep-alives
+   │   are required... enabled on either the client or server (not the proxy)."
+   │
+   ├── docs live in ──► dotnet/AspNetCore.Docs / aspnetcore/fundamentals/servers/yarp/
+   │                     ├── timeouts.md    (ms.date 11/01/2025)  ✅ covers it (WebSockets section)
+   │                     └── websockets.md  (ms.date 2/6/2025)    ❌ Timeout section silent on ActivityTimeout
+   │
+   ├── source of truth ─► dotnet/yarp  ForwarderRequestConfig.ActivityTimeout
+   │                        "The default is 100 seconds ... TCP keep-alive packets and HTTP/2 protocol pings
+   │                         will not reset the timeout, but WebSocket pings will."
+   │                      ForwarderError.UpgradeActivityTimeout
+   │                        "An upgraded request was idle and canceled due to the activity timeout."
+   │
+   └── still biting users ► dotnet/yarp#2615 (2024): "YARP keep terminating the WebSocket after around
+                            2 minutes", error UpgradeActivityTimeout; a maintainer explained the 100 s
+                            ActivityTimeout again. The user fixed it by raising ActivityTimeout.
+```
+
+| Fact | Value | How checked |
+|---|---|---|
+| #1764 state | Open, unassigned, Backlog, 2 comments, last update 2023-01-09 | GitHub API, 2026-09-27 |
+| Open PR for it? | None found | Web search; no cross-references visible on the issue |
+| `websockets.md` Timeout section | Only says HTTP request timeouts are disabled after the handshake, then links to Timeouts | Raw file on `main`, 2026-09-27 |
+| `timeouts.md` WebSockets section | "`ActivityTimeout` does apply to WebSocket requests. WebSocket keep-alives can be enabled by either the client or server..." Nothing about the interval needing to be shorter than the timeout. | Raw file on `main`, 2026-09-27 |
+| `WebSocketOptions.KeepAliveInterval` default | "The default is two minutes." | API docs (aspnetcore-10.0) |
+| Latest `Yarp.ReverseProxy` | 2.3.0 (what the sample uses) | NuGet version index |
+
+**Why #2615 matters:** it's independent proof that users still hit this, two years after #1764 was opened. It
+makes a better "why this docs change is worth merging" argument than anything you could write yourself. Cite it in
+the comment.
+
+---
+
+### 2. What you have (inventory)
+
+| Artifact | State | Strength | Gap |
+|---|---|---|---|
+| `sample/` (EchoServer, Proxy, IdleClient) | Builds and runs; SDK pinned to 10.0.302, YARP 2.3.0 | Minimal and readable. A maintainer can run it in 5 minutes. | `IdleClient` never exits on its own (fine; Ctrl+C) |
+| 8 s override results (experiments 1–3) | Output pasted into `lectures/001-...md` | Shows the mechanism and the exact timing (8.0 s) | Not raw files; no proxy-side log saved; 8 s isn't the number users see |
+| Real-default results (100 s) | Described in lecture §7/§9 | — | **No output saved anywhere.** Treat as unverified. |
+| Understanding (Q1–Q3, lecture 001) | Deep | You can explain *why* it happens, down to `StreamCopier` and `ActivityCancellationTokenSource` | — |
+| `README.md` (public evidence page) | Written | Claim, environment, repro commands, results table | Rows 3–4 have no evidence; no `sample/evidence/` folder |
+| Upstream activity | None | — | No comment, no PR |
+
+Q3's "Next steps" checklist status: the repro and the fix are done; the default-interval gotcha was observed at the
+8 s scale only; the browser heartbeat experiment was not done (parked); the draft comment hasn't been updated yet
+(done below, in §5.2).
+
+---
+
+### 3. What each claim needs as evidence
+
+Only collect evidence for claims you're going to make. There are four:
+
+| # | Claim | Already stated upstream? | Your evidence now | What's needed |
+|---|---|---|---|---|
+| C1 | An idle WebSocket through YARP is aborted after `ActivityTimeout` (default 100 s) | Yes: the issue, Timeouts page, source comment | 8 s run, pasted | **E1**: real 100 s run, client + proxy logs saved |
+| C2 | A server WebSocket keep-alive shorter than the timeout prevents it | Yes: Timeouts page | 3 s vs 8 s run, pasted | **E2**: 30 s keep-alive vs 100 s timeout, watched for ≥ 300 s, saved |
+| C3 | **ASP.NET Core's default 2-minute `KeepAliveInterval` does *not* prevent it** | **No. This is the new information.** | 8 s run only | **E1** covers it: both sides left at defaults and it still dies at 100 s |
+| C4 | The failure is an abort, not a graceful close | No, but it's a side detail | Client exception text, pasted | Comes free with E1 |
+
+C3 is why your comment is worth more than "+1, the docs are missing a sentence". **E1 is the most important run
+you'll do**, because one run with both sides at their out-of-the-box defaults proves C1, C3 and C4 together, at
+exactly the numbers a real user would see.
+
+---
+
+### 4. Evidence collection plan
+
+```
+ E1  IdleClient ──► Proxy [ActivityTimeout = 100 s default] ──► EchoServer [KeepAliveInterval = 2 min default]
+     expected: client aborted at ~100.0 s; proxy logs an error naming the activity timeout
+
+ E2  IdleClient ──► Proxy [ActivityTimeout = 100 s default] ──► EchoServer [KeepAliveInterval = 30 s]
+     expected: client prints "...still open at 300s"; proxy logs no error
+```
+
+| Run | EchoServer | Proxy | Watch for | Pass if | Save as (in `sample/evidence/`) |
+|---|---|---|---|---|---|
+| **E1** | `dotnet run --project EchoServer` (no env var) | `dotnet run --project Proxy` (no env var) | ~2 min | Client prints `[100.x s] Connection died` and `Aborted` | `001-defaults-abort-client.txt`, `001-defaults-abort-proxy.txt` |
+| **E2** | `WS_KEEPALIVE_SECONDS=30 dotnet run --project EchoServer` | `dotnet run --project Proxy` | ≥ 300 s (3× the timeout), then Ctrl+C | Client prints `...still open at 300s` | `002-keepalive30-survives-client.txt`, `002-keepalive30-survives-proxy.txt` |
+| E3 (optional) | Re-run the three 8 s experiments | with the 8 s override | 1 min each | Same as lecture | `003-*.txt`. Only if you want the fast runs as files too. |
+
+**How to capture (macOS, from `yarp/1764_websocket_idle_timeout/sample/`):**
+
+```bash
+mkdir -p evidence
+lsof -i :5000 -i :5050            # must print nothing before each run: no stale servers (lecture 001 §3 gotcha)
+
+# One header per client file, so the file is self-describing:
+{ echo "# run:     E1 defaults on both sides"
+  echo "# date:    $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "# os:      macOS $(sw_vers -productVersion)"
+  echo "# dotnet:  $(dotnet --version)   Yarp.ReverseProxy 2.3.0"
+  echo "# echo:    dotnet run --project EchoServer   (no WS_KEEPALIVE_SECONDS)"
+  echo "# proxy:   dotnet run --project Proxy        (appsettings ActivityTimeout 00:01:40)"
+  echo "# client:  dotnet run --project IdleClient -- ws://localhost:5000/ws"
+  echo; } > evidence/001-defaults-abort-client.txt
+
+# Terminal 1
+dotnet run --project EchoServer
+# Terminal 2
+dotnet run --project Proxy 2>&1 | tee evidence/001-defaults-abort-proxy.txt
+# Terminal 3
+dotnet run --project IdleClient -- ws://localhost:5000/ws 2>&1 | tee -a evidence/001-defaults-abort-client.txt
+```
+
+For E2, repeat with the `002-...` names and `WS_KEEPALIVE_SECONDS=30` on EchoServer. Stop the client with Ctrl+C
+after the `300s` line, then stop the servers and check `lsof` again.
+
+**What to look for in the proxy log (E1):** the lecture recorded a stack trace through
+`StreamCopier.CopyAsync(... ActivityCancellationTokenSource ...)`. #2615's user saw the error name
+`UpgradeActivityTimeout`. *Unverified:* whether your Proxy's log level shows that name. Save whatever appears;
+don't change code to make it appear.
+
+**Time budget:** E1 about 5 minutes, E2 about 8 minutes, updating the README 15 minutes. **The whole session is
+under 45 minutes.** If something fails, that's a signal to debug the setup (is anything listening on the ports?),
+not a reason to redesign the sample.
+
+---
+
+### 5. What to do with the evidence
+
+```
+ sample/evidence/*.txt ──► README.md results table (rows point at files)
+                                   │
+                                   ▼
+                      comment on dotnet/yarp#1764  (links the README)
+                                   │
+          ┌────────────────────────┼─────────────────────────────┐
+          ▼                        ▼                             ▼
+   "yes, please PR"        no reply in ~7 days          "already covered, closing"
+          │                        │                             │
+          └──────────► PR in dotnet/AspNetCore.Docs ◄────┘       └──► done (triage counts)
+                                   │
+                                   ▼
+          update README table · issue CLAUDE.md · scouting tracker · persona.md
+```
+
+#### 5.1 Update the public README
+
+Replace rows 3–4 of the results table with the E1/E2 outcomes and a link to each file. Delete the "log not
+saved" note. Rows 1–2 can stay as "8 s override, recorded in lecture 001" unless you do E3.
+
+#### 5.2 The comment on #1764 (draft v2, replacing Q2's draft)
+
+Keep it short: maintainers skim, and the link carries the detail.
+
+> Hi! I'd like to help close this one out.
+>
+> Most of this is now documented in the [Timeouts page's WebSockets section](https://learn.microsoft.com/aspnet/core/fundamentals/servers/yarp/timeouts#websockets),
+> but the [WebSockets page's Timeout section](https://learn.microsoft.com/aspnet/core/fundamentals/servers/yarp/websockets#timeout)
+> only mentions HTTP request timeouts, so people reading about WebSockets won't find it (for example #2615).
+>
+> One detail neither page mentions: ASP.NET Core's default `WebSocketOptions.KeepAliveInterval` is 2 minutes,
+> which is longer than YARP's default 100 s `ActivityTimeout`. So a destination server that "has keep-alives on"
+> with defaults still gets its idle connections aborted. I verified this on .NET 10 / YARP 2.3.0 with a minimal
+> client → YARP → echo server repro: with defaults on both sides the connection is aborted at 100 s; with a 30 s
+> `KeepAliveInterval` it stays open. Repro and logs: <link to yarp/1764_websocket_idle_timeout/README.md>
+>
+> Would a short addition to the WebSockets page's Timeout section (ActivityTimeout still applies after the
+> handshake, keep-alives must be shorter than it, link to Timeouts) resolve this? If so I'm happy to open the PR
+> in dotnet/AspNetCore.Docs.
+
+Before posting: fill in the link, make sure the numbers match your evidence files exactly, and re-check the issue
+for new activity. There's no need to @-mention anyone; the issue author gets notified.
+
+#### 5.3 The proposed docs text (for the PR)
+
+The current `websockets.md` Timeout section, with a new second paragraph:
+
+```markdown
+## Timeout
+
+[Http Request Timeouts](/aspnet/core/performance/timeouts) (.NET 8+) can apply timeouts to all requests by default or by policy. These timeouts will be disabled after a WebSocket handshake. They will still apply to gRPC requests. For additional configuration see [Timeouts](xref:fundamentals/servers/yarp/timeouts).
+
+The cluster's `ActivityTimeout` (100 seconds by default) still applies after the handshake: if no data or WebSocket ping frames are sent in either direction for that long, YARP closes the connection. To keep idle WebSocket connections open, enable WebSocket keep-alives on the client or the destination server with an interval shorter than `ActivityTimeout`, or increase `ActivityTimeout` for the cluster. ASP.NET Core's default <xref:Microsoft.AspNetCore.Builder.WebSocketOptions.KeepAliveInterval> is two minutes, which is longer than the default `ActivityTimeout`. For more information, see [Timeouts](xref:fundamentals/servers/yarp/timeouts#websockets).
+```
+
+Things to confirm when you write the PR: the `#websockets` anchor resolves; the xref form for the API link matches
+what other AspNetCore.Docs pages use; whether to bump `ms.date` (the contributor guide says).
+
+#### 5.4 The PR
+
+- Use GitHub's web editor on `aspnetcore/fundamentals/servers/yarp/websockets.md` (no clone needed; the repo is
+  huge). One file, one section.
+- Title something like *"YARP WebSockets: document ActivityTimeout and keep-alive interval"*.
+- Description: what changed, why (link `dotnet/yarp#1764`, mention #2615), and a *Verification* line with the
+  environment and a link to the evidence README.
+- **AI disclosure:** the page's front matter already has `ai-usage: ai-assisted`. Read AspNetCore.Docs'
+  contributor guidance on AI-generated content and follow it. Keep the prose your own words, or disclose it.
+- Referencing the YARP issue from a PR in another repo may not auto-close it. After merge, comment on #1764 with
+  the PR link so a maintainer can close it.
+
+#### 5.5 Close the loop
+
+Record the comment and PR links, and the outcome, in: this Q4 checklist, `../CLAUDE.md` status, the root
+`README.md` issues table, and the tracker in `scouting/001-issue_shortlist_sept_2026.md`.
+
+---
+
+### 6. Decision table: what might happen after the comment
+
+| Maintainer response | Your move |
+|---|---|
+| "Yes, please PR" | §5.3–5.4 |
+| "Put it in Timeouts instead / as well" | Add the gotcha sentence to `timeouts.md`'s WebSockets section instead of (or as well as) `websockets.md`. Still one small PR. |
+| "Already covered, closing" | Done. Update the trackers. Triage that closes a stale issue is a real contribution. |
+| No reply after ~7 days | Open the PR anyway. AspNetCore.Docs PRs are reviewed by the docs team, not only YARP maintainers. Link it on #1764. |
+| Someone else opens a PR first | Review it, and add your repro link as supporting evidence. Don't compete. |
+
+---
+
+### 7. Process check (honest)
+
+- **What went well:** on 2026-09-26 you went from reading the issue to a running three-process repro in one day,
+  and you checked the *current* docs before writing anything (Q2). Both are exactly the habits that make a first
+  PR go smoothly.
+- **What to watch:** the upstream deliverable is about 120 words of docs plus a comment. You now have three
+  concept notes, a 245-line lecture, and a shortlist, and nothing has been posted. That ratio is fine for
+  learning, but it's the "too slow / too deep" pattern from `persona.md` if it keeps growing. **Posting is now
+  the thing that unblocks everything else**, because the maintainers' answer decides what the PR looks like.
+- **Rule for the next session:** evidence (§4) and the comment (§5.2) in one sitting. Anything interesting that
+  comes up goes in §9's ledger, not into a new deep dive, until the comment is posted.
+
+---
+
+### 8. Checklist (progress tracker)
+
+- [x] Read the issue; find where the docs live (Q2, 2026-09-26)
+- [x] Discover the Timeouts page already covers the core (Q2, 2026-09-26)
+- [x] Build the three-process repro; observe abort, fix and gotcha at 8 s (lecture 001, 2026-09-26)
+- [x] Restructure repo; public evidence page `README.md` (2026-09-27)
+- [x] Re-verify issue and docs state; find #2615; plan evidence (this entry, 2026-09-27)
+- [ ] **E1**: defaults on both sides, 100 s abort, client + proxy logs saved
+- [ ] **E2**: 30 s keep-alive survives ≥ 300 s, logs saved
+- [ ] Update `README.md` results table with evidence links
+- [ ] Commit and push, so the link in the comment works
+- [ ] Re-check #1764, then post the comment (§5.2)
+- [ ] Maintainer response → follow §6
+- [ ] PR in `dotnet/AspNetCore.Docs` (§5.3–5.4)
+- [ ] PR merged / issue closed; trackers updated (§5.5)
+
+---
+
+### 9. Question Ledger (parked until the comment is posted)
+
+- **A general lecture:** "long-lived connections through middleboxes": every hop (NAT, cloud load balancer,
+  YARP, corporate proxy) has its own idle timer, and heartbeats have to beat the *smallest* one. That's the
+  concept under #1764, and it transfers to SignalR, gRPC streaming, and MQTT. Lecture 001 is currently about the
+  YARP repro specifically. A general version would suit the `lectures/` folder better.
+- **Telemetry:** wire `Yarp.Telemetry.Consumption` into `Proxy` and watch `WebSocketCloseReason.ActivityTimeout`
+  get reported (the old optional step).
+- **Why did #2615 see "around 2 minutes" rather than 100 s?** Unknown. Possibly the browser noticed late, or a
+  different hop. Curious, but not needed.
+- **Browser heartbeat experiment** from Q3 (client-side fix, watch frames in DevTools).
+
+### Sources (checked 2026-09-27)
+
+- [dotnet/yarp#1764](https://github.com/dotnet/yarp/issues/1764) · [dotnet/yarp#2615](https://github.com/dotnet/yarp/issues/2615)
+- [`websockets.md` on main](https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/fundamentals/servers/yarp/websockets.md) · [YARP Timeouts page](https://learn.microsoft.com/aspnet/core/fundamentals/servers/yarp/timeouts)
+- [`ForwarderRequestConfig.cs`](https://github.com/dotnet/yarp/blob/main/src/ReverseProxy/Forwarder/ForwarderRequestConfig.cs) · [`ForwarderError.cs`](https://github.com/dotnet/yarp/blob/main/src/ReverseProxy/Forwarder/ForwarderError.cs)
+- [`WebSocketOptions.KeepAliveInterval`](https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.builder.websocketoptions.keepaliveinterval) · [Yarp.ReverseProxy on NuGet](https://www.nuget.org/packages/Yarp.ReverseProxy)

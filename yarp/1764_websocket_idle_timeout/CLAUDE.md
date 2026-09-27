@@ -29,7 +29,7 @@ The public evidence page for this issue is [`README.md`](README.md). Keep it in 
 - `concept_notes/001-questions_from_the_issue_shortlist.md`: append-only Q&A. Q1 covers why maintainers leave
   small docs issues open, Q2 where YARP's docs live and what the Timeouts page already covers (plus a draft
   comment), and Q3 sockets, the WebSocket handshake, proxy byte-pumping, idle timeouts and keep-alives.
-- `lectures/001-yarp-websocket-activity-timeout.md`: builds and runs the sample, reproduces the drop, confirms
+- `../../lectures/001-yarp-websocket-activity-timeout.md` (repo-root lectures): builds and runs the sample, reproduces the drop, confirms
   the fix, and shows the gotcha that ASP.NET Core's default 2-minute keep-alive is longer than YARP's 100 s timeout.
 - `implementations/`: plans and build logs for the actual docs change (empty so far).
 
@@ -42,17 +42,17 @@ The public evidence page for this issue is [`README.md`](README.md). Keep it in 
 - 2026-09-26: reproduction built and run. Verified with captured console output at an 8 s override: abort at
   8.0 s with no effective keep-alive; survives with a 3 s keep-alive; the 2-minute default keep-alive does not help.
   Runs at the real 100 s default are described in lecture 001 but the output wasn't saved.
+- 2026-09-27: re-verified. #1764 still open, unassigned, no activity since 2023-01-09. Docs unchanged. Found
+  dotnet/yarp#2615 (2024), where a user hit exactly this. Evidence plan and comment/PR drafts in concept notes **Q4**.
 - Nothing posted upstream yet.
 
 ## Next steps
 
-1. Re-run experiments 1–4 from `README.md` and save each run's output to `sample/evidence/NNN-<name>.txt` with a
-   version header. The two real-default (100 s) runs matter most, since those are the numbers the comment cites.
-2. Re-check #1764 for new comments or claims, then post the comment drafted in concept notes Q2, updated with the
-   verified numbers and a link to this folder's `README.md`.
-3. Depending on the maintainers' answer, either open a small PR in `dotnet/AspNetCore.Docs` (one section in
-   `websockets.md` cross-referencing the Timeouts page and calling out the default-interval gotcha), or let them
-   close it as covered. Log the plan in `implementations/001-...md`.
-4. Optional: add `Yarp.Telemetry.Consumption` to `Proxy` to observe `WebSocketCloseReason.ActivityTimeout`
-   directly.
-5. Update the root `README.md` issues table and the scouting tracker when anything is posted.
+The live checklist is **concept notes Q4 §8**. In short:
+
+1. Capture E1 (defaults on both sides → abort at 100 s) and E2 (30 s keep-alive survives ≥ 300 s) into
+   `sample/evidence/`, following Q4 §4.
+2. Update `README.md`'s results table with the evidence links, then commit and push.
+3. Re-check #1764 and post the comment from Q4 §5.2.
+4. Follow Q4 §6 depending on the reply; the PR text is in Q4 §5.3.
+5. Update the trackers (root `README.md`, scouting tracker) when anything is posted.

@@ -66,7 +66,7 @@ Proxy-side stack trace on abort (experiment 1) shows the byte pump being cancell
 `Yarp.ReverseProxy.Forwarder.StreamCopier.CopyAsync(..., ActivityCancellationTokenSource activityToken, ...)`.
 
 **Note:** the raw console output for experiments 1 and 2 is recorded in
-[`lectures/001-yarp-websocket-activity-timeout.md`](lectures/001-yarp-websocket-activity-timeout.md). Output for
+[`lectures/001-yarp-websocket-activity-timeout.md`](../../lectures/001-yarp-websocket-activity-timeout.md). Output for
 experiments 3 and 4 (real defaults) has not been saved yet. Treat those two rows as unverified until the logs are
 in `sample/evidence/`.
 
@@ -76,4 +76,4 @@ YARP doesn't parse WebSocket frames after the upgrade. It copies bytes in both d
 resets an activity watchdog whenever any byte moves. Server Ping/Pong control frames are bytes too, so they reset
 the watchdog even though neither application sees them. If nothing moves for `ActivityTimeout`, YARP tears down
 both connections without a close handshake. Longer write-up:
-[`lectures/001-yarp-websocket-activity-timeout.md`](lectures/001-yarp-websocket-activity-timeout.md).
+[`lectures/001-yarp-websocket-activity-timeout.md`](../../lectures/001-yarp-websocket-activity-timeout.md).

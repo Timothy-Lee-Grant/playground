@@ -1,9 +1,10 @@
 # Lectures
 
-Concept lectures that are useful beyond a single issue, one folder per topic (`websockets/`, `async/`,
-`pinvoke/`, `opentelemetry/`, ...). Files are named `NNN-title.md`, numbered per folder.
+Full, in-depth lectures on concepts I'm missing, written to stay useful beyond the issue that prompted them.
+All lectures live here (never inside an issue folder). Files are named `NNN-title.md`; group them into topic
+subfolders if this folder grows.
 
-Issue-specific write-ups (what we ran, what happened) live in that issue's own `lectures/` folder instead. When a
-concept from an issue deserves its own lesson, write it here and link to it from the issue folder.
+An issue's step-by-step experiment record (commands, observed output) belongs in that issue's `README.md` and
+`sample/evidence/`. Link to the relevant lecture from the issue folder.
 
 Style and conventions: see the root [`CLAUDE.md`](../CLAUDE.md) ("Learn") and [`persona.md`](../persona.md).

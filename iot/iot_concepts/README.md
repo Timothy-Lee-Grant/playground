@@ -1,0 +1,30 @@
+# IoT Concepts: lecture notes
+
+Lectures on the concepts behind dotnet/iot and IoT on Linux in general: GPIO, drivers, the kernel interfaces,
+and the .NET patterns the library is built on. Each one is prompted by an issue but written to teach the concept
+**holistically**, so it's still useful after that issue is closed. The issue shows up inside a lecture as a worked
+example, not as the subject.
+
+**How lectures are written** (root [`../../CLAUDE.md`](../../CLAUDE.md) §4.4 and [`../../persona.md`](../../persona.md)):
+why it exists and what problem it solves → the cast of characters (personified, named components) → how they
+interact (diagram) → control flow → the real upstream code (file and type names) → edge cases → common mistakes →
+interview relevance → real-world usage → check-yourself questions. Name files `NNN-title.md`.
+
+Concept notes that are only about one issue belong in that issue's conversation log, not here.
+
+---
+
+## Index
+
+| # | Lecture | Prompted by | Status |
+|---|---|---|---|
+| — | *(none written yet)* | | |
+
+## Candidates (from #2403, entry #1 §12)
+
+| Topic | Why it matters here |
+|---|---|
+| .NET events and delegates: `event` accessors, multicast delegates, delegate identity | The whole #2403 fix hinges on `-=` removing the exact delegate instance that `+=` registered. |
+| dotnet/iot architecture: controller, driver, pin, bindings | Explains why the driver, not the pin, ends up calling your handler. |
+| GPIO on Linux: sysfs vs libgpiod v1 vs v2, edge events | What the drivers are actually talking to, and why there are three of them. |
+| Breaking changes in libraries: binary, source and behavioral breaks; semver | Why a one-line-looking fix "needs a major release". |

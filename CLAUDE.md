@@ -1,167 +1,272 @@
-# Open-Source Workbench: working guide
+# Open-Source Workbench: orientation for Claude (and humans)
 
-This repo is where Timothy and Claude find open-source issues, work on them, and learn along the way. It used to
-be a general playground; it is now organized around contributing to open source. `README.md` is the public face
-(maintainers land there from PR links); this file is the working guide.
+This repo is where Timothy and Claude find open-source issues, understand them, reproduce them, fix them, and
+learn the concepts behind them. It's published on GitHub as `Timothy-Lee-Grant/playground` (it started as a general
+playground; since 2026-09-26 it's organized around open-source work). `README.md` is the public face that
+maintainers land on from PR links. **This file is the working guide.** Read it before doing anything here.
 
-**Read `persona.md` first** before writing any lecture, concept note or review. It covers who I am, how I learn
-(diagrams, tables, named/personified components, running systems before documents; never ask me to "picture"
-something), and my process habits to watch for.
+**Before you write anything for Timothy** (a conversation answer, a lecture, a report), read [`persona.md`](persona.md).
+It covers who he is (embedded/firmware engineer moving toward backend and infrastructure), how he learns
+(high-level architecture first, then components → interactions → control flow → code → edge cases; personified,
+named components; ASCII diagrams and tables; running systems before documents), and process habits to watch for.
 
----
-
-## What the repo is for
-
-1. **Scout:** search repos for issues worth doing, and keep a dated shortlist.
-2. **Explore:** read the issue, the thread and the relevant source; ask questions until the problem makes sense.
-3. **Learn:** turn concepts I don't understand into lectures I can come back to.
-4. **Experiment:** build the smallest running system that reproduces the issue or proves a fix, and save the
-   output as **evidence**.
-5. **Contribute:** comment, open the PR upstream, and link back to the issue folder as evidence.
+> **The system is new (started 2026-09-26) and still changing.** The structure below is current as of
+> 2026-09-27. If something here stops matching reality, fix this file in the same session. There's a list of open
+> questions about the system at the end.
 
 ---
 
-## Areas
+## 1. Repo map
 
-| Path | Purpose | Can AI write code here? |
+```
+exercises/  (GitHub: Timothy-Lee-Grant/playground)
+├── README.md               public index: what this repo is + table of every issue worked on
+├── CLAUDE.md               ← you are here: layout, workflow, conventions, templates
+├── persona.md              who Timothy is and how he learns (living document; read first)
+├── scouting/               issue searches: dated shortlists of candidate issues + a progress tracker
+├── iot/                    dotnet/iot work ─────────────── NEW LAYOUT (v2), see §2
+│   ├── CLAUDE.md           orientation for the dotnet/iot project itself
+│   ├── iot_concepts/       lecture notes on IoT / dotnet/iot concepts, reusable across issues
+│   └── 2403_<slug>/        one folder per issue: README, CLAUDE, conversation/, sample/, report/
+├── yarp/                   dotnet/yarp work ────────────── LEGACY LAYOUT (v1), see §3; don't restructure
+│   └── 1764_websocket_idle_timeout/
+├── lectures/               cross-cutting lectures not tied to one upstream project (+ the YARP-era lecture)
+├── hand_experiments/       older hand-written practice projects (Kafka, Redis, Rx, RabbitMQ, ...)
+│                           ⚠ strict rules: NO AI-written code; review-and-teach only. See its CLAUDE.md.
+└── private/                personal notes; gitignored, never pushed. Don't read or quote unless Timothy asks.
+```
+
+Upstream source code is **never** committed here. Forks are cloned outside this repo (see §5, Contribute).
+
+---
+
+## 2. The v2 layout (use this for every new issue)
+
+### 2.1 Upstream-project folder: `<repo>/`
+
+One top-level folder per upstream repository, named after the repo in lowercase (`iot`, `yarp`, `csharp-sdk`,
+`opentelemetry-dotnet`, ...).
+
+| Path | What it is |
+|---|---|
+| `<repo>/CLAUDE.md` | Orientation for the **upstream project**: what it is, how its source is laid out, key types, how to build and test it, its contribution rules and release cadence, maintainers seen so far, and the list of issue folders. Shared context for every issue in that project. |
+| `<repo>/<repo>_concepts/` | **Lecture notes** for that project's domain (e.g. `iot_concepts/`: GPIO, drivers, .NET events, Linux GPIO APIs). Written to teach the concept holistically, so they stay useful after the issue that prompted them is closed. Has a `README.md` index. |
+| `<repo>/<issue#>_<slug>/` | One workspace per issue being worked on (§2.2). |
+
+### 2.2 Issue folder: `<repo>/<issue#>_<slug>/`
+
+```
+<issue#>_<slug>/
+├── README.md        public landing page for maintainers (short): claim · status · links to report + sample
+├── CLAUDE.md        orientation for this issue: what it is, upstream rules, where things are, how to resume
+├── conversation/    the linear log of the work: progress + questions/answers + decisions   (§4.1)
+│   └── 001-conversation-log.md
+├── sample/          runnable experiments and their captured output                         (§4.2)
+│   ├── README.md    what each experiment is and how to run it
+│   └── evidence/    raw output of every run the report relies on
+└── report/          the finished lab report(s)                                            (§4.3)
+    └── README.md    what belongs here + the lab-report outline
+```
+
+| Folder | Question it answers | Audience | Edited how |
+|---|---|---|---|
+| `conversation/` | "What happened, in what order, and why?" | Timothy, and any Claude session picking up the work | Append-only (except the status box and index at the top) |
+| `sample/` | "Can I see it happen?" | Timothy, maintainers who want to rerun it | Code changes freely; evidence files are never edited after capture |
+| `report/` | "What was found, how was it tested, and what does it mean?" | Anyone: Timothy, maintainers, a future reader | Written when there are results; revised until final |
+| `README.md` | "Why is this folder linked from my PR?" | Maintainers | Kept short and current |
+
+### 2.3 Where does a piece of writing go?
+
+| You're writing... | It goes in |
+|---|---|
+| An answer to Timothy's question about this issue | `conversation/` (new entry) |
+| A record of what was just done (ran E1, posted a comment, decided a route) | `conversation/` (📍 or 🧭 entry) |
+| A general explanation of a concept (events, GPIO, sysfs vs libgpiod, semver) | `<repo>/<repo>_concepts/NNN-*.md`, linked from the conversation |
+| A concept that isn't specific to any one upstream project | root `lectures/` |
+| Code that reproduces or tests something | `sample/` |
+| Raw output of a run | `sample/evidence/NNN-*.txt` |
+| The final write-up of results | `report/NNN-lab-report-*.md` |
+| The fix itself | a fork **outside** this repo (§5) |
+| Status for a maintainer | the issue `README.md` |
+
+---
+
+## 3. The v1 (legacy) layout: `yarp/1764_websocket_idle_timeout/`
+
+YARP #1764 was the first issue and uses the older layout. **Timothy is still actively working on it, so don't
+restructure it.** Plan to migrate it once #1764 is closed. How the v1 pieces map to v2:
+
+| v1 (yarp/1764) | v2 equivalent |
+|---|---|
+| `concept_notes/001-questions_from_the_issue_shortlist.md` (Q&A log that also tracked progress) | `conversation/001-conversation-log.md` |
+| `implementations/001-lab-report-*.md` | `report/001-lab-report-*.md` |
+| root `lectures/001-yarp-websocket-activity-timeout.md` | `yarp/yarp_concepts/` (after migration) |
+| `README.md` (long public evidence page) | `README.md` (short) + `report/` |
+| `sample/`, `sample/evidence/`, `CLAUDE.md` | same |
+
+When working in `yarp/1764_*`, follow **its own** `CLAUDE.md`.
+
+---
+
+## 4. The three working folders in detail
+
+### 4.1 `conversation/`: one linear log
+
+The conversation log is where Timothy thinks out loud with Claude. It mixes questions, answers, progress and
+decisions **in the order they happened**, so reading it top to bottom rebuilds the full context. That's
+deliberate: a new Claude session (desktop or CLI) can read this one file and know where things stand.
+
+- **File:** `conversation/001-conversation-log.md`. If it gets very long (roughly 1,500+ lines), start
+  `002-conversation-log.md` with a one-paragraph recap and a link back. Don't split by topic.
+- **Top of file:** a header explaining the file, then **"Where we are now"** (stage, last entry, open decisions,
+  next step) and an **Index** table. These two are the only things edited in place. Update them with every new
+  entry.
+- **Entries:** `## #N · YYYY-MM-DD · <type>: <title>`, appended at the bottom. Types:
+  - 📍 **Progress:** what was done, with links to evidence or commits.
+  - ❓ **Question → 💬 Answer:** Timothy's question in his words, then the answer: short answer first, then the
+    explanation, then takeaways / next steps.
+  - 🧭 **Decision:** what was decided, the options considered, and why.
+  - 🔁 **Correction:** fixes an earlier entry and links back to it. Never edit the old entry.
+- **Keep answers issue-focused.** If an answer grows into a general lesson, write it as a concept lecture and link
+  it from the entry.
+- **End of every working session** (desktop or CLI): append a 📍 entry saying what was done, what's verified, and
+  what's next, and update "Where we are now".
+
+### 4.2 `sample/`: experiments and evidence
+
+- **Walking skeleton first:** get the smallest thing running end to end, then add pieces. Build and run early
+  and often. Don't design big before running anything.
+- Each experiment has an ID (`E1`, `E2`, ...) that's used the same way in the conversation, `sample/README.md`
+  and the report.
+- **Pin the toolchain** (`global.json`, exact package versions) so a maintainer can reproduce it.
+- **Evidence is captured, not remembered.** Save the raw output of every run anything relies on to
+  `sample/evidence/NNN-<experiment>-<what>.txt`, with a header: date, OS, `dotnet --version`, package versions,
+  upstream commit/tag if relevant, and the exact command. Never edit an evidence file after capture; rerun instead.
+- Label anything not backed by a saved run as **unverified**, everywhere.
+- Check the state you think you changed (ports, processes, env vars, which package version actually restored)
+  before trusting a rerun.
+
+### 4.3 `report/`: the lab report
+
+A finished, standalone write-up in the style of an undergraduate physics/chemistry lab report. It takes a reader
+from the problem to the results and explains how every result was obtained, without needing the conversation log.
+Write it once there are real results; it's the document an upstream comment or PR links to.
+
+Outline (template in §8.4): Abstract → Background → Question & hypotheses → Apparatus & environment → Method (per
+experiment) → Results (tables, figures, evidence links) → Discussion → Conclusion → Limitations & threats to
+validity → What was contributed upstream → References → Appendix.
+
+### 4.4 `<repo>_concepts/`: lecture notes
+
+Full lectures on concepts Timothy needs, written for the long term. The issue that prompted a lecture is an
+*example inside it*, not its subject. Style, from `persona.md`: why it exists and what problem it solves first;
+then architecture → components → interactions → control flow → implementation → edge cases; personified, named
+characters; ASCII diagrams and tables; code references to the real upstream files and types; "common mistakes",
+"interview relevance" and "real-world usage" sections. Each concepts folder has a `README.md` index table
+(number, title, prompted by, status).
+
+---
+
+## 5. Workflow, stage by stage
+
+| Stage | What happens | Output goes to |
 |---|---|---|
-| `scouting/` | Issue searches: `NNN-issue_shortlist_<month_year>.md`, one per search pass, with a progress tracker | n/a (docs only) |
-| `lectures/` | Full, in-depth concept lectures, reusable across issues (all lectures live here, not in issue folders) | n/a (docs only) |
-| `<repo>/<issue#>_<slug>/` | One workspace per issue I've picked (e.g. `yarp/1764_websocket_idle_timeout/`) | **Yes** |
-| `hand_experiments/` | Older by-hand practice projects (Kafka, Redis, Rx, RabbitMQ, ...) | **No.** Strict review-and-teach-only rules; see `hand_experiments/CLAUDE.md` |
-| `private/` | Personal notes; gitignored, never pushed | n/a |
-| `persona.md` | Who I am and how I learn; a living document (see below) | n/a |
+| **1. Scout** | Search upstream repos for candidate issues. | `scouting/NNN-issue_shortlist_<month_year>.md` (one per pass, dated snapshot; carry unfinished items forward). Keep its **progress tracker** current. |
+| **2. Pick** | Move a candidate to "working on it". Re-check the thread (open? claimed? PR up? maintainer comments?) and record the check date. | Create the issue folder (§2.2) from the templates in §8. Create `<repo>/CLAUDE.md` and `<repo>_concepts/` if this is the first issue in that repo. Add a row to the root `README.md` table and update the scouting tracker. |
+| **3. Explore** | Read the issue, the thread and the source. Timothy asks questions until the problem makes sense. | `conversation/`: entry #1 is always a briefing (what the issue is, the facts, the cast of characters, control flow, findings, fit check, next steps). |
+| **4. Learn** | Turn concepts Timothy is missing into lectures. | `<repo>_concepts/`, linked from the conversation. |
+| **5. Experiment** | Reproduce the issue or prove a fix with the smallest running system. | `sample/` + `sample/evidence/`; 📍 entries in the conversation. |
+| **6. Report** | Write up the results. | `report/`; update the issue `README.md`. |
+| **7. Contribute** | Comment on the issue before substantial work (say what you plan and ask if it's wanted). Implement in a **fork cloned outside this repo**. Open the PR. | Links and outcomes go to the conversation, the issue `CLAUDE.md` status, the root `README.md` table, and the scouting tracker. |
+
+**Contribution rules that apply everywhere:**
+
+- Read the upstream `CONTRIBUTING.md`, PR template and any AI-assistant guidance before the first comment, and
+  record the relevant rules in `<repo>/CLAUDE.md`.
+- In PR descriptions, link to the issue folder
+  (`https://github.com/Timothy-Lee-Grant/playground/tree/main/<repo>/<issue#>_<slug>`) and state the verified
+  environment ("verified on .NET 10.0.302 / System.Device.Gpio 4.2.0").
+- Disclose AI assistance per the upstream project's policy. If the project has no policy, disclose briefly anyway.
+- One active upstream PR at a time.
 
 ---
 
-## The workflow, stage by stage
+## 6. Working with Claude sessions (desktop and CLI)
 
-### 1. Scout → `scouting/`
+**Starting a session on an issue** (e.g. `claude` in the issue folder, or "let's continue on iot#2403"):
 
-- Each search pass is a new file: `scouting/NNN-issue_shortlist_<month_year>.md`. Don't rewrite old shortlists;
-  they're dated snapshots. Carry unfinished items forward into the next one.
-- For each candidate, record: link, state (open / claimed / closed), intent (🛠️ contribute vs. 📖 learn-only),
-  type, effort estimate, hardware needs, and why it's a fit. Then **Problem → Why it fits → How to fix → Steps →
-  Done when → Watch out for**.
-- Keep the file's **progress tracker** table current as items move.
-- Issue state changes fast. Re-check the issue thread (still open? claimed? PR already up?) before starting
-  anything, and say what date the check was made.
+1. Read this file, then `<repo>/CLAUDE.md`, then the issue's `CLAUDE.md`.
+2. Read `conversation/001-conversation-log.md` **top to bottom**. "Where we are now" says where to pick up.
+3. Re-check the upstream issue for new activity if the last check is more than a few days old.
+4. Say what you understand the current state to be before changing anything.
 
-### 2. Pick → create the issue workspace
+**Ending a session:** append a 📍 Progress entry to the conversation and update "Where we are now". Update the
+issue `CLAUDE.md` status and the trackers if anything moved.
 
-When an item moves from "candidate" to "working on it", create `<repo>/<issue#>_<slug>/`:
-
-- `<repo>` is the upstream repo name in lowercase: `yarp`, `iot`, `csharp-sdk`, `opentelemetry-dotnet`, ...
-- `<slug>` is a short snake_case description: `1764_websocket_idle_timeout`.
-- Create `README.md` and `CLAUDE.md` from the templates at the bottom of this file. Other subfolders only get
-  created when there's something to put in them.
-- Add a row to the **Issues** table in the root `README.md`.
-- Before any PR, read the upstream `CONTRIBUTING.md` (including its AI-disclosure rule) and note the relevant
-  rules in the issue's `CLAUDE.md`.
-
-### 3. Explore → `concept_notes/`
-
-- An **append-only** Q&A log: my question, in my words → short answer → explanation → takeaways / next steps.
-  Newest at the bottom, with an index table at the top. Don't rewrite earlier answers; if one turns out to be
-  wrong, append a correction that links back to it.
-- Keep entries short and focused on the issue. If an answer grows into a full lesson, it belongs in a lecture.
-
-### 4. Learn → `lectures/`
-
-All lectures live in the repo-root `lectures/` folder, never inside an issue folder. A lecture teaches a
-**concept** I'm missing (WebSockets, proxies and idle timeouts, cancellation tokens, P/Invoke struct layout, ...)
-fully and in depth, so it stays useful long after the issue that prompted it. The issue that motivated it is an
-example inside the lecture, not its subject. If the folder grows, group files into topic subfolders.
-
-The step-by-step record of an issue's own experiments (commands, observed output) belongs in that issue's
-`README.md` and `sample/evidence/`, not in a lecture.
-
-Lecture style (from `persona.md`): purpose before mechanism; high-level architecture → components → interactions
-→ control flow → implementation → edge cases; personified named characters; ASCII diagrams and tables; "common
-mistakes" and "interview relevance" sections. When a lecture explains upstream code, reference the real file and
-type names.
-
-### 5. Experiment → `sample/` and `sample/evidence/`
-
-- **Walking skeleton first:** get the smallest thing running end to end before adding pieces. Get a
-  build/run result early and often. Don't write a large design without running anything.
-- Pin the toolchain (`global.json`, exact package versions) so a maintainer can reproduce it.
-- **Evidence is captured, not remembered.** Save the raw output of every run the README relies on to
-  `sample/evidence/NNN-<what>.txt`. Put a header on each file with the date, OS, `dotnet --version`, package
-  versions, the upstream commit/tag if relevant, and the exact command(s).
-- Label anything not backed by a saved run as **unverified**, in the README and in lectures alike.
-- Always check the state you think you changed (ports, processes, env vars) before trusting a re-run.
-  `lectures/001-yarp-websocket-activity-timeout.md` has a concrete example with a stale `dotnet run` child process.
-
-### 6. Contribute
-
-- Comment on the issue before substantial work: say what you plan to do and ask whether it's wanted.
-- The fix itself goes in a **fork cloned outside this repo**. Upstream source never gets committed here.
-- In the PR description, link to the issue folder (`https://github.com/Timothy-Lee-Grant/playground/tree/main/<repo>/<issue#>_<slug>`)
-  and state the verified environment ("verified on .NET 10.0.302 / Yarp.ReverseProxy 2.3.0").
-- Follow the upstream project's AI-disclosure policy.
-- Record the comment/PR links and the outcome in the issue's `CLAUDE.md`, the root `README.md` table, and the
-  scouting tracker.
+**What Claude may write:** anything in `scouting/`, `<repo>/` (including code in `sample/`), `lectures/`, and these
+orientation docs. **Nothing** in `hand_experiments/` except reviews and teaching docs its `CLAUDE.md` allows.
+Update `persona.md` when something durable is learned about Timothy (it's shared across his projects).
 
 ---
 
-## Conventions
+## 7. Conventions
 
-- **Markdown naming:** `NNN-title.md`, a three-digit sequence per folder (`001`, `002`, ...), oldest first. Put a
-  short metadata block under the title (date, related issue, what the file is).
-- **Public vs. private.** Issue-folder `README.md` files are written for a maintainer audience: neutral, factual,
-  and short. Learning notes can be personal, but anything that shouldn't be public goes in `private/`.
-- **Keep indexes current:** the root `README.md` issues table, the scouting tracker, and each issue's `CLAUDE.md`
-  status section.
-- **`persona.md` is a living document.** Update it when you learn something worth keeping about me: new projects,
-  skills I've demonstrated, patterns in how I work, changes in my goals. I use it across several projects.
-- **Process findings count.** When reviewing my work, include process observations (time between runs, whether
-  there was a walking skeleton, whether I got stuck digging) alongside the technical ones. See
-  `hand_experiments/lectures/engineering-practice/` for background.
+- **File naming:** `NNN-title.md`, a three-digit sequence per folder (`001`, `002`, ...), oldest first. Put a short
+  metadata block under the title (date, related issue, what the file is).
+- **Issue folder names:** `<issue#>_<slug>` where the slug is a short lowercase description. (Existing: `yarp/1764_websocket_idle_timeout`
+  uses snake_case; `iot/2403_gpiopin-event-handler-...` uses kebab-case. Either is fine; keep the issue number first.)
+- **Dates:** absolute (`2026-09-27`), never "today" or "last week". Say when an upstream fact was checked.
+- **Verified vs. unverified:** a claim is verified only if a saved evidence file shows it. Label everything else.
+- **Public vs. private:** issue `README.md` files and reports are written for a maintainer audience: neutral,
+  factual, short. Learning notes can be personal. Anything that shouldn't be public goes in `private/`.
+- **Keep the indexes current:** root `README.md` issues table, scouting tracker, `<repo>/CLAUDE.md` issue list,
+  each issue's `CLAUDE.md` status, each concepts `README.md`.
+- **Process findings count.** When reviewing Timothy's work, include process observations (time between runs, was
+  there a walking skeleton, did he get stuck digging) alongside the technical ones. Background:
+  `hand_experiments/lectures/engineering-practice/`.
 
 ---
 
-## Templates
+## 8. Templates
 
-### Issue `README.md` (public evidence page)
+### 8.1 Issue `README.md` (public landing page)
 
 ```markdown
 # <repo>#<issue>: <short title>
 
-**Upstream issue:** <link> · **Related PR:** <link or "not yet"> · **Status:** <one line>
+**Upstream issue:** <link> · **Related PR:** <link or "not yet"> · **Status:** <one line, dated>
 
 ## Claim
-What this folder demonstrates, in one or two sentences.
+What this folder demonstrates, in one or two sentences. ("Nothing verified yet" is a valid claim.)
+
+## Where to look
+- Full write-up: `report/NNN-lab-report-*.md`
+- Run it yourself: `sample/README.md`
+- Raw output: `sample/evidence/`
 
 ## Environment
 OS · `dotnet --version` · package versions · upstream commit/tag
-
-## Setup
-ASCII diagram of the pieces and how they connect.
-
-## Reproduce
-Exact commands, from a clean clone.
-
-## Results
-| Experiment | Configuration | Expected | Observed | Evidence file |
-
-## Notes
-Anything a maintainer should know (caveats, what's *not* verified).
 ```
 
-### Issue `CLAUDE.md` (working notes)
+### 8.2 Issue `CLAUDE.md` (orientation)
 
 ```markdown
 # <repo>#<issue>: <short title>
 
 ## What this is
-The issue in plain words, and why I picked it (link to the scouting entry).
+The issue in plain words, and why it was picked (link to the scouting entry).
+
+## Read this first
+Order for a new session: this file → conversation log top to bottom.
+
+## Upstream facts (checked YYYY-MM-DD)
+State, labels, assignee, maintainer comments that matter, related issues/PRs.
 
 ## Upstream rules
-CONTRIBUTING.md notes, AI-disclosure rule, where docs/code live, PR template quirks.
+CONTRIBUTING notes, AI-disclosure rule, PR template quirks, breaking-change policy.
 
-## Structure
-What's in each subfolder.
+## Where things are
+Folder-by-folder. Upstream source files that matter. Where the fork is cloned (path on Timothy's machine).
 
 ## Status
 Dated bullet log: what's verified, what's posted upstream.
@@ -169,3 +274,86 @@ Dated bullet log: what's verified, what's posted upstream.
 ## Next steps
 Ordered; each step should produce something visible.
 ```
+
+### 8.3 Conversation log
+
+Header, "Where we are now" and Index as described in §4.1. Copy the top of
+`iot/2403_*/conversation/001-conversation-log.md` as the model.
+
+### 8.4 Lab report
+
+```markdown
+# Lab Report NNN: <title>
+
+| | |
+|---|---|
+| Issue | <link> |
+| Author | Timothy Grant (with Claude) |
+| Date | YYYY-MM-DD |
+| Upstream version tested | <commit/tag, package versions> |
+| Status | draft / final |
+
+## Abstract
+Five sentences: problem, method, key result, conclusion, what was contributed.
+
+## 1. Background
+The system, the concepts needed, and the issue as reported. Link concept lectures rather than repeating them.
+
+## 2. Question and hypotheses
+The precise question, and each hypothesis stated so an experiment can prove it wrong.
+
+## 3. Apparatus and environment
+Hardware, OS, SDK, package versions, upstream commit. Diagram of the setup.
+
+## 4. Method
+One subsection per experiment (E1, E2, ...): setup, procedure (exact commands), what was measured, controls.
+
+## 5. Results
+Per experiment: observed output (tables, figures), evidence file links, expected vs. observed.
+
+## 6. Discussion
+What the results mean, how they answer the question, surprises, corrections to earlier beliefs.
+
+## 7. Conclusion
+
+## 8. Limitations and threats to validity
+What wasn't tested (drivers, hardware, OS) and why it might matter.
+
+## 9. Upstream contribution
+What was posted (comments, PRs), with links and outcomes.
+
+## References
+
+## Appendix
+Full logs, extra figures, code listings.
+```
+
+### 8.5 Concept lecture
+
+```markdown
+# Lecture NNN: <concept>
+
+> Prompted by: <repo>#<issue> · Date: YYYY-MM-DD · Prerequisites: <lectures>
+
+## What problem does this solve?
+## The cast of characters
+## How they interact (diagram)
+## Control flow, step by step
+## In the real code (file and type references)
+## Edge cases and gotchas
+## Common mistakes
+## Interview relevance
+## Real-world production usage
+## Check yourself (questions)
+```
+
+---
+
+## 9. Open questions about the system
+
+These aren't settled yet. Revisit them as the system matures.
+
+1. **Migrating `yarp/1764`** to the v2 layout once #1764 is done (and moving its lecture into `yarp/yarp_concepts/`).
+2. **What root `lectures/` is for** long term: cross-cutting concepts only, or retired in favor of `<repo>_concepts/`.
+3. **Slug style:** snake_case vs kebab-case for issue folders.
+4. **Whether `scouting/` should also split per upstream repo** once there are several shortlists.

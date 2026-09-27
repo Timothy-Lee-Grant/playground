@@ -711,7 +711,7 @@ Update this table as you go. It's the "status board" for this repo's open-source
 | D | iot#2602 | ☐ not started | | | | |
 | E | mcp#1806 | ☐ not started | | | | |
 | F | iot#2356 | ☐ not started | | | | Order MPU-6050 |
-| G | iot#2403 | ☐ not started | | | | |
+| G | iot#2403 | 🔎 exploring (2026-09-27) | ☐ | | | Workspace: [`iot/2403_gpiopin-event-handler-assing-wrong-sender-value/`](../iot/2403_gpiopin-event-handler-assing-wrong-sender-value/). ⚠ Triage (2025-07-10) says the fix is breaking and needs a major release; see conversation #1 §10 |
 | H | mcp#1781 | ☐ not started | | | | |
 | I | yarp#2847 | ☐ not started | | | | |
 | J | iot#2352 | ☐ not started | | | | Hardware needed |

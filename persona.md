@@ -283,6 +283,12 @@ doesn't fix it. While researching he also found that the Timeouts docs page alre
 which shrinks the real change to a cross-reference. That's a good example of checking before contributing. Nothing
 posted upstream as of 2026-09-27.
 
+Second pick (2026-09-27): **dotnet/iot #2403** (`GpioPin` event handlers get a driver-internal object as `sender`),
+in the new per-project layout (`iot/` with `iot_concepts/` lectures and an issue folder split into `conversation/`,
+`sample/`, `report/`). He designed that layout himself: a single linear conversation log (questions, answers and
+progress together, readable top to bottom by a later Claude CLI session), a lab-report-style `report/` modeled on
+his undergraduate physics/chemistry reports, and project-level concept lectures instead of per-issue ones.
+
 ## LLM_Monitor (2026, in progress)
 
 A self-built AI orchestration platform. Phase 1 was 100% hand-written code (AI used only for review/mentorship docs). Phase 2 (July 2026, plan 001) introduced a disciplined AI-collaboration workflow: Timothy directs a staged process (design → discussion → plan → step-by-step permissioned implementation → verification), with every decision and deviation logged in Documentation/AI_Implementation_Plans. Microservices: C#/.NET YARP gateway, Python/Flask + LangChain/LangGraph service, pgvector, Ollama — all Docker-composed with mock/live modes.

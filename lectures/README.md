@@ -1,10 +1,18 @@
-# Lectures
+# Lectures (cross-cutting)
 
-Full, in-depth lectures on concepts I'm missing, written to stay useful beyond the issue that prompted them.
-All lectures live here (never inside an issue folder). Files are named `NNN-title.md`; group them into topic
-subfolders if this folder grows.
+Full, in-depth lectures on concepts that **aren't specific to one upstream project** (for example: how to read a
+large codebase, semantic versioning in general, async/await fundamentals).
 
-An issue's step-by-step experiment record (commands, observed output) belongs in that issue's `README.md` and
-`sample/evidence/`. Link to the relevant lecture from the issue folder.
+Concepts tied to one project's domain go in that project's concepts folder instead:
 
-Style and conventions: see the root [`CLAUDE.md`](../CLAUDE.md) ("Learn") and [`persona.md`](../persona.md).
+| Project | Concepts folder |
+|---|---|
+| dotnet/iot | [`../iot/iot_concepts/`](../iot/iot_concepts/) |
+| dotnet/yarp | none yet. `001-yarp-websocket-activity-timeout.md` lives here for now and moves to `yarp/yarp_concepts/` when the YARP folder is migrated to the new layout. |
+
+| # | Lecture | Prompted by |
+|---|---|---|
+| 001 | [YARP WebSocket activity timeout](001-yarp-websocket-activity-timeout.md) | dotnet/yarp#1764 |
+
+Files are named `NNN-title.md`. Style and conventions: root [`CLAUDE.md`](../CLAUDE.md) §4.4 and
+[`persona.md`](../persona.md).

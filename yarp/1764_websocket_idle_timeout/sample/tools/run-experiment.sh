@@ -51,6 +51,9 @@ trap cleanup EXIT
 PROXY_DEST="http://localhost:5050/"; CLIENT_URL="ws://localhost:5000/ws"
 if [[ $TAP -eq 1 ]]; then PROXY_DEST="http://localhost:5051/"; CLIENT_URL="ws://localhost:5001/ws"; fi
 
+describe_ka() { # $1 = seconds or empty, $2 = text for the default
+  if [[ -z "$1" ]]; then echo "$2"; elif [[ "$1" == "0" ]]; then echo "0 (off)"; else echo "$1 s"; fi
+}
 header() { # $1 = role, $2 = command
   cat <<EOF
 # experiment: $NAME ($1)
@@ -58,7 +61,7 @@ header() { # $1 = role, $2 = command
 # os:         macOS $(sw_vers -productVersion) ($(uname -m))
 # dotnet:     SDK $(cd "$SAMPLE" && dotnet --version), runtime $(dotnet --list-runtimes | grep 'NETCore.App 10' | tail -1 | awk '{print $2}'), Yarp.ReverseProxy 2.3.0
 # repo:       $(git -C "$SAMPLE" rev-parse --short HEAD) (+ uncommitted sample changes, if any)
-# settings:   proxy ActivityTimeout=${ACTIVITY:-100 s (appsettings 00:01:40)} · server KeepAliveInterval=${SERVER_KA:+${SERVER_KA} s}${SERVER_KA:-2 min (default)} · client KeepAliveInterval=${CLIENT_KA:+${CLIENT_KA} s}${CLIENT_KA:-30 s (ClientWebSocket default)} · taps=$([[ $TAP -eq 1 ]] && echo on || echo off)
+# settings:   proxy ActivityTimeout=${ACTIVITY:-100 s (appsettings 00:01:40)} · server KeepAliveInterval=$(describe_ka "$SERVER_KA" "2 min (default)") · client KeepAliveInterval=$(describe_ka "$CLIENT_KA" "30 s (ClientWebSocket default)") · taps=$([[ $TAP -eq 1 ]] && echo on || echo off)
 # command:    $2
 #
 EOF

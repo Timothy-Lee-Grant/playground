@@ -1,0 +1,65 @@
+<!doctype html><meta charset="utf-8"><style>
+body { margin: 0; padding: 18px; background: #f4f4f1; font: 13px -apple-system, system-ui, sans-serif; width: 1560px; }
+h1 { font-size: 17px; margin: 0 0 2px; } .sub { color: #555; margin-bottom: 12px; font: 12px ui-monospace, monospace; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+section { background: #1e1e1e; border-radius: 8px; overflow: hidden; }
+h2 { margin: 0; padding: 7px 12px; font-size: 13px; color: #fff; background: #333; display: flex; justify-content: space-between; }
+h2 small { color: #aaa; font: 11px ui-monospace, monospace; }
+pre { margin: 0; padding: 10px 12px; color: #ddd; font: 11.5px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; word-break: break-all; }
+.bad { color: #ff7b72; font-weight: 700; } .good { color: #7ee787; font-weight: 700; } .warn { color: #e3b341; font-weight: 700; }
+</style><h1>Experiment 009: Chrome page, server keep-alive 30 s</h1><div class="sub">settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=30 s · client = page in headless Chrome 153 (browser WebSocket API has no keep-alive setting) · taps=on · repeated ticks and framework stack frames elided</div>
+<div class="grid"><section><h2>IdleClient (the caller)<small>evidence/009-browser-server-30s-survives-client.txt</small></h2><pre></pre></section><section><h2>Proxy · YARP (the gatekeeper)<small>evidence/009-browser-server-30s-survives-proxy.txt</small></h2><pre>info: Yarp.ReverseProxy.Configuration.ConfigProvider.ConfigurationConfigProvider[1]
+      Loading proxy data from config.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /Users/timothygrant/Desktop/projects/exercises/yarp/1764_websocket_idle_timeout/sample/Proxy
+info: Yarp.ReverseProxy.Forwarder.HttpForwarder[9]
+      Proxying to http://localhost:5051/ws HTTP/1.1 RequestVersionOrLower 
+info: Yarp.ReverseProxy.Forwarder.HttpForwarder[56]
+      Received HTTP/1.1 response 101.
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...</pre></section><section><h2>wstap · client ↔ YARP<small>evidence/009-browser-server-30s-survives-tap-client-proxy.txt</small></h2><pre>15:44:45  +   0.007s  [client→proxy] listening on :5001, forwarding to :5000  (──► = toward :5000)
+15:44:50  +   5.034s  [client→proxy] TCP accepted from (&#x27;127.0.0.1&#x27;, 64608); connecting to :5000
+15:44:50  +   5.035s  [client→proxy] ──►  HTTP  GET /ws HTTP/1.1
+15:44:50  +   5.289s  [client→proxy] ◄──  HTTP  HTTP/1.1 101 Switching Protocols
+15:44:50  +   5.291s  [client→proxy] ──►  WS    TEXT   masked, 5 B payload &#x27;hello&#x27;
+15:44:50  +   5.297s  [client→proxy] ◄──  WS    TEXT   unmasked, 5 B payload &#x27;hello&#x27;
+15:45:20  +  35.292s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:45:50  +  65.285s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:46:20  +  95.291s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:46:50  + 125.304s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:47:20  + 155.302s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:47:50  + 185.301s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:48:20  + 215.293s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:48:50  + 245.300s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:49:20  + 275.298s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:49:50  + 305.293s  [client→proxy] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:50:00  + 315.181s  [client→proxy] ──►  WS    CLOSE  masked, 2 B payload code=1001
+15:50:00  + 315.182s  [client→proxy] ──►  TCP   <span class="bad">FIN</span> (sender closed its side)
+15:50:00  + 315.183s  [client→proxy] ◄──  TCP   <span class="bad">FIN</span> (sender closed its side)
+15:50:00  + 315.185s  [client→proxy] TCP both directions finished</pre></section><section><h2>wstap · YARP ↔ EchoServer<small>evidence/009-browser-server-30s-survives-tap-proxy-echo.txt</small></h2><pre>15:44:45  +   0.013s  [proxy→echo] listening on :5051, forwarding to :5050  (──► = toward :5050)
+15:44:50  +   5.524s  [proxy→echo] TCP accepted from (&#x27;127.0.0.1&#x27;, 64612); connecting to :5050
+15:44:50  +   5.526s  [proxy→echo] ──►  HTTP  GET /ws HTTP/1.1
+15:44:50  +   5.582s  [proxy→echo] ◄──  HTTP  HTTP/1.1 101 Switching Protocols
+15:44:50  +   5.598s  [proxy→echo] ──►  WS    TEXT   masked, 5 B payload &#x27;hello&#x27;
+15:44:50  +   5.600s  [proxy→echo] ◄──  WS    TEXT   unmasked, 5 B payload &#x27;hello&#x27;
+15:45:20  +  35.592s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:45:50  +  65.586s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:46:20  +  95.588s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:46:50  + 125.595s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:47:20  + 155.588s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:47:50  + 185.600s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:48:20  + 215.592s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:48:50  + 245.599s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:49:20  + 275.593s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:49:50  + 305.587s  [proxy→echo] ◄──  WS    <span class="good">PONG</span>   unmasked, 0 B payload
+15:50:00  + 315.489s  [proxy→echo] ──►  WS    CLOSE  masked, 2 B payload code=1001
+15:50:00  + 315.496s  [proxy→echo] ◄──  WS    CLOSE  unmasked, 9 B payload code=1000
+15:50:00  + 315.496s  [proxy→echo] ──►  TCP   <span class="bad">FIN</span> (sender closed its side)
+15:50:00  + 315.497s  [proxy→echo] ◄──  TCP   <span class="bad">FIN</span> (sender closed its side)
+15:50:00  + 315.497s  [proxy→echo] TCP both directions finished</pre></section></div>

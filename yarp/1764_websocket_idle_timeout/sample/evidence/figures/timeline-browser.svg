@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="910" height="308" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="12">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16" y="24" font-size="15" font-weight="600" fill="#1d1d1b">What crossed the wire after the last application message (captured by wstap)</text>
+<line x1="120.0" y1="56" x2="120.0" y2="230" stroke="#e6e6e6"/>
+<text x="120.0" y="246" text-anchor="middle" fill="#666">0s</text>
+<line x1="187.5" y1="56" x2="187.5" y2="230" stroke="#e6e6e6"/>
+<text x="187.5" y="246" text-anchor="middle" fill="#666">30s</text>
+<line x1="255.0" y1="56" x2="255.0" y2="230" stroke="#e6e6e6"/>
+<text x="255.0" y="246" text-anchor="middle" fill="#666">60s</text>
+<line x1="322.5" y1="56" x2="322.5" y2="230" stroke="#e6e6e6"/>
+<text x="322.5" y="246" text-anchor="middle" fill="#666">90s</text>
+<line x1="390.0" y1="56" x2="390.0" y2="230" stroke="#e6e6e6"/>
+<text x="390.0" y="246" text-anchor="middle" fill="#666">120s</text>
+<line x1="457.5" y1="56" x2="457.5" y2="230" stroke="#e6e6e6"/>
+<text x="457.5" y="246" text-anchor="middle" fill="#666">150s</text>
+<line x1="525.0" y1="56" x2="525.0" y2="230" stroke="#e6e6e6"/>
+<text x="525.0" y="246" text-anchor="middle" fill="#666">180s</text>
+<line x1="592.5" y1="56" x2="592.5" y2="230" stroke="#e6e6e6"/>
+<text x="592.5" y="246" text-anchor="middle" fill="#666">210s</text>
+<line x1="660.0" y1="56" x2="660.0" y2="230" stroke="#e6e6e6"/>
+<text x="660.0" y="246" text-anchor="middle" fill="#666">240s</text>
+<line x1="727.5" y1="56" x2="727.5" y2="230" stroke="#e6e6e6"/>
+<text x="727.5" y="246" text-anchor="middle" fill="#666">270s</text>
+<line x1="795.0" y1="56" x2="795.0" y2="230" stroke="#e6e6e6"/>
+<text x="795.0" y="246" text-anchor="middle" fill="#666">300s</text>
+<line x1="345.0" y1="48" x2="345.0" y2="230" stroke="#c62828" stroke-dasharray="5,4" stroke-width="1.5"/>
+<text x="349.0" y="46" fill="#c62828">YARP ActivityTimeout = 100 s</text>
+<text x="480.0" y="266" text-anchor="middle" fill="#444">seconds after the echoed "hello" (idle time)</text>
+<rect x="8" y="62" width="894" height="78" rx="6" fill="#f3f3ef"/>
+<text x="16" y="80"><tspan font-weight="600" fill="#1d1d1b">008 · Chrome page</tspan><tspan fill="#555">   server KA 2 min (default) → aborted at 100 s</tspan></text>
+<text x="112" y="106" text-anchor="end" fill="#888" font-size="11">client ↔ YARP</text>
+<line x1="120" y1="102" x2="840" y2="102" stroke="#bbb"/>
+<text x="345.3" y="107" text-anchor="middle" font-size="15" font-weight="700" fill="#c62828">✕<title>TCP closed at 100.1s</title></text>
+<text x="355.3" y="98" font-size="11" fill="#c62828">TCP closed by YARP at 100.1s (no WebSocket Close frame)</text>
+<text x="112" y="132" text-anchor="end" fill="#888" font-size="11">YARP ↔ server</text>
+<line x1="120" y1="128" x2="840" y2="128" stroke="#bbb"/>
+<text x="345.0" y="133" text-anchor="middle" font-size="15" font-weight="700" fill="#c62828">✕<title>TCP closed at 100.0s</title></text>
+<text x="355.0" y="124" font-size="11" fill="#c62828">TCP closed by YARP at 100.0s (no WebSocket Close frame)</text>
+<rect x="8" y="146" width="894" height="78" rx="6" fill="#fafaf8"/>
+<text x="16" y="164"><tspan font-weight="600" fill="#1d1d1b">009 · Chrome page</tspan><tspan fill="#555">   server KA 30 s → survives</tspan></text>
+<text x="112" y="190" text-anchor="end" fill="#888" font-size="11">client ↔ YARP</text>
+<line x1="120" y1="186" x2="840" y2="186" stroke="#bbb"/>
+<circle cx="187.5" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 30.0s</title></circle>
+<circle cx="255.0" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 60.0s</title></circle>
+<circle cx="322.5" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 90.0s</title></circle>
+<circle cx="390.0" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 120.0s</title></circle>
+<circle cx="457.5" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 150.0s</title></circle>
+<circle cx="525.0" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 180.0s</title></circle>
+<circle cx="592.5" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 210.0s</title></circle>
+<circle cx="660.0" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 240.0s</title></circle>
+<circle cx="727.5" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 270.0s</title></circle>
+<circle cx="795.0" cy="191" r="4" fill="#1a7f37"><title>PONG ◄── at 300.0s</title></circle>
+<text x="844" y="190" font-size="11" fill="#1a7f37">open ▸</text>
+<text x="112" y="216" text-anchor="end" fill="#888" font-size="11">YARP ↔ server</text>
+<line x1="120" y1="212" x2="840" y2="212" stroke="#bbb"/>
+<circle cx="187.5" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 30.0s</title></circle>
+<circle cx="255.0" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 60.0s</title></circle>
+<circle cx="322.5" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 90.0s</title></circle>
+<circle cx="390.0" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 120.0s</title></circle>
+<circle cx="457.5" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 150.0s</title></circle>
+<circle cx="525.0" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 180.0s</title></circle>
+<circle cx="592.5" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 210.0s</title></circle>
+<circle cx="660.0" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 240.0s</title></circle>
+<circle cx="727.5" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 270.0s</title></circle>
+<circle cx="795.0" cy="217" r="4" fill="#1a7f37"><title>PONG ◄── at 300.0s</title></circle>
+<text x="844" y="216" font-size="11" fill="#1a7f37">open ▸</text>
+<circle cx="16" cy="278" r="4" fill="#1a7f37"/><text x="24" y="282" fill="#444">WebSocket Pong frame</text>
+<circle cx="246" cy="278" r="4" fill="#1f6feb"/><text x="254" y="282" fill="#444">WebSocket Ping frame (none seen)</text>
+<circle cx="476" cy="278" r="4" fill="#c62828"/><text x="484" y="282" fill="#444">TCP connection closed</text>
+<text x="16" y="302" fill="#888" font-size="11">Dots above a line travel toward the server; below travel toward the client. "open ▸" = still open when the run was stopped at 310 s.</text>
+</svg>

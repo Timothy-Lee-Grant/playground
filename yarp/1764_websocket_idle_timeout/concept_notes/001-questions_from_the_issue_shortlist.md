@@ -15,7 +15,8 @@
 | Q1 | Why do maintainers open an issue for a simple docs fix instead of just doing it? | YARP #1764 (item A) | How open-source projects actually run |
 | Q2 | I found `src/TelemetryConsumption/WebSockets/` in YARP, but it's all C#. Where are the docs, and what am I misunderstanding? | YARP #1764 (item A) | Code vs. docs repos; finding a doc's source; verifying before contributing |
 | Q3 | What are sockets and WebSockets, what does YARP do with them, what is the proxy timeout, and how do keep-alives and browser heartbeats fix it? | YARP #1764 (item A) | Sockets, WebSocket handshake, proxy byte-pumping, idle timeouts, keep-alives |
-| Q4 | Getting my bearings: where does #1764 stand, what evidence do I still need, and what do I do with it? | YARP #1764 (item A) | Status check, evidence plan, comment + PR plan (**the current progress tracker**) |
+| Q4 | Getting my bearings: where does #1764 stand, what evidence do I still need, and what do I do with it? | YARP #1764 (item A) | Status check, evidence plan, comment + PR plan (tracker continued in Q5) |
+| Q5 | My E1 run stayed open past 300 s with defaults on both sides. Did I collect it wrong? | YARP #1764 (item A) | **Correction to Q3/Q4 (C3)**: the .NET client's own 30 s keep-alive; browsers are the real failure case (**the current progress tracker**) |
 
 ---
 
@@ -669,3 +670,65 @@ Record the comment and PR links, and the outcome, in: this Q4 checklist, `../CLA
 - [`websockets.md` on main](https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/fundamentals/servers/yarp/websockets.md) · [YARP Timeouts page](https://learn.microsoft.com/aspnet/core/fundamentals/servers/yarp/timeouts)
 - [`ForwarderRequestConfig.cs`](https://github.com/dotnet/yarp/blob/main/src/ReverseProxy/Forwarder/ForwarderRequestConfig.cs) · [`ForwarderError.cs`](https://github.com/dotnet/yarp/blob/main/src/ReverseProxy/Forwarder/ForwarderError.cs)
 - [`WebSocketOptions.KeepAliveInterval`](https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.builder.websocketoptions.keepaliveinterval) · [Yarp.ReverseProxy on NuGet](https://www.nuget.org/packages/Yarp.ReverseProxy)
+
+---
+
+## Q5. My E1 run stayed open past 300 s with "defaults on both sides". Did I collect it wrong?
+
+**Related:** [YARP #1764](https://github.com/dotnet/yarp/issues/1764), item A · **Asked:** 2026-09-27 ·
+**Corrects:** [Q3 §5](#5-fix-1-server-side-keep-alives-your-reading-confirmed) ("with defaults the proxy still cuts idle
+sockets") and [Q4 §3–§5.2](#3-what-each-claim-needs-as-evidence) (claim C3, and E1's expected result) · **This entry is
+now the progress tracker** (§4).
+
+### The question
+
+I tried to capture E1 (defaults on both sides, expected: aborted at 100 s). The client was still open at 300 s. I don't
+think I did it right. What should the evidence actually be?
+
+### The short answer
+
+**You collected it correctly. The prediction was wrong.** .NET's `ClientWebSocket` sends its own keep-alive frame (an
+unsolicited Pong) every **30 s** by default, and that resets YARP's 100 s `ActivityTimeout` just like a server keep-alive
+does. So with a .NET client, "defaults on both sides" survives. The case that fails at defaults is a **browser** client,
+which can't send keep-alives at all. The full evidence session, with a wire tap on both hops, screenshots and nine runs,
+is in [`implementations/001-lab-report-idle-websockets-through-yarp.md`](../implementations/001-lab-report-idle-websockets-through-yarp.md).
+
+### The explanation
+
+| Who sends a keep-alive by default | Interval | Beats YARP's 100 s? |
+|---|---|---|
+| .NET `ClientWebSocket` | 30 s | ✅ yes, so the connection survives (runs 001, 003) |
+| ASP.NET Core `UseWebSockets` (server) | 2 min | ❌ no |
+| Browser `WebSocket` | none, no API for it | ❌ nothing to send |
+
+The rule: **the connection survives if the smallest keep-alive interval of any endpoint is under `ActivityTimeout`.**
+The lecture's 8 s runs *looked* like they proved "defaults die" only because at 8 s the client's 30 s keep-alive was
+too slow as well (run 007). The 8 s override wasn't a faithful scale model of the 100 s case.
+
+| Run | Setup (timeout 100 s) | Result |
+|---|---|---|
+| 003 | .NET client, all defaults | open at 310 s (client Pong every 30 s on the wire) |
+| 004 / 006 | .NET client, keep-alive **off**, server default | **aborted at 100.1 s**, `UpgradeActivityTimeout` |
+| 005 | .NET client off, server 30 s | open at 310 s |
+| 008 | Chrome, server default | **aborted at 100.1 s**, close code 1006 |
+| 009 | Chrome, server 30 s | open at 310 s |
+
+### What to take away
+
+- A result that contradicts the prediction is the most useful run in the session. Explain it with an instrument (here,
+  a wire tap) before collecting more.
+- "Enabled" isn't the question for keep-alives; "shorter than the smallest idle timer on the path, from *some* endpoint" is.
+- Test with the client your users actually run. For #1764 that's usually a browser.
+- The docs text in Q4 §5.3 still stands. The **comment draft in Q4 §5.2 must not say "defaults on both sides → aborted"**.
+  Use the corrected sentence in the lab report §6.3.
+
+### 4. Checklist (progress tracker, continues Q4 §8)
+
+- [x] E1/E2 equivalents captured at real defaults: runs 002–009 in `sample/evidence/` (2026-09-27)
+- [x] `README.md` results table updated with evidence links (2026-09-27)
+- [x] Lab report written: `implementations/001-lab-report-idle-websockets-through-yarp.md` (2026-09-27)
+- [ ] Review, commit and push, so the link in the comment works
+- [ ] Re-check #1764, then post the comment (Q4 §5.2 with the lab report §6.3 sentence)
+- [ ] Maintainer response → follow Q4 §6
+- [ ] PR in `dotnet/AspNetCore.Docs` (Q4 §5.3–5.4)
+- [ ] PR merged / issue closed; trackers updated (Q4 §5.5)

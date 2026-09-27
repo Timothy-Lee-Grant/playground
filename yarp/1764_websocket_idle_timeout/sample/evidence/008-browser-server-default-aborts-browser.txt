@@ -1,0 +1,10 @@
+3:42:59 PM  navigated to http://127.0.0.1:8088/index.html?auto=1&url=ws://localhost:5001/ws
+3:43:04 PM  saved evidence/screenshots/008-browser-server-default-aborts-t005s.png
+3:44:34 PM  saved evidence/screenshots/008-browser-server-default-aborts-t095s.png
+3:44:40 PM  saved evidence/screenshots/008-browser-server-default-aborts-closed.png
+15:42:59  connecting to ws://localhost:5001/ws
+15:42:59  open; sending 'hello'
+15:42:59  received: hello
+15:42:59 [+0.0s]  now idle: sending nothing
+15:44:39 [+100.1s]  close event: code=1006 reason='' wasClean=false after 100.1 s idle
+

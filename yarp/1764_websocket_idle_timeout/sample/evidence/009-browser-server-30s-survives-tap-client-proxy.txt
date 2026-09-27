@@ -1,0 +1,28 @@
+# experiment: 009-browser-server-30s-survives (wstap client→proxy)
+# date:       2026-09-27T22:44:45Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       10ec1e3 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=30 s · client = page in headless Chrome 153 (browser WebSocket API has no keep-alive setting) · taps=on
+# command:    python3 tools/wstap.py --listen 5001 --target 5000 --label client→proxy
+#
+15:44:45  +   0.007s  [client→proxy] listening on :5001, forwarding to :5000  (──► = toward :5000)
+15:44:50  +   5.034s  [client→proxy] TCP accepted from ('127.0.0.1', 64608); connecting to :5000
+15:44:50  +   5.035s  [client→proxy] ──►  HTTP  GET /ws HTTP/1.1
+15:44:50  +   5.289s  [client→proxy] ◄──  HTTP  HTTP/1.1 101 Switching Protocols
+15:44:50  +   5.291s  [client→proxy] ──►  WS    TEXT   masked, 5 B payload 'hello'
+15:44:50  +   5.297s  [client→proxy] ◄──  WS    TEXT   unmasked, 5 B payload 'hello'
+15:45:20  +  35.292s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:45:50  +  65.285s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:46:20  +  95.291s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:46:50  + 125.304s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:47:20  + 155.302s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:47:50  + 185.301s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:48:20  + 215.293s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:48:50  + 245.300s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:49:20  + 275.298s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:49:50  + 305.293s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:50:00  + 315.181s  [client→proxy] ──►  WS    CLOSE  masked, 2 B payload code=1001
+15:50:00  + 315.182s  [client→proxy] ──►  TCP   FIN (sender closed its side)
+15:50:00  + 315.183s  [client→proxy] ◄──  TCP   FIN (sender closed its side)
+15:50:00  + 315.185s  [client→proxy] TCP both directions finished

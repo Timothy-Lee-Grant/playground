@@ -1,0 +1,41 @@
+<!doctype html><meta charset="utf-8"><style>
+body { margin: 0; padding: 18px; background: #f4f4f1; font: 13px -apple-system, system-ui, sans-serif; width: 1560px; }
+h1 { font-size: 17px; margin: 0 0 2px; } .sub { color: #555; margin-bottom: 12px; font: 12px ui-monospace, monospace; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+section { background: #1e1e1e; border-radius: 8px; overflow: hidden; }
+h2 { margin: 0; padding: 7px 12px; font-size: 13px; color: #fff; background: #333; display: flex; justify-content: space-between; }
+h2 small { color: #aaa; font: 11px ui-monospace, monospace; }
+pre { margin: 0; padding: 10px 12px; color: #ddd; font: 11.5px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; word-break: break-all; }
+.bad { color: #ff7b72; font-weight: 700; } .good { color: #7ee787; font-weight: 700; } .warn { color: #e3b341; font-weight: 700; }
+</style><h1>Experiment 006 (control): same as 004 with no taps in the path</h1><div class="sub">settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=0 (off) · taps=off · repeated ticks and framework stack frames elided</div>
+<div class="grid"><section><h2>IdleClient (the caller)<small>evidence/006-no-client-ka-server-default-aborts-no-tap-client.txt</small></h2><pre>15:40:40  Connecting to ws://localhost:5000/ws ...
+15:40:40  Client KeepAliveInterval = 00:00:00 (WS_CLIENT_KEEPALIVE_SECONDS)
+15:40:40  Connected. Sending one message to prove the round trip works.
+15:40:40  Echo received: hello
+15:40:40  Now going idle — sending nothing. Watching for the connection to die...
+15:40:50    ...<span class="good">still open</span> at 10s
+      … 8 more ticks …
+15:42:20    ...<span class="good">still open</span> at 100s
+15:42:20  [100.1s] <span class="bad">Connection died</span>: WebSocketException: The remote party closed the WebSocket connection without completing the close handshake.
+15:42:20  Final client state: <span class="bad">Aborted</span></pre></section><section><h2>Proxy · YARP (the gatekeeper)<small>evidence/006-no-client-ka-server-default-aborts-no-tap-proxy.txt</small></h2><pre>info: Yarp.ReverseProxy.Configuration.ConfigProvider.ConfigurationConfigProvider[1]
+      Loading proxy data from config.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /Users/timothygrant/Desktop/projects/exercises/yarp/1764_websocket_idle_timeout/sample/Proxy
+info: Yarp.ReverseProxy.Forwarder.HttpForwarder[9]
+      Proxying to http://localhost:5050/ws HTTP/1.1 RequestVersionOrLower 
+info: Yarp.ReverseProxy.Forwarder.HttpForwarder[56]
+      Received HTTP/1.1 response 101.
+<span class="warn">warn:</span> Yarp.ReverseProxy.Forwarder.HttpForwarder[48]
+      <span class="bad">UpgradeActivityTimeout</span>: The WebSocket connection was closed after being idle longer than the Activity Timeout.
+      System.Threading.Tasks.TaskCanceledException: The operation was canceled.
+         at System.Net.Http.CancellationHelper.ThrowOperationCanceledException(Exception innerException, CancellationToken cancellationToken)
+         at System.Net.Http.HttpConnection.RawConnectionStream.ReadAsync(Memory`1 buffer, CancellationToken cancellationToken)
+         at Yarp.ReverseProxy.Forwarder.StreamCopier.CopyAsync(Stream input, Stream output, Int64 promisedContentLength, StreamCopierTelemetry telemetry, ActivityCancellationTokenSource activityToken, Boolean autoFlush, CancellationToken cancellation)
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...</pre></section></div>

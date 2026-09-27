@@ -1,0 +1,55 @@
+<!doctype html><meta charset="utf-8"><style>
+body { margin: 0; padding: 18px; background: #f4f4f1; font: 13px -apple-system, system-ui, sans-serif; width: 1560px; }
+h1 { font-size: 17px; margin: 0 0 2px; } .sub { color: #555; margin-bottom: 12px; font: 12px ui-monospace, monospace; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+section { background: #1e1e1e; border-radius: 8px; overflow: hidden; }
+h2 { margin: 0; padding: 7px 12px; font-size: 13px; color: #fff; background: #333; display: flex; justify-content: space-between; }
+h2 small { color: #aaa; font: 11px ui-monospace, monospace; }
+pre { margin: 0; padding: 10px 12px; color: #ddd; font: 11.5px/1.45 ui-monospace, Menlo, monospace; white-space: pre-wrap; word-break: break-all; }
+.bad { color: #ff7b72; font-weight: 700; } .good { color: #7ee787; font-weight: 700; } .warn { color: #e3b341; font-weight: 700; }
+</style><h1>Experiment 007: ActivityTimeout 8 s, .NET client defaults (the lecture&#x27;s fast setting)</h1><div class="sub">settings:   proxy ActivityTimeout=00:00:08 · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=30 s (ClientWebSocket default) · taps=on · repeated ticks and framework stack frames elided</div>
+<div class="grid"><section><h2>IdleClient (the caller)<small>evidence/007-8s-override-dotnet-client-default-aborts-client.txt</small></h2><pre>15:42:25  Connecting to ws://localhost:5001/ws ...
+15:42:25  Client KeepAliveInterval = 00:00:30 (ClientWebSocket default)
+15:42:25  Connected. Sending one message to prove the round trip works.
+15:42:25  Echo received: hello
+15:42:25  Now going idle — sending nothing. Watching for the connection to die...
+15:42:33  [8.0s] <span class="bad">Connection died</span>: WebSocketException: The remote party closed the WebSocket connection without completing the close handshake.
+15:42:33  Final client state: <span class="bad">Aborted</span></pre></section><section><h2>Proxy · YARP (the gatekeeper)<small>evidence/007-8s-override-dotnet-client-default-aborts-proxy.txt</small></h2><pre>info: Yarp.ReverseProxy.Configuration.ConfigProvider.ConfigurationConfigProvider[1]
+      Loading proxy data from config.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /Users/timothygrant/Desktop/projects/exercises/yarp/1764_websocket_idle_timeout/sample/Proxy
+info: Yarp.ReverseProxy.Forwarder.HttpForwarder[9]
+      Proxying to http://localhost:5051/ws HTTP/1.1 RequestVersionOrLower 
+info: Yarp.ReverseProxy.Forwarder.HttpForwarder[56]
+      Received HTTP/1.1 response 101.
+<span class="warn">warn:</span> Yarp.ReverseProxy.Forwarder.HttpForwarder[48]
+      <span class="bad">UpgradeActivityTimeout</span>: The WebSocket connection was closed after being idle longer than the Activity Timeout.
+      System.OperationCanceledException: The operation was canceled.
+         at System.IO.Pipelines.Pipe.GetReadAsyncResult()
+         at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.Http1UpgradeMessageBody.ReadAsyncInternalAwaited(ValueTask`1 readTask, CancellationToken cancellationToken)
+         at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpRequestStream.ReadAsyncInternal(Memory`1 destination, CancellationToken cancellationToken)
+         at Yarp.ReverseProxy.Forwarder.StreamCopier.CopyAsync(Stream input, Stream output, Int64 promisedContentLength, StreamCopierTelemetry telemetry, ActivityCancellationTokenSource activityToken, Boolean autoFlush, CancellationToken cancellation)
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...</pre></section><section><h2>wstap · client ↔ YARP<small>evidence/007-8s-override-dotnet-client-default-aborts-tap-client-proxy.txt</small></h2><pre>15:42:24  +   0.009s  [client→proxy] listening on :5001, forwarding to :5000  (──► = toward :5000)
+15:42:25  +   0.849s  [client→proxy] TCP accepted from (&#x27;127.0.0.1&#x27;, 64491); connecting to :5000
+15:42:25  +   0.852s  [client→proxy] ──►  HTTP  GET /ws HTTP/1.1
+15:42:25  +   0.998s  [client→proxy] ◄──  HTTP  HTTP/1.1 101 Switching Protocols
+15:42:25  +   1.002s  [client→proxy] ──►  WS    TEXT   masked, 5 B payload &#x27;hello&#x27;
+15:42:25  +   1.007s  [client→proxy] ◄──  WS    TEXT   unmasked, 5 B payload &#x27;hello&#x27;
+15:42:33  +   9.012s  [client→proxy] ◄──  TCP   <span class="bad">FIN</span> (sender closed its side)
+15:42:33  +   9.012s  [client→proxy] ──►  TCP   <span class="bad">FIN</span> (sender closed its side)
+15:42:33  +   9.012s  [client→proxy] TCP both directions finished</pre></section><section><h2>wstap · YARP ↔ EchoServer<small>evidence/007-8s-override-dotnet-client-default-aborts-tap-proxy-echo.txt</small></h2><pre>15:42:24  +   0.013s  [proxy→echo] listening on :5051, forwarding to :5050  (──► = toward :5050)
+15:42:25  +   1.219s  [proxy→echo] TCP accepted from (&#x27;127.0.0.1&#x27;, 64494); connecting to :5050
+15:42:25  +   1.222s  [proxy→echo] ──►  HTTP  GET /ws HTTP/1.1
+15:42:25  +   1.270s  [proxy→echo] ◄──  HTTP  HTTP/1.1 101 Switching Protocols
+15:42:25  +   1.288s  [proxy→echo] ──►  WS    TEXT   masked, 5 B payload &#x27;hello&#x27;
+15:42:25  +   1.291s  [proxy→echo] ◄──  WS    TEXT   unmasked, 5 B payload &#x27;hello&#x27;
+15:42:33  +   9.276s  [proxy→echo] ──►  TCP   <span class="bad">FIN</span> (sender closed its side)
+15:42:33  +   9.276s  [proxy→echo] ◄──  TCP   <span class="bad">FIN</span> (sender closed its side)
+15:42:33  +   9.277s  [proxy→echo] TCP both directions finished</pre></section></div>

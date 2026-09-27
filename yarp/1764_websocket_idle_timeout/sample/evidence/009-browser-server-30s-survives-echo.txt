@@ -1,0 +1,26 @@
+# experiment: 009-browser-server-30s-survives (EchoServer)
+# date:       2026-09-27T22:44:44Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       10ec1e3 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=30 s · client = page in headless Chrome 153 (browser WebSocket API has no keep-alive setting) · taps=on
+# command:    WS_KEEPALIVE_SECONDS=30 dotnet bin/Debug/net10.0/EchoServer.dll   (cwd sample/EchoServer)
+#
+info: EchoServer[0]
+      EchoServer starting. WebSocket KeepAliveInterval = 00:00:30
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5050
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /Users/timothygrant/Desktop/projects/exercises/yarp/1764_websocket_idle_timeout/sample/EchoServer
+info: EchoServer[0]
+      Client connected. Echoing messages until the socket closes.
+info: EchoServer[0]
+      Echoing: hello
+info: EchoServer[0]
+      Client connection loop ended. Final state: Closed
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...

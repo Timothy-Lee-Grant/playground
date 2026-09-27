@@ -1,0 +1,11 @@
+3:44:50 PM  navigated to http://127.0.0.1:8088/index.html?auto=1&url=ws://localhost:5001/ws
+3:44:55 PM  saved evidence/screenshots/009-browser-server-30s-survives-t005s.png
+3:46:25 PM  saved evidence/screenshots/009-browser-server-30s-survives-t095s.png
+3:47:20 PM  saved evidence/screenshots/009-browser-server-30s-survives-t150s.png
+3:49:00 PM  saved evidence/screenshots/009-browser-server-30s-survives-t250s.png
+3:50:00 PM  saved evidence/screenshots/009-browser-server-30s-survives-still-open-t310s.png
+15:44:50  connecting to ws://localhost:5001/ws
+15:44:50  open; sending 'hello'
+15:44:50  received: hello
+15:44:50 [+0.0s]  now idle: sending nothing
+

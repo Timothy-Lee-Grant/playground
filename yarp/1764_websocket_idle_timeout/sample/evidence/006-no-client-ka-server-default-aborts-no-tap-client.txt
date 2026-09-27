@@ -3,7 +3,7 @@
 # os:         macOS 26.3 (arm64)
 # dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
 # repo:       6cbe9d4 (+ uncommitted sample changes, if any)
-# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=0 s0 · taps=off
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=0 (off) · taps=off
 # command:    WS_CLIENT_KEEPALIVE_SECONDS=0 IDLE_MAX_SECONDS=310 dotnet IdleClient/bin/Debug/net10.0/IdleClient.dll ws://localhost:5000/ws
 #
 15:40:40  Connecting to ws://localhost:5000/ws ...
@@ -11,3 +11,16 @@
 15:40:40  Connected. Sending one message to prove the round trip works.
 15:40:40  Echo received: hello
 15:40:40  Now going idle — sending nothing. Watching for the connection to die...
+15:40:50    ...still open at 10s
+15:41:00    ...still open at 20s
+15:41:10    ...still open at 30s
+15:41:20    ...still open at 40s
+15:41:30    ...still open at 50s
+15:41:40    ...still open at 60s
+15:41:50    ...still open at 70s
+15:42:00    ...still open at 80s
+15:42:10    ...still open at 90s
+15:42:20    ...still open at 100s
+15:42:20  [100.1s] Connection died: WebSocketException: The remote party closed the WebSocket connection without completing the close handshake.
+15:42:20  Final client state: Aborted
+# after cleanup, listeners on 5000/5001/5050/5051: none

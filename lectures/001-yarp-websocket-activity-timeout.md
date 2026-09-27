@@ -154,6 +154,12 @@ better than no keep-alive at all when the timeout is 8 seconds (or, at real-worl
 the sentence worth adding to the docs: *"enable keep-alives" is necessary but not sufficient — the interval has
 to be shorter than the timeout on every hop in between.*
 
+> **Correction (2026-09-27, from the evidence session):** at the real 100 s timeout this experiment does **not**
+> reproduce with the .NET `IdleClient`. `ClientWebSocket` sends its own keep-alive every 30 s by default, which resets
+> YARP's timer, so the connection stays open (run 003). At 8 s it died only because 30 s was also too slow (run 007).
+> The 2-minute-server-default failure is real for clients with no keep-alive of their own, which includes **every
+> browser** (run 008: aborted at 100.1 s). See `yarp/1764_websocket_idle_timeout/implementations/001-lab-report-idle-websockets-through-yarp.md`.
+
 ## 7. Verifying it with YARP's real defaults (no env overrides)
 
 Everything above used an 8-second override purely for iteration speed. To see the real-world numbers from
@@ -236,6 +242,10 @@ settings need this same "which number is smaller" sanity check, not just "is the
 Per `yarp/1764_websocket_idle_timeout/concept_notes/001-...md` Q2, the actual remaining gap is one missing cross-reference sentence on YARP's
 `websockets.md` doc page. This sample now gives that comment/PR real, verified numbers instead of just citing
 the docs:
+
+> **Correction (2026-09-27):** the quote below overstates what was verified. The 100 s runs were never saved, and
+> "regardless of a server-side `KeepAliveInterval`" only holds when the client sends no keep-alive of its own. Measured
+> results and the corrected wording are in the issue folder's lab report §6.
 
 > Verified on .NET 10 / YARP 2.3.0: an idle WebSocket through YARP is aborted at the configured
 > `ActivityTimeout` (confirmed at both an 8s override and the real 100s default) regardless of a server-side

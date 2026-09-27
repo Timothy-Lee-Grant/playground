@@ -1,0 +1,9 @@
+# experiment: 008-browser-server-default-aborts (external client)
+# date:       2026-09-27T22:42:54Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       10ec1e3 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client = page in headless Chrome 153 (browser WebSocket API has no keep-alive setting) · taps=on
+# command:    open ws://localhost:5001/ws from another client (e.g. the browser page in tools/)
+#
+# after cleanup, listeners on 5000/5001/5050/5051: none

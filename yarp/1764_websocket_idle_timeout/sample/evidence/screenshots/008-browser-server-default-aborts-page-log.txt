@@ -1,0 +1,5 @@
+15:42:59  connecting to ws://localhost:5001/ws
+15:42:59  open; sending 'hello'
+15:42:59  received: hello
+15:42:59 [+0.0s]  now idle: sending nothing
+15:44:39 [+100.1s]  close event: code=1006 reason='' wasClean=false after 100.1 s idle

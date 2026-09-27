@@ -12,7 +12,8 @@ from pathlib import Path
 
 EVIDENCE = Path(__file__).resolve().parent.parent / "evidence"
 LINE = re.compile(r"\+\s*([\d.]+)s\s+\[[^\]]+\]\s+(──►|◄──)\s+(WS|TCP)\s+(\S+)")
-X0, W, SPAN, TIMEOUT = 250, 640, 320, 100  # plot x origin, plot width px, seconds shown, ActivityTimeout
+X0, W, SPAN, TIMEOUT = 120, 720, 320, 100
+STOP = 305  # a close after this many idle seconds is the harness ending the run, not the proxy  # plot x origin, plot width px, seconds shown, ActivityTimeout
 
 
 def events(tap_file):
@@ -36,9 +37,9 @@ def x(t):
 
 def main():
     out, pairs = sys.argv[1], list(zip(sys.argv[2::2], sys.argv[3::2]))
-    row_h, top = 64, 56
-    height = top + row_h * len(pairs) + 56
-    s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{X0 + W + 40}" height="{height}" '
+    row_h, top = 84, 62
+    height = top + row_h * len(pairs) + 78
+    s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{X0 + W + 70}" height="{height}" '
          f'font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="12">',
          f'<rect width="100%" height="100%" fill="#ffffff"/>',
          f'<text x="16" y="24" font-size="15" font-weight="600" fill="#1d1d1b">'
@@ -56,13 +57,13 @@ def main():
 
     for i, (name, caption) in enumerate(pairs):
         y = top + i * row_h
-        s.append(f'<rect x="8" y="{y}" width="{X0 + W + 24}" height="{row_h - 4}" rx="6" '
+        s.append(f'<rect x="8" y="{y}" width="{X0 + W + 54}" height="{row_h - 6}" rx="6" '
                  f'fill="{"#fafaf8" if i % 2 else "#f3f3ef"}"/>')
         title, _, sub = caption.partition("|")
-        s.append(f'<text x="16" y="{y + 22}" font-weight="600" fill="#1d1d1b">{title.strip()}</text>')
-        s.append(f'<text x="16" y="{y + 40}" fill="#555">{sub.strip()}</text>')
+        s.append(f'<text x="16" y="{y + 18}"><tspan font-weight="600" fill="#1d1d1b">{title.strip()}</tspan>'
+                 f'<tspan fill="#555">   {sub.strip()}</tspan></text>')
         for j, (hop, label) in enumerate([("client-proxy", "client ↔ YARP"), ("proxy-echo", "YARP ↔ server")]):
-            ly = y + 18 + j * 24
+            ly = y + 40 + j * 26
             s.append(f'<text x="{X0 - 8}" y="{ly + 4}" text-anchor="end" fill="#888" font-size="11">{label}</text>')
             s.append(f'<line x1="{X0}" y1="{ly}" x2="{X0 + W}" y2="{ly}" stroke="#bbb"/>')
             f = EVIDENCE / f"{name}-tap-{hop}.txt"
@@ -70,27 +71,31 @@ def main():
                 continue
             fins = [e for e in events(f) if e[2] == "FIN"]
             for t, arrow, what in events(f):
-                if what == "FIN":
+                if what == "FIN" or t >= STOP:  # skip the harness's own shutdown traffic
                     continue
                 # ──► is toward the server side of this hop; draw it above the line, ◄── below
                 color = {"PING": "#1f6feb", "PONG": "#1a7f37", "CLOSE": "#8250df"}.get(what, "#444")
                 dy = -5 if arrow == "──►" else 5
                 s.append(f'<circle cx="{x(t):.1f}" cy="{ly + dy}" r="4" fill="{color}"><title>{what} {arrow} '
                          f'at {t:.1f}s</title></circle>')
-            if fins:
+            if fins and fins[0][0] >= STOP:
+                s.append(f'<text x="{X0 + W + 4}" y="{ly + 4}" font-size="11" fill="#1a7f37">open ▸</text>')
+            elif fins:
                 t = fins[0][0]
                 s.append(f'<text x="{x(t):.1f}" y="{ly + 5}" text-anchor="middle" font-size="15" font-weight="700" '
                          f'fill="#c62828">✕<title>TCP closed at {t:.1f}s</title></text>')
-                s.append(f'<text x="{x(t) + 9:.1f}" y="{ly + 4}" font-size="11" fill="#c62828">closed {t:.1f}s</text>')
+                s.append(f'<text x="{x(t) + 10:.1f}" y="{ly - 4}" font-size="11" fill="#c62828">'
+                         f'TCP closed by YARP at {t:.1f}s (no WebSocket Close frame)</text>')
             else:
-                s.append(f'<text x="{X0 + W + 4}" y="{ly + 4}" font-size="13" fill="#1a7f37">→</text>')
+                s.append(f'<text x="{X0 + W + 4}" y="{ly + 4}" font-size="11" fill="#1a7f37">open ▸</text>')
     # legend
-    lx, ly = X0 + W - 330, 40
-    for k, (label, color) in enumerate([("Pong", "#1a7f37"), ("Ping", "#1f6feb"), ("TCP closed", "#c62828")]):
-        s.append(f'<circle cx="{lx + k * 110}" cy="{ly - 4}" r="4" fill="{color}"/>'
-                 f'<text x="{lx + k * 110 + 8}" y="{ly}" fill="#444">{label}</text>')
+    lx, ly = 16, height - 26
+    for k, (label, color) in enumerate([("WebSocket Pong frame", "#1a7f37"), ("WebSocket Ping frame (none seen)", "#1f6feb"),
+                                        ("TCP connection closed", "#c62828")]):
+        s.append(f'<circle cx="{lx + k * 230}" cy="{ly - 4}" r="4" fill="{color}"/>'
+                 f'<text x="{lx + k * 230 + 8}" y="{ly}" fill="#444">{label}</text>')
     s.append(f'<text x="16" y="{height - 6}" fill="#888" font-size="11">Dots above a line travel toward the server; '
-             f'below travel toward the client. → = still open when the run ended.</text>')
+             f'below travel toward the client. "open ▸" = still open when the run was stopped at 310 s.</text>')
     s.append("</svg>")
     Path(out).write_text("\n".join(s))
     print(f"wrote {out}")

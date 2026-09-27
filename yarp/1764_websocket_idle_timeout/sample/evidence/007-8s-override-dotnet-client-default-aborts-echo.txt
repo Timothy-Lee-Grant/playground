@@ -1,9 +1,9 @@
-# experiment: 006-no-client-ka-server-default-aborts-no-tap (EchoServer)
-# date:       2026-09-27T22:40:39Z
+# experiment: 007-8s-override-dotnet-client-default-aborts (EchoServer)
+# date:       2026-09-27T22:42:23Z
 # os:         macOS 26.3 (arm64)
 # dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
-# repo:       6cbe9d4 (+ uncommitted sample changes, if any)
-# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=0 (off) · taps=off
+# repo:       10ec1e3 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=00:00:08 · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=30 s (ClientWebSocket default) · taps=on
 # command:    dotnet bin/Debug/net10.0/EchoServer.dll   (cwd sample/EchoServer)
 #
 info: EchoServer[0]
@@ -21,7 +21,7 @@ info: EchoServer[0]
 info: EchoServer[0]
       Echoing: hello
 fail: Microsoft.AspNetCore.Server.Kestrel[13]
-      Connection id "0HNOST1DR64C5", Request id "0HNOST1DR64C5:00000001": An unhandled exception was thrown by the application.
+      Connection id "0HNOST2D5U3C5", Request id "0HNOST2D5U3C5:00000001": An unhandled exception was thrown by the application.
       System.Net.WebSockets.WebSocketException (0x80004005): The remote party closed the WebSocket connection without completing the close handshake.
          at System.Net.WebSockets.ManagedWebSocket.ThrowEOFUnexpected()
          at System.Net.WebSockets.ManagedWebSocket.EnsureBufferContainsAsync(Int32 minimumRequiredBytes, CancellationToken cancellationToken)

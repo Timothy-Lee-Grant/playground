@@ -1,0 +1,4 @@
+15:44:50  connecting to ws://localhost:5001/ws
+15:44:50  open; sending 'hello'
+15:44:50  received: hello
+15:44:50 [+0.0s]  now idle: sending nothing

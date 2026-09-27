@@ -3,7 +3,7 @@
 # os:         macOS 26.3 (arm64)
 # dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
 # repo:       6cbe9d4 (+ uncommitted sample changes, if any)
-# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=0 s0 · taps=on
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=0 (off) · taps=on
 # command:    dotnet bin/Debug/net10.0/EchoServer.dll   (cwd sample/EchoServer)
 #
 info: EchoServer[0]

@@ -1,9 +1,9 @@
-# experiment: 005-no-client-ka-server-30s-survives (Proxy)
-# date:       2026-09-27T22:35:24Z
+# experiment: 009-browser-server-30s-survives (Proxy)
+# date:       2026-09-27T22:44:45Z
 # os:         macOS 26.3 (arm64)
 # dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
-# repo:       6cbe9d4 (+ uncommitted sample changes, if any)
-# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=30 s · client KeepAliveInterval=0 (off) · taps=on
+# repo:       10ec1e3 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=30 s · client = page in headless Chrome 153 (browser WebSocket API has no keep-alive setting) · taps=on
 # command:    env ReverseProxy__Clusters__echoCluster__Destinations__echo-destination__Address=http://localhost:5051/ dotnet bin/Debug/net10.0/Proxy.dll   (cwd sample/Proxy)
 #
 info: Yarp.ReverseProxy.Configuration.ConfigProvider.ConfigurationConfigProvider[1]

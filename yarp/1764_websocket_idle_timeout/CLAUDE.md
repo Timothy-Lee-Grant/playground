@@ -24,14 +24,21 @@ The public evidence page for this issue is [`README.md`](README.md). Keep it in 
 - `README.md`: public evidence page (claim, environment, repro commands, results). This is the link for the PR.
 - `sample/`: the runnable solution. `EchoServer` (destination, `KeepAliveInterval` from `WS_KEEPALIVE_SECONDS`),
   `Proxy` (YARP, `ActivityTimeout` in `appsettings.json`), `IdleClient` (goes idle and reports when the connection
-  dies). Pinned to SDK `10.0.302` by its own `global.json`.
-- `sample/evidence/`: captured run output (not created yet; see next steps).
+  dies; `WS_CLIENT_KEEPALIVE_SECONDS`, `IDLE_MAX_SECONDS`). Pinned to SDK `10.0.302` by its own `global.json`.
+- `sample/tools/`: `run-experiment.sh` (one-command runs; writes headed evidence files; checks ports before and
+  after), `wstap.py` (transparent relay that logs WebSocket frames), `KeepAliveDefaults/`, `browser/` (page plus
+  `capture.mjs` for scripted headless-Chrome screenshots), and figure generators (`timeline_svg.py`,
+  `logpanel.py`, `render.mjs`).
+- `sample/evidence/`: raw run output `NNN-*.txt` (001 = first manual attempt, 002–009 = the 2026-09-27 session),
+  `screenshots/` (browser runs), `figures/` (timelines generated from the tap logs), `panels/` (console views
+  generated from each run's files).
 - `concept_notes/001-questions_from_the_issue_shortlist.md`: append-only Q&A. Q1 covers why maintainers leave
   small docs issues open, Q2 where YARP's docs live and what the Timeouts page already covers (plus a draft
   comment), and Q3 sockets, the WebSocket handshake, proxy byte-pumping, idle timeouts and keep-alives.
 - `../../lectures/001-yarp-websocket-activity-timeout.md` (repo-root lectures): builds and runs the sample, reproduces the drop, confirms
   the fix, and shows the gotcha that ASP.NET Core's default 2-minute keep-alive is longer than YARP's 100 s timeout.
-- `implementations/`: plans and build logs for the actual docs change (empty so far).
+- `implementations/001-lab-report-idle-websockets-through-yarp.md`: the full lab report for the evidence session
+  (system, mechanism, method, every result with figures and screenshots, corrected claims, limitations).
 
 ## Status
 
@@ -44,15 +51,20 @@ The public evidence page for this issue is [`README.md`](README.md). Keep it in 
   Runs at the real 100 s default are described in lecture 001 but the output wasn't saved.
 - 2026-09-27: re-verified. #1764 still open, unassigned, no activity since 2023-01-09. Docs unchanged. Found
   dotnet/yarp#2615 (2024), where a user hit exactly this. Evidence plan and comment/PR drafts in concept notes **Q4**.
+- 2026-09-27: evidence captured at real defaults (runs 002–009; lab report `implementations/001`). Findings:
+  aborted at 100.1 s whenever no endpoint's keep-alive is under 100 s (004, 006, browser 008); a 30 s server
+  keep-alive fixes it (005, browser 009). **Correction:** "defaults on both sides → abort" is false for a .NET
+  client, because `ClientWebSocket` sends a Pong every 30 s by default (003, and the first attempt 001). It's
+  true for browsers, which can't send keep-alives. The Q4 §5.2 comment draft needs its verification sentence
+  replaced; the text is in the lab report §6.3 and concept notes Q5.
+- 2026-09-27: #1764 re-checked: still open, unassigned, Backlog, no activity since 2023-01-09. Docs unchanged.
 - Nothing posted upstream yet.
 
 ## Next steps
 
-The live checklist is **concept notes Q4 §8**. In short:
+The live checklist is **concept notes Q5 §4** (it continues Q4 §8). In short:
 
-1. Capture E1 (defaults on both sides → abort at 100 s) and E2 (30 s keep-alive survives ≥ 300 s) into
-   `sample/evidence/`, following Q4 §4.
-2. Update `README.md`'s results table with the evidence links, then commit and push.
-3. Re-check #1764 and post the comment from Q4 §5.2.
-4. Follow Q4 §6 depending on the reply; the PR text is in Q4 §5.3.
-5. Update the trackers (root `README.md`, scouting tracker) when anything is posted.
+1. Review the evidence and the lab report; commit and push, so the README link in the comment works.
+2. Re-check #1764, then post the comment using the **corrected** verification sentence (lab report §6.3).
+3. Follow Q4 §6 depending on the reply; the PR text in Q4 §5.3 still stands as written.
+4. Update the trackers (root `README.md`, scouting tracker) when anything is posted.

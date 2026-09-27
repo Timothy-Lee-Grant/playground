@@ -1,0 +1,17 @@
+# experiment: 007-8s-override-dotnet-client-default-aborts (wstap proxy→echo)
+# date:       2026-09-27T22:42:24Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       10ec1e3 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=00:00:08 · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=30 s (ClientWebSocket default) · taps=on
+# command:    python3 tools/wstap.py --listen 5051 --target 5050 --label proxy→echo
+#
+15:42:24  +   0.013s  [proxy→echo] listening on :5051, forwarding to :5050  (──► = toward :5050)
+15:42:25  +   1.219s  [proxy→echo] TCP accepted from ('127.0.0.1', 64494); connecting to :5050
+15:42:25  +   1.222s  [proxy→echo] ──►  HTTP  GET /ws HTTP/1.1
+15:42:25  +   1.270s  [proxy→echo] ◄──  HTTP  HTTP/1.1 101 Switching Protocols
+15:42:25  +   1.288s  [proxy→echo] ──►  WS    TEXT   masked, 5 B payload 'hello'
+15:42:25  +   1.291s  [proxy→echo] ◄──  WS    TEXT   unmasked, 5 B payload 'hello'
+15:42:33  +   9.276s  [proxy→echo] ──►  TCP   FIN (sender closed its side)
+15:42:33  +   9.276s  [proxy→echo] ◄──  TCP   FIN (sender closed its side)
+15:42:33  +   9.277s  [proxy→echo] TCP both directions finished

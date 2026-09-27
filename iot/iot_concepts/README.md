@@ -18,7 +18,7 @@ Concept notes that are only about one issue belong in that issue's conversation 
 
 | # | Lecture | Prompted by | Status |
 |---|---|---|---|
-| — | *(none written yet)* | | |
+| 001 | [The Big Picture: what dotnet/iot is, how it's built, and how to use it](001-the-big-picture-dotnet-iot.md) | #2403 (orientation before starting) | Written 2026-09-27; behavior claims unverified until samples run |
 
 ## Candidates (from #2403, entry #1 §12)
 

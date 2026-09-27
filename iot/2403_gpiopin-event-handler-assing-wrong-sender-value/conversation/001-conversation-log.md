@@ -24,9 +24,9 @@
 | | |
 |---|---|
 | **Stage** | Explore: understanding the issue. No code yet, nothing posted upstream. |
-| **Last entry** | #1 (2026-09-27) |
+| **Last entry** | #2 (2026-09-27) |
 | **Open decision** | Which route to take (entry #1 §10). |
-| **Next step** | Timothy reads #1 and asks questions (entry #2 onward). Then pick a route and a first concept lecture. |
+| **Next step** | Timothy reads lecture 001 (the big picture) and entry #1, then asks questions (entry #3 onward). Then pick a route. |
 
 ---
 
@@ -35,6 +35,7 @@
 | # | Date | Type | Title |
 |---|---|---|---|
 | 1 | 2026-09-27 | 📍 Briefing | What #2403 is, what's going on, what the source shows, and whether it's still a good pick |
+| 2 | 2026-09-27 | 📍 Progress | Wrote concepts lecture 001 (the big picture of dotnet/iot); one new docs lead |
 
 ---
 
@@ -250,3 +251,27 @@ E1 and E2 run on macOS. Everything goes to `../sample/`, raw output to `../sampl
 - Contribution guidance: `Documentation/CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/copilot-instructions.md`
 
 ---
+
+## #2 · 2026-09-27 · 📍 Progress: big-picture lecture written
+
+Before going deeper into #2403, Timothy asked for a holistic lecture on dotnet/iot: what the repo is, how to use it,
+where it runs, and the concepts he'll need.
+
+- **Written:** [`../../iot_concepts/001-the-big-picture-dotnet-iot.md`](../../iot_concepts/001-the-big-picture-dotnet-iot.md).
+  It covers the purpose and history, a C/Linux → dotnet/iot mapping table, the layered architecture, the cast of
+  characters, the two NuGet packages and the repo layout, GPIO in depth (including the callback path #2403 is
+  about), how `new GpioController()` picks a driver, Linux GPIO interfaces (sysfs / libgpiod v1 / v2 /
+  `/dev/gpiomem`), I2C/SPI/PWM, bindings and their conventions, a platform matrix, four ways to run code (fake
+  driver on the Mac, Raspberry Pi, FT232H on the Mac, Arduino/Firmata), contributor workflow, and a ranked list of
+  concepts to learn.
+- **Recommended reading order:** lecture 001 first, then entry #1 again. §6.3 and §14 of the lecture lead
+  straight into this issue.
+- **New lead (unverified, docs-only):** `Documentation/gpio-linux-libgpiod.md` shows `new GpioController(chipNumber)`,
+  but the current source only has `GpioController()` and `GpioController(GpioDriver)`. The same snippet also
+  declares `gpioController` and then uses `controller`. That's a small, non-breaking docs fix and a possible easy
+  first dotnet/iot PR alongside route C/D (entry #1 §10).
+- **New cheap experiment idea (E0):** run `new GpioController()` on the Mac. The lecture (§7) predicts
+  `PlatformNotSupportedException("No unix driver appears to be runnable")`, because .NET reports macOS as
+  `PlatformID.Unix`. It's a two-minute walking skeleton that confirms the driver-selection path before E1.
+- Nothing posted upstream. Route decision still pending.
+

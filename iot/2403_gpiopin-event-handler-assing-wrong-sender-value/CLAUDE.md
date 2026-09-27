@@ -49,7 +49,7 @@ small, testable bug in the core GPIO library that teaches .NET event design and 
 | `sample/` | Experiments E1–E3 (planned in conversation #1 §11). See `sample/README.md`. |
 | `sample/evidence/` | Raw run output (none yet). |
 | `report/` | The lab report, once there are results. See `report/README.md`. |
-| `../iot_concepts/` | Lectures prompted by this issue (none yet; candidates in its README). |
+| `../iot_concepts/` | Lectures prompted by this issue: 001 the big picture. Candidates in its README. |
 
 **Upstream files that matter** (paths in dotnet/iot):
 `src/System.Device.Gpio/System/Device/Gpio/GpioPin.cs` (the `ValueChanged` accessors),
@@ -70,11 +70,12 @@ tests: `src/System.Device.Gpio.Tests/GpioControllerSoftwareTests.cs`, `src/devic
   `VirtualGpioPin` (L1–L4).
 - 2026-09-27: **Fit concern:** triage says the fix needs a major release, which the scouting entry didn't account
   for. Route decision pending (conversation #1 §10).
+- 2026-09-27: Wrote `../iot_concepts/001-the-big-picture-dotnet-iot.md` (orientation lecture). Conversation entry #2.
 - Nothing posted upstream.
 
 ## Next steps
 
 1. Timothy reads conversation #1 and asks questions (entries #2+).
 2. Decide the route (A: ask first / B: build the fix anyway / C: docs-only slice / D: virtual-controller leads).
-3. Write the first `iot_concepts/` lecture (probably .NET events and delegate identity).
+3. Next `iot_concepts/` lecture: probably .NET events and delegate identity (001, the big picture, is done).
 4. Build E1 (sender pass-through) and E2 (virtual-controller leads) in `sample/`, capture evidence.

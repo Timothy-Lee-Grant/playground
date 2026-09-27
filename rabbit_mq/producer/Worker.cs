@@ -1,4 +1,4 @@
-namespace SqliteInteraction;
+namespace producer;
 
 public class Worker(ILogger<Worker> logger) : BackgroundService
 {

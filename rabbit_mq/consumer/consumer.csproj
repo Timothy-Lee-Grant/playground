@@ -4,7 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-SqliteInteraction-31b42fe3-e160-4cce-bdf5-e651566bc947</UserSecretsId>
+    <UserSecretsId>dotnet-consumer-ca2bfc01-49d1-4eeb-98da-2f17dcc299af</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

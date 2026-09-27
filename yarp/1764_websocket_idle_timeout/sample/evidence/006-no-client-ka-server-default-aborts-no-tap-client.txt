@@ -1,0 +1,13 @@
+# experiment: 006-no-client-ka-server-default-aborts-no-tap (IdleClient)
+# date:       2026-09-27T22:40:40Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       6cbe9d4 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=0 s0 · taps=off
+# command:    WS_CLIENT_KEEPALIVE_SECONDS=0 IDLE_MAX_SECONDS=310 dotnet IdleClient/bin/Debug/net10.0/IdleClient.dll ws://localhost:5000/ws
+#
+15:40:40  Connecting to ws://localhost:5000/ws ...
+15:40:40  Client KeepAliveInterval = 00:00:00 (WS_CLIENT_KEEPALIVE_SECONDS)
+15:40:40  Connected. Sending one message to prove the round trip works.
+15:40:40  Echo received: hello
+15:40:40  Now going idle — sending nothing. Watching for the connection to die...

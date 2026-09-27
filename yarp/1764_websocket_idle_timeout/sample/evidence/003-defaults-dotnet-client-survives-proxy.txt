@@ -1,0 +1,24 @@
+# experiment: 003-defaults-dotnet-client-survives (Proxy)
+# date:       2026-09-27T22:28:23Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       6cbe9d4 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=30 s (ClientWebSocket default) · taps=on
+# command:    env ReverseProxy__Clusters__echoCluster__Destinations__echo-destination__Address=http://localhost:5051/ dotnet bin/Debug/net10.0/Proxy.dll   (cwd sample/Proxy)
+#
+info: Yarp.ReverseProxy.Configuration.ConfigProvider.ConfigurationConfigProvider[1]
+      Loading proxy data from config.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /Users/timothygrant/Desktop/projects/exercises/yarp/1764_websocket_idle_timeout/sample/Proxy
+info: Yarp.ReverseProxy.Forwarder.HttpForwarder[9]
+      Proxying to http://localhost:5051/ws HTTP/1.1 RequestVersionOrLower 
+info: Yarp.ReverseProxy.Forwarder.HttpForwarder[56]
+      Received HTTP/1.1 response 101.
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...

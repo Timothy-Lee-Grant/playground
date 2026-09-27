@@ -1,0 +1,47 @@
+# experiment: 003-defaults-dotnet-client-survives (IdleClient)
+# date:       2026-09-27T22:28:24Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       6cbe9d4 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=30 s (ClientWebSocket default) · taps=on
+# command:    IDLE_MAX_SECONDS=310 dotnet IdleClient/bin/Debug/net10.0/IdleClient.dll ws://localhost:5001/ws
+#
+15:28:24  Connecting to ws://localhost:5001/ws ...
+15:28:24  Client KeepAliveInterval = 00:00:30 (ClientWebSocket default)
+15:28:25  Connected. Sending one message to prove the round trip works.
+15:28:25  Echo received: hello
+15:28:25  Now going idle — sending nothing. Watching for the connection to die...
+15:28:35    ...still open at 10s
+15:28:45    ...still open at 20s
+15:28:55    ...still open at 30s
+15:29:05    ...still open at 40s
+15:29:15    ...still open at 50s
+15:29:25    ...still open at 60s
+15:29:35    ...still open at 70s
+15:29:45    ...still open at 80s
+15:29:55    ...still open at 90s
+15:30:05    ...still open at 100s
+15:30:15    ...still open at 110s
+15:30:25    ...still open at 120s
+15:30:35    ...still open at 130s
+15:30:45    ...still open at 140s
+15:30:55    ...still open at 150s
+15:31:05    ...still open at 160s
+15:31:15    ...still open at 170s
+15:31:25    ...still open at 180s
+15:31:35    ...still open at 190s
+15:31:45    ...still open at 200s
+15:31:55    ...still open at 210s
+15:32:05    ...still open at 220s
+15:32:15    ...still open at 230s
+15:32:25    ...still open at 240s
+15:32:35    ...still open at 250s
+15:32:45    ...still open at 260s
+15:32:55    ...still open at 270s
+15:33:05    ...still open at 280s
+15:33:15    ...still open at 290s
+15:33:25    ...still open at 300s
+15:33:35    ...still open at 310s
+15:33:35  [310.0s] Still open after IDLE_MAX_SECONDS=310; stopping the watch.
+15:33:35  Final client state: Aborted
+# after cleanup, listeners on 5000/5001/5050/5051: none

@@ -1,0 +1,13 @@
+# experiment: 002-keepalive-defaults (prints the framework's keep-alive defaults)
+# date:       2026-09-27T22:28:15Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302
+# command:    dotnet run --project tools/KeepAliveDefaults
+#
+Runtime: .NET 10.0.10
+WebSocket.DefaultKeepAliveInterval             = 00:00:30
+ClientWebSocket().Options.KeepAliveInterval    = 00:00:30
+ClientWebSocket().Options.KeepAliveTimeout     = -00:00:00.0010000
+ASP.NET Core WebSocketOptions.KeepAliveInterval = 00:02:00
+ASP.NET Core WebSocketOptions.KeepAliveTimeout  = -00:00:00.0010000
+YARP ForwarderRequestConfig.ActivityTimeout     = (null in config => 100 s built-in default; see ForwarderRequestConfig.cs)

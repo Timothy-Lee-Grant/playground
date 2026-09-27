@@ -1,0 +1,37 @@
+# experiment: 004-no-client-ka-server-default-aborts (EchoServer)
+# date:       2026-09-27T22:33:38Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       6cbe9d4 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=2 min (default) · client KeepAliveInterval=0 s0 · taps=on
+# command:    dotnet bin/Debug/net10.0/EchoServer.dll   (cwd sample/EchoServer)
+#
+info: EchoServer[0]
+      EchoServer starting. WebSocket KeepAliveInterval = 00:02:00
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5050
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /Users/timothygrant/Desktop/projects/exercises/yarp/1764_websocket_idle_timeout/sample/EchoServer
+info: EchoServer[0]
+      Client connected. Echoing messages until the socket closes.
+info: EchoServer[0]
+      Echoing: hello
+fail: Microsoft.AspNetCore.Server.Kestrel[13]
+      Connection id "0HNOSSTGFQA3V", Request id "0HNOSSTGFQA3V:00000001": An unhandled exception was thrown by the application.
+      System.Net.WebSockets.WebSocketException (0x80004005): The remote party closed the WebSocket connection without completing the close handshake.
+         at System.Net.WebSockets.ManagedWebSocket.ThrowEOFUnexpected()
+         at System.Net.WebSockets.ManagedWebSocket.EnsureBufferContainsAsync(Int32 minimumRequiredBytes, CancellationToken cancellationToken)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+         at System.Net.WebSockets.ManagedWebSocket.ReceiveAsyncPrivate[TResult](Memory`1 payloadBuffer, CancellationToken cancellationToken)
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+         at System.Threading.Tasks.ValueTask`1.ValueTaskSourceAsTask.<>c.<.cctor>b__4_0(Object state)
+      --- End of stack trace from previous location ---
+         at Program.<>c__DisplayClass0_0.<<<Main>$>b__0>d.MoveNext() in /Users/timothygrant/Desktop/projects/exercises/yarp/1764_websocket_idle_timeout/sample/EchoServer/Program.cs:line 35
+      --- End of stack trace from previous location ---
+         at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.ProcessRequests[TContext](IHttpApplication`1 application)
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...

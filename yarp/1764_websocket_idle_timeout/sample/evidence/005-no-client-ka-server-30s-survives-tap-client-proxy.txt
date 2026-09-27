@@ -1,0 +1,27 @@
+# experiment: 005-no-client-ka-server-30s-survives (wstap client→proxy)
+# date:       2026-09-27T22:35:24Z
+# os:         macOS 26.3 (arm64)
+# dotnet:     SDK 10.0.302, runtime 10.0.10, Yarp.ReverseProxy 2.3.0
+# repo:       6cbe9d4 (+ uncommitted sample changes, if any)
+# settings:   proxy ActivityTimeout=100 s (appsettings 00:01:40) · server KeepAliveInterval=30 s30 · client KeepAliveInterval=0 s0 · taps=on
+# command:    python3 tools/wstap.py --listen 5001 --target 5000 --label client→proxy
+#
+15:35:24  +   0.029s  [client→proxy] listening on :5001, forwarding to :5000  (──► = toward :5000)
+15:35:25  +   0.799s  [client→proxy] TCP accepted from ('127.0.0.1', 64383); connecting to :5000
+15:35:25  +   0.801s  [client→proxy] ──►  HTTP  GET /ws HTTP/1.1
+15:35:25  +   1.047s  [client→proxy] ◄──  HTTP  HTTP/1.1 101 Switching Protocols
+15:35:25  +   1.051s  [client→proxy] ──►  WS    TEXT   masked, 5 B payload 'hello'
+15:35:25  +   1.056s  [client→proxy] ◄──  WS    TEXT   unmasked, 5 B payload 'hello'
+15:35:55  +  31.049s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:36:25  +  61.045s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:36:55  +  91.043s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:37:25  + 121.048s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:37:55  + 151.046s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:38:25  + 181.046s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:38:55  + 211.045s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:39:25  + 241.050s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:39:55  + 271.045s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:40:25  + 301.050s  [client→proxy] ◄──  WS    PONG   unmasked, 0 B payload
+15:40:35  + 311.070s  [client→proxy] ──►  TCP   FIN (sender closed its side)
+15:40:35  + 311.072s  [client→proxy] ◄──  TCP   FIN (sender closed its side)
+15:40:35  + 311.073s  [client→proxy] TCP both directions finished

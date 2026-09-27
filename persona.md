@@ -269,6 +269,20 @@ I want to develop strong engineering intuition so that I can reason about unfami
 
 # Active Projects
 
+## Open-source contributions (this repo, Sept 2026, in progress)
+
+This repo (formerly a general playground) became an open-source workbench on 2026-09-27: scout issues, reproduce
+them in small running experiments, save the output as evidence to link from upstream PRs, and write lectures for
+the concepts along the way. First search pass (2026-09-26, `scouting/001-issue_shortlist_sept_2026.md`) covered
+dotnet/iot, the MCP C# SDK, YARP and OpenTelemetry .NET, with a deliberate mix of 🛠️ contribute and 📖 learn-only
+items and a "one active PR at a time" rule. First pick: **YARP #1764** (docs, WebSocket idle timeout). Instead of
+copying the maintainer's explanation into the docs, he had Claude build a three-process repro (client → YARP →
+echo server), ran it, and confirmed the abort at `ActivityTimeout`, the `KeepAliveInterval` fix, and a gotcha the issue doesn't mention:
+ASP.NET Core's default 2-minute keep-alive is longer than YARP's 100 s timeout, so "turn on keep-alives" alone
+doesn't fix it. While researching he also found that the Timeouts docs page already covers most of the issue,
+which shrinks the real change to a cross-reference. That's a good example of checking before contributing. Nothing
+posted upstream as of 2026-09-27.
+
 ## LLM_Monitor (2026, in progress)
 
 A self-built AI orchestration platform. Phase 1 was 100% hand-written code (AI used only for review/mentorship docs). Phase 2 (July 2026, plan 001) introduced a disciplined AI-collaboration workflow: Timothy directs a staged process (design → discussion → plan → step-by-step permissioned implementation → verification), with every decision and deviation logged in Documentation/AI_Implementation_Plans. Microservices: C#/.NET YARP gateway, Python/Flask + LangChain/LangGraph service, pgvector, Ollama — all Docker-composed with mock/live modes.
@@ -279,13 +293,13 @@ A self-built AI orchestration platform. Phase 1 was 100% hand-written code (AI u
 
 ---
 
-## reactive exercise (`reactive/`, .NET Worker Service, Aug 2026, hand-exploration)
+## reactive exercise (`hand_experiments/reactive/`, .NET Worker Service, Aug 2026, hand-exploration)
 
-A by-hand exploration of pub/sub and Reactive Extensions in C#, done deliberately without AI assistance first (per the project's own rule: AI may only add lecture docs, not touch the exercise code). `StateService.cs` was a thinking-out-loud sketch (didn't compile) reasoning toward "I need a way to send events to subscribed callbacks" and "I'd guess this needs a function pointer, but C# doesn't like that" — correct systems instinct (registry of callbacks / Observer pattern), translated from a C mental model without yet knowing C#'s delegate/`event` vocabulary. The project is named `reactive` but `reactive.csproj` never referenced the actual `System.Reactive` (Rx.NET) package — i.e., reaching for the *idea* of Reactive Extensions without yet knowing it's a specific installable library, distinct from a hand-rolled dictionary-of-lists or the built-in `event` keyword. Reviewed in `lectures/reactive/001-The-Broadcaster-And-The-Listeners.md`: covers delegates vs. C function pointers, why `event` enforces the "only one publisher" rule the sketch stated as a comment, the Observer-pattern lineage from hand-rolled → `event` → `IObservable<T>` → Rx.NET operators, the concrete thread-safety race hiding in a background-service publisher + naive `List<T>` subscriber registry (ties directly to the standing async/race-condition weakness below), and `System.Threading.Channels` flagged as the primitive that transfers most directly to later Kafka work.
+A by-hand exploration of pub/sub and Reactive Extensions in C#, done deliberately without AI assistance first (per the project's own rule: AI may only add lecture docs, not touch the exercise code). `StateService.cs` was a thinking-out-loud sketch (didn't compile) reasoning toward "I need a way to send events to subscribed callbacks" and "I'd guess this needs a function pointer, but C# doesn't like that" — correct systems instinct (registry of callbacks / Observer pattern), translated from a C mental model without yet knowing C#'s delegate/`event` vocabulary. The project is named `reactive` but `reactive.csproj` never referenced the actual `System.Reactive` (Rx.NET) package — i.e., reaching for the *idea* of Reactive Extensions without yet knowing it's a specific installable library, distinct from a hand-rolled dictionary-of-lists or the built-in `event` keyword. Reviewed in `hand_experiments/lectures/reactive/001-The-Broadcaster-And-The-Listeners.md`: covers delegates vs. C function pointers, why `event` enforces the "only one publisher" rule the sketch stated as a comment, the Observer-pattern lineage from hand-rolled → `event` → `IObservable<T>` → Rx.NET operators, the concrete thread-safety race hiding in a background-service publisher + naive `List<T>` subscriber registry (ties directly to the standing async/race-condition weakness below), and `System.Threading.Channels` flagged as the primitive that transfers most directly to later Kafka work.
 
-**Second pass (2026-08-05):** attempted the fix by splitting into two separate runnable projects (`reactive/` + a new `listener1/`), each with its own `Program.cs`/host — i.e. two separate OS processes — while still trying to bridge them with an in-process `event`/delegate (`_stateService.OnEventTrigger += ...`). This is a recurring shape worth watching for: reaching for the next architectural step (splitting publisher/subscriber into separate deployable units, which *is* the right instinct for real distributed pub/sub) before the in-process mechanism is solid, and not yet distinguishing "this abstraction lives in one process's memory" from "this needs a network transport." Also produced two fresh, very typical C#-mechanics bugs: assigning a constructor parameter to a `var` inside the constructor body (a local, not a field) while also having a primary constructor and a non-chained secondary constructor fight each other; and declaring `public delegate void OnEventTrigger(string message);` (a *type*) and then trying to `.Invoke()` it directly, conflating a delegate type declaration with a delegate instance/field. Reviewed in `lectures/reactive/002-Whats-Actually-Inside-The-Microphone.md`, which leads with the process-boundary issue before the interface deep-dive (`IObserver<T>`/`IObservable<T>`'s four methods, a from-scratch `MiniSubject<T>` reconstruction to de-mystify where `.OnNext()`/`.Subscribe()` "come from"), and recommends folding `listener1` back into one process until the in-memory version is solid, deferring real cross-process pub/sub to a deliberate later exercise (natural candidate: Redis Pub/Sub, since `redis/` already exists in this repo).
+**Second pass (2026-08-05):** attempted the fix by splitting into two separate runnable projects (`reactive/` + a new `listener1/`), each with its own `Program.cs`/host — i.e. two separate OS processes — while still trying to bridge them with an in-process `event`/delegate (`_stateService.OnEventTrigger += ...`). This is a recurring shape worth watching for: reaching for the next architectural step (splitting publisher/subscriber into separate deployable units, which *is* the right instinct for real distributed pub/sub) before the in-process mechanism is solid, and not yet distinguishing "this abstraction lives in one process's memory" from "this needs a network transport." Also produced two fresh, very typical C#-mechanics bugs: assigning a constructor parameter to a `var` inside the constructor body (a local, not a field) while also having a primary constructor and a non-chained secondary constructor fight each other; and declaring `public delegate void OnEventTrigger(string message);` (a *type*) and then trying to `.Invoke()` it directly, conflating a delegate type declaration with a delegate instance/field. Reviewed in `hand_experiments/lectures/reactive/002-Whats-Actually-Inside-The-Microphone.md`, which leads with the process-boundary issue before the interface deep-dive (`IObserver<T>`/`IObservable<T>`'s four methods, a from-scratch `MiniSubject<T>` reconstruction to de-mystify where `.OnNext()`/`.Subscribe()` "come from"), and recommends folding `listener1` back into one process until the in-memory version is solid, deferring real cross-process pub/sub to a deliberate later exercise (natural candidate: Redis Pub/Sub, since `redis/` already exists in this repo).
 
-## kafka exercise (`kafka/`, .NET Worker Services + Docker Compose, Aug 2026, in progress)
+## kafka exercise (`hand_experiments/kafka/`, .NET Worker Services + Docker Compose, Aug 2026, in progress)
 
 First hands-on session 2026-08-08. Structure built: a `kafka.slnx` solution with four projects — `Producer`,
 `ConsumerOne`, `ConsumerTwo`, `Contracts` (a `TaskCreatedEvent` record) — plus a KRaft-mode `confluentinc/cp-kafka`
@@ -295,7 +309,7 @@ defining `task-net` (so the broker never started once), and `Producer.cs` had fi
 were still the untouched `dotnet new worker` template with no `Confluent.Kafka` reference; `Contracts` was
 referenced by nothing.
 
-Reviewed in `lectures/kafka/Problems/001-Kafka-Problem-Log.md` (17 findings, severity-graded). The C#-mechanics
+Reviewed in `hand_experiments/lectures/kafka/Problems/001-Kafka-Problem-Log.md` (17 findings, severity-graded). The C#-mechanics
 bugs: a **primary constructor colliding with an explicit constructor of the same signature** — the *second*
 occurrence of this exact shape in four days, after `reactive/` on 2026-08-05, so it's a real knowledge gap, not a
 slip; `BootStrapServers` (correct member is `BootstrapServers`); `overrride`; and a leftover
@@ -311,7 +325,7 @@ agreement; dual advertised listeners; `Acks.All`; `Flush` before `Dispose`; type
 
 ## redis exercise (Aug 2026, not yet started)
 
-`redis/` is still an empty folder. Both `redis/` and `kafka/` were set up as deliberately non-useful, integration-focused C# exercises — the stated goal is learning to wire a real piece of infrastructure into a C# project (run the server, use the real client library and wire protocol), not building something practical. Directly follows from the `reactive/` exercise's cross-process wall (see above, `[[reactive exercise]]`): lecture `lectures/redis/001-The-Fast-Librarian-Setting-Up-Redis-In-CSharp.md` frames Redis Pub/Sub (`StackExchange.Redis`, `ConnectionMultiplexer`/`ISubscriber`) as the direct fix to that wall, with the load-bearing caveat that Redis Pub/Sub is fire-and-forget (no persistence/replay) — which sets up `lectures/kafka/001-The-Archivist-Setting-Up-Kafka-In-CSharp.md` as the contrasting durable/replayable/consumer-group model (`Confluent.Kafka`, topics/partitions/offsets/consumer groups, at-least-once vs. exactly-once commit semantics). Both docs give a matched build-order (single client end-to-end first, then two separate processes/console apps standing in for publisher and subscriber, then a stretch goal) and a direct side-by-side: kill the subscriber, publish while it's down, restart it — Redis loses those messages, Kafka doesn't. Redis has not been started as of this writing; Kafka was started 2026-08-08 (see above). Worth noting: the matched build-order in both lecture docs — *single client end-to-end first, then split into two processes* — is exactly the walking-skeleton discipline he then didn't follow on the Kafka attempt, which suggests the gap is about applying the rule under pressure rather than knowing it.
+`redis/` is still an empty folder. Both `redis/` and `kafka/` were set up as deliberately non-useful, integration-focused C# exercises — the stated goal is learning to wire a real piece of infrastructure into a C# project (run the server, use the real client library and wire protocol), not building something practical. Directly follows from the `reactive/` exercise's cross-process wall (see above, `[[reactive exercise]]`): lecture `hand_experiments/lectures/redis/001-The-Fast-Librarian-Setting-Up-Redis-In-CSharp.md` frames Redis Pub/Sub (`StackExchange.Redis`, `ConnectionMultiplexer`/`ISubscriber`) as the direct fix to that wall, with the load-bearing caveat that Redis Pub/Sub is fire-and-forget (no persistence/replay) — which sets up `hand_experiments/lectures/kafka/001-The-Archivist-Setting-Up-Kafka-In-CSharp.md` as the contrasting durable/replayable/consumer-group model (`Confluent.Kafka`, topics/partitions/offsets/consumer groups, at-least-once vs. exactly-once commit semantics). Both docs give a matched build-order (single client end-to-end first, then two separate processes/console apps standing in for publisher and subscriber, then a stretch goal) and a direct side-by-side: kill the subscriber, publish while it's down, restart it — Redis loses those messages, Kafka doesn't. Redis has not been started as of this writing; Kafka was started 2026-08-08 (see above). Worth noting: the matched build-order in both lecture docs — *single client end-to-end first, then split into two processes* — is exactly the walking-skeleton discipline he then didn't follow on the Kafka attempt, which suggests the gap is about applying the rule under pressure rather than knowing it.
 
 ## Tool_Box (July 2026, starting)
 
@@ -356,7 +370,7 @@ of my life I assumed "picture an apple" was a metaphor. I *do* dream visually (w
 visual system works, what's missing is deliberate top-down access to it). **This is the single most useful thing
 for an AI to know about how to help me:** give me diagrams, tables, ASCII, named components and explicit
 relationships; never tell me to "picture" or "imagine" something; and route me to a running system before a
-document. Full analysis in `lectures/engineering-practice/003-The-Mind-Without-Pictures.md`.
+document. Full analysis in `hand_experiments/lectures/engineering-practice/003-The-Mind-Without-Pictures.md`.
 
 Other things about my cognition that seem relevant, offered as evidence rather than conclusions:
 
@@ -378,7 +392,7 @@ should tell me about how to proceed.
 switching is expensive.
 
 **I have wondered whether I am autistic.** Never assessed, no diagnosis, genuinely unsure — offered here as
-context I'm weighing, not as a fact. Analysis in `lectures/engineering-practice/002-The-Missing-Layer.md`, updated
+context I'm weighing, not as a fact. Analysis in `hand_experiments/lectures/engineering-practice/002-The-Missing-Layer.md`, updated
 in `003`: the traits overlap with common descriptions of autistic cognition, but each also has other explanations,
 and only a qualified assessor can answer it. Note that one plank of that hypothesis — the prelab difficulty — has
 since moved to aphantasia (a distinct condition), which weakens it somewhat; what remains is literal execution,
@@ -390,7 +404,7 @@ don't speculate about it unprompted, and don't let it become an explanation for 
 
 Senior engineers on my team have told me directly that I am **too slow** and that I **get too caught up in the
 details**. This is currently my highest-priority thing to fix — it is the main obstacle between me and the
-senior-level backend roles I'm targeting. `lectures/engineering-practice/` exists specifically to work on this,
+senior-level backend roles I'm targeting. `hand_experiments/lectures/engineering-practice/` exists specifically to work on this,
 and I want AI assistance to treat it as a standing goal, not a one-off request: when reviewing my work, always
 include process findings (how long between commits, did anything compile, was there a walking skeleton) alongside
 the technical ones.
@@ -402,7 +416,7 @@ Timothy volunteered four unrelated experiences — university prelabs being the 
 his wife calling him "robotic," a senior engineer's recurring complaint that he answers intent questions with
 mechanism, and a Linux deployment where he executed steps correctly but couldn't recover when one failed. They
 share one structure: **mechanism and procedure intact, purpose absent.** Written up in
-`lectures/engineering-practice/002-The-Missing-Layer.md`.
+`hand_experiments/lectures/engineering-practice/002-The-Missing-Layer.md`.
 
 Two conclusions worth carrying into any future session:
 
@@ -464,7 +478,7 @@ before the in-process version worked), so it is now a confirmed recurring patter
 inversion it causes: he front-loads the *certain* work (writing a record, adding a project) and defers the
 *uncertain* work (does the broker start, can the client connect), which is exactly backwards for risk.
 
-**Framing that seems worth reusing** (from `lectures/engineering-practice/001-Closing-The-Loop.md`): his
+**Framing that seems worth reusing** (from `hand_experiments/lectures/engineering-practice/001-Closing-The-Loop.md`): his
 caution is a *correctly-learned* response to embedded work, where an experiment costs minutes, mistakes can be
 physical, and abstractions are thin enough that reading to the register is genuinely the fast path. Backend
 inverts every one of those costs; the habit isn't bad, it's mis-calibrated, and what needs to change is his

@@ -1,7 +1,7 @@
 # Concept Notes 001 — Questions From the Issue Shortlist
 
-> **What this is:** a running Q&A log of *concept notes*. As I read `implementations/001-issue_shortlist_sept_2026.md`, I ask about things I don't understand, and each answer is **appended** here, newest at the bottom.
-> **Style:** short and issue-focused. Just enough concept to unblock the next step, then concrete next steps. Not a full lecture; deep dives belong in the repo's top-level `lectures/` domains.
+> **What this is:** a running Q&A log of *concept notes*. As I read `scouting/001-issue_shortlist_sept_2026.md` (at the repo root), I ask about things I don't understand, and each answer is **appended** here, newest at the bottom.
+> **Style:** short and issue-focused. Just enough concept to unblock the next step, then concrete next steps. Not a full lecture; deep dives belong in this folder's `lectures/` (issue-specific) or the repo-root `lectures/<topic>/` (reusable concepts).
 > **Started:** 2026-09-26
 >
 > **Format for each entry:** the question (in my words) → the short answer → the explanation → what to take away / next steps.

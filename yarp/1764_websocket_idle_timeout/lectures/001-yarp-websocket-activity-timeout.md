@@ -2,9 +2,9 @@
 
 > **What this is:** the hands-on follow-through on the "Next steps" checklist at the bottom of
 > `concept_notes/001-questions_from_the_issue_shortlist.md` (Q3) and the "Optional hands-on" note under item A in
-> `implementations/001-issue_shortlist_sept_2026.md`. It builds the three-piece sample described there, runs it,
+> `scouting/001-issue_shortlist_sept_2026.md` (repo root). It builds the three-piece sample described there, runs it,
 > and records what actually happened — including one thing that *didn't* happen the way the notes predicted.
-> **Code:** `yarp_timeout/sample/` · **Date run:** 2026-09-26, .NET SDK 10.0.302, `Yarp.ReverseProxy` 2.3.0.
+> **Code:** `yarp/1764_websocket_idle_timeout/sample/` · **Date run:** 2026-09-26, .NET SDK 10.0.302, `Yarp.ReverseProxy` 2.3.0.
 
 ---
 
@@ -33,7 +33,7 @@ IdleClient  ──ws://──►  Proxy (YARP)  ──ws://──►  EchoServer
 ## 2. One-time setup
 
 ```bash
-cd yarp_timeout/sample
+cd yarp/1764_websocket_idle_timeout/sample
 dotnet build
 ```
 
@@ -43,7 +43,7 @@ installed, which you don't want picking up this build by accident). `dotnet buil
 
 ## 3. Running the three pieces
 
-Each piece is a separate process. Open three terminals (or background two of them) from `yarp_timeout/sample/`.
+Each piece is a separate process. Open three terminals (or background two of them) from `yarp/1764_websocket_idle_timeout/sample/`.
 
 **Terminal 1 — EchoServer:**
 ```bash

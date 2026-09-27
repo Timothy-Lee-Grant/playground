@@ -1,13 +1,14 @@
 # Project Idea
 
-This project is to allow me to explore topics by hand.
+This folder is the older, by-hand half of the repo: practice implementations for exploring topics by hand.
+(The rest of the repo is now an open-source workbench with different rules; see the root `CLAUDE.md`.)
 
 I write the exercise code myself, without AI. The AI's job is to **review** what I wrote and **teach** — it never
 writes the exercise code for me. See "Hard rules" below.
 
 # persona.md
 
-My persona.md file tells you who I am, and my goals. Read it before writing any lecture or review.
+My `persona.md` file (at the repo root, `../persona.md`) tells you who I am, and my goals. Read it before writing any lecture or review.
 
 ---
 

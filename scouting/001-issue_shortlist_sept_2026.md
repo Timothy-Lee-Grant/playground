@@ -78,13 +78,13 @@ Each entry: **Problem → Why it fits → How to fix it → Steps → Done when 
 
 > **🟢 Open, available · 🛠️ Contribute.**
 
-> ⚠️ **Update (2026-09-26, see `concept_notes/001-questions_from_the_issue_shortlist.md` Q2):** the core of this is **already documented** on the YARP **Timeouts** page (its WebSockets section, `ms.date` 11/01/2025). The WebSockets page itself still doesn't mention `ActivityTimeout`. **Revised task:** comment on #1764 pointing this out, then either (a) add a short cross-reference sentence to `websockets.md` in `dotnet/AspNetCore.Docs` (the GitHub web editor is fine, no clone needed), or (b) let the maintainers close it as covered. Q2 has the exact steps and a draft comment.
+> ⚠️ **Update (2026-09-26, see `yarp/1764_websocket_idle_timeout/concept_notes/001-questions_from_the_issue_shortlist.md` Q2):** the core of this is **already documented** on the YARP **Timeouts** page (its WebSockets section, `ms.date` 11/01/2025). The WebSockets page itself still doesn't mention `ActivityTimeout`. **Revised task:** comment on #1764 pointing this out, then either (a) add a short cross-reference sentence to `websockets.md` in `dotnet/AspNetCore.Docs` (the GitHub web editor is fine, no clone needed), or (b) let the maintainers close it as covered. Q2 has the exact steps and a draft comment.
 
 **Link:** https://github.com/dotnet/yarp/issues/1764 · Labels: `Type: Documentation`, `help wanted` · Milestone: Backlog
 
 **Problem.** YARP closes a proxied request that has been idle for **100 seconds** (the default activity timeout). That protects the proxy from leaking resources, but it means an idle WebSocket connection gets dropped. The fix for users is to send keep-alives from the **client or the destination server** (WebSocket-level pings or application-level heartbeats), not from the proxy. The maintainer explained this in the issue, but it never made it into the docs. As of 2026-09-26, the YARP WebSockets page on Microsoft Learn only says that HTTP request timeouts are disabled after the WebSocket handshake. It says nothing about the activity timeout or keep-alives.
 
-**Why it fits.** Low risk and fast review, and it teaches you the docs pipeline. The subject (proxy timeouts, long-lived connections) also sits right inside your `lectures/yarp/` groundwork.
+**Why it fits.** Low risk and fast review, and it teaches you the docs pipeline. The subject (proxy timeouts, long-lived connections) also connects directly to your YARP work in LLM_Monitor.
 
 **How to fix it.** Add a short section to the YARP WebSockets doc (and, if appropriate, a cross-link from the Timeouts doc) explaining:
 1. The activity timeout exists and defaults to 100 s.
@@ -96,7 +96,7 @@ Each entry: **Problem → Why it fits → How to fix it → Steps → Done when 
 - [ ] Re-read the issue thread; confirm it's still open and unclaimed.
 - [ ] Read the current pages: [WebSockets](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/servers/yarp/websockets) and the linked Timeouts page. Note exactly where the new text belongs.
 - [ ] Comment on the YARP issue: *"I'd like to take this. YARP docs now live in AspNetCore.Docs, so I plan to add a 'Idle connections and keep-alives' section to `yarp/websockets.md` covering the 100 s activity timeout and client/server keep-alives. Does that location work?"*
-- [ ] Optional but valuable: verify the behavior yourself. A tiny YARP app + an echo WebSocket server, leave the socket idle >100 s, observe the close, then set `KeepAliveInterval` and observe that it survives. A sentence like "verified on .NET 10 / YARP 2.x" in the PR description builds trust.
+- [x] *(Done 2026-09-26: see `yarp/1764_websocket_idle_timeout/README.md`.)* Optional but valuable: verify the behavior yourself. A tiny YARP app + an echo WebSocket server, leave the socket idle >100 s, observe the close, then set `KeepAliveInterval` and observe that it survives. A sentence like "verified on .NET 10 / YARP 2.x" in the PR description builds trust.
 - [ ] Fork `dotnet/AspNetCore.Docs`, edit the Markdown, preview it, and open the PR referencing `dotnet/yarp#1764`.
 
 **Done when:** PR merged in AspNetCore.Docs, and the YARP issue is closed (or you've commented with the link so a maintainer can close it).
@@ -701,11 +701,11 @@ The default behavior must stay unchanged when the option isn't set.
 
 ## 3. Progress tracker
 
-Update this table as you go. It's the "status board" for the open_source home base.
+Update this table as you go. It's the "status board" for this repo's open-source work. When an item gets its own issue folder, link it in the Notes column.
 
 | Item | Issue | Status | Comment posted | PR | Merged | Notes |
 |---|---|---|---|---|---|---|
-| A | yarp#1764 | ☐ not started | | | | |
+| A | yarp#1764 | 🔄 repro verified (2026-09-26) | ☐ | | | Workspace: [`yarp/1764_websocket_idle_timeout/`](../yarp/1764_websocket_idle_timeout/) |
 | B | iot#2297 | ☐ not started | | | | |
 | C | iot#2600 | ☐ not started | | | | |
 | D | iot#2602 | ☐ not started | | | | |

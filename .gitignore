@@ -1,18 +1,17 @@
-# Keep the build context lean: Docker uploads everything not listed here
-# before the build even starts.
+# .NET build output
 bin/
 obj/
-**/bin/
-**/obj/
-.git/
-.github/
-Documentation/
-docs/
-tests/
+*.user
+.vs/
+TestResults/
+
+# Editors / OS
 .vscode/
 .idea/
 .DS_Store
+
+# Secrets
 .env
 
-# Private notes (copied manually to a private repo; never pushed)
+# Private notes (kept locally / in a private repo; never pushed)
 private/

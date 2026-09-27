@@ -113,9 +113,9 @@ Do not treat AI as a black box. Explain how systems work internally whenever pos
 
 ---
 
-# Current Weaknesses
+# Areas I'm Actively Growing
 
-Areas where I need the most improvement include:
+Areas I'm deliberately building depth in:
 
 ## Distributed Systems
 
@@ -299,39 +299,12 @@ A self-built AI orchestration platform. Phase 1 was 100% hand-written code (AI u
 
 ---
 
-## reactive exercise (`hand_experiments/reactive/`, .NET Worker Service, Aug 2026, hand-exploration)
+## Hand-written practice exercises (`hand_experiments/`, Aug 2026)
 
-A by-hand exploration of pub/sub and Reactive Extensions in C#, done deliberately without AI assistance first (per the project's own rule: AI may only add lecture docs, not touch the exercise code). `StateService.cs` was a thinking-out-loud sketch (didn't compile) reasoning toward "I need a way to send events to subscribed callbacks" and "I'd guess this needs a function pointer, but C# doesn't like that" — correct systems instinct (registry of callbacks / Observer pattern), translated from a C mental model without yet knowing C#'s delegate/`event` vocabulary. The project is named `reactive` but `reactive.csproj` never referenced the actual `System.Reactive` (Rx.NET) package — i.e., reaching for the *idea* of Reactive Extensions without yet knowing it's a specific installable library, distinct from a hand-rolled dictionary-of-lists or the built-in `event` keyword. Reviewed in `hand_experiments/lectures/reactive/001-The-Broadcaster-And-The-Listeners.md`: covers delegates vs. C function pointers, why `event` enforces the "only one publisher" rule the sketch stated as a comment, the Observer-pattern lineage from hand-rolled → `event` → `IObservable<T>` → Rx.NET operators, the concrete thread-safety race hiding in a background-service publisher + naive `List<T>` subscriber registry (ties directly to the standing async/race-condition weakness below), and `System.Threading.Channels` flagged as the primitive that transfers most directly to later Kafka work.
-
-**Second pass (2026-08-05):** attempted the fix by splitting into two separate runnable projects (`reactive/` + a new `listener1/`), each with its own `Program.cs`/host — i.e. two separate OS processes — while still trying to bridge them with an in-process `event`/delegate (`_stateService.OnEventTrigger += ...`). This is a recurring shape worth watching for: reaching for the next architectural step (splitting publisher/subscriber into separate deployable units, which *is* the right instinct for real distributed pub/sub) before the in-process mechanism is solid, and not yet distinguishing "this abstraction lives in one process's memory" from "this needs a network transport." Also produced two fresh, very typical C#-mechanics bugs: assigning a constructor parameter to a `var` inside the constructor body (a local, not a field) while also having a primary constructor and a non-chained secondary constructor fight each other; and declaring `public delegate void OnEventTrigger(string message);` (a *type*) and then trying to `.Invoke()` it directly, conflating a delegate type declaration with a delegate instance/field. Reviewed in `hand_experiments/lectures/reactive/002-Whats-Actually-Inside-The-Microphone.md`, which leads with the process-boundary issue before the interface deep-dive (`IObserver<T>`/`IObservable<T>`'s four methods, a from-scratch `MiniSubject<T>` reconstruction to de-mystify where `.OnNext()`/`.Subscribe()` "come from"), and recommends folding `listener1` back into one process until the in-memory version is solid, deferring real cross-process pub/sub to a deliberate later exercise (natural candidate: Redis Pub/Sub, since `redis/` already exists in this repo).
-
-## kafka exercise (`hand_experiments/kafka/`, .NET Worker Services + Docker Compose, Aug 2026, in progress)
-
-First hands-on session 2026-08-08. Structure built: a `kafka.slnx` solution with four projects — `Producer`,
-`ConsumerOne`, `ConsumerTwo`, `Contracts` (a `TaskCreatedEvent` record) — plus a KRaft-mode `confluentinc/cp-kafka`
-Compose file with correctly-reasoned dual listeners (`PLAINTEXT` for container-to-container, `PLAINTEXT_HOST` for
-processes on the Mac). At end of session **nothing ran**: the Compose file referenced a network `taks-net` while
-defining `task-net` (so the broker never started once), and `Producer.cs` had five compile errors. Both consumers
-were still the untouched `dotnet new worker` template with no `Confluent.Kafka` reference; `Contracts` was
-referenced by nothing.
-
-Reviewed in `hand_experiments/lectures/kafka/Problems/001-Kafka-Problem-Log.md` (17 findings, severity-graded). The C#-mechanics
-bugs: a **primary constructor colliding with an explicit constructor of the same signature** — the *second*
-occurrence of this exact shape in four days, after `reactive/` on 2026-08-05, so it's a real knowledge gap, not a
-slip; `BootStrapServers` (correct member is `BootstrapServers`); `overrride`; and a leftover
-`_producer.Produce(..., handler)` line referencing symbols deleted in an earlier attempt, left in place rather
-than replaced. Also a "using shotgun" — six unnecessary `using` directives including `System.Reflection` and
-`System.IO.Pipelines`, accepted from IDE quick-fixes while chasing an error. Notably, **none of the five blockers
-came from insufficient Kafka understanding** — the Kafka-specific choices he made (`Acks.All`, flushing before
-dispose, catching `ProduceException` specifically, wanting the `DeliveryResult` back) were correct and
-well-informed.
-
-**Skills/instincts demonstrated (mistimed, not wrong):** shared-contracts assembly for producer/consumer wire
-agreement; dual advertised listeners; `Acks.All`; `Flush` before `Dispose`; typed exception handling.
-
-## redis exercise (Aug 2026, not yet started)
-
-`redis/` is still an empty folder. Both `redis/` and `kafka/` were set up as deliberately non-useful, integration-focused C# exercises — the stated goal is learning to wire a real piece of infrastructure into a C# project (run the server, use the real client library and wire protocol), not building something practical. Directly follows from the `reactive/` exercise's cross-process wall (see above, `[[reactive exercise]]`): lecture `hand_experiments/lectures/redis/001-The-Fast-Librarian-Setting-Up-Redis-In-CSharp.md` frames Redis Pub/Sub (`StackExchange.Redis`, `ConnectionMultiplexer`/`ISubscriber`) as the direct fix to that wall, with the load-bearing caveat that Redis Pub/Sub is fire-and-forget (no persistence/replay) — which sets up `hand_experiments/lectures/kafka/001-The-Archivist-Setting-Up-Kafka-In-CSharp.md` as the contrasting durable/replayable/consumer-group model (`Confluent.Kafka`, topics/partitions/offsets/consumer groups, at-least-once vs. exactly-once commit semantics). Both docs give a matched build-order (single client end-to-end first, then two separate processes/console apps standing in for publisher and subscriber, then a stretch goal) and a direct side-by-side: kill the subscriber, publish while it's down, restart it — Redis loses those messages, Kafka doesn't. Redis has not been started as of this writing; Kafka was started 2026-08-08 (see above). Worth noting: the matched build-order in both lecture docs — *single client end-to-end first, then split into two processes* — is exactly the walking-skeleton discipline he then didn't follow on the Kafka attempt, which suggests the gap is about applying the rule under pressure rather than knowing it.
+Deliberately hand-written (no AI code) integration exercises: `reactive/` (pub/sub, delegates, `event`,
+Rx.NET concepts), `kafka/` (producer/consumers with a shared contracts assembly on KRaft-mode Kafka in Docker
+Compose), and `redis/` (planned: Redis Pub/Sub as the fire-and-forget counterpart to Kafka). Each has a companion
+lecture in `hand_experiments/lectures/`.
 
 ## Tool_Box (July 2026, starting)
 
@@ -359,154 +332,20 @@ When assisting me:
 
 Act as if you are mentoring an engineer who wants to grow from a junior developer into a highly capable systems engineer over the next several years.
 
-# My Own Observations About Myself (Timothy)
+---
 
-## Hyperfixation on Details
+# Working With Me (for AI assistants)
 
-One of the problems which I am realizing is that I have a blockage in my head about being comfortable and being able to use frameworks, abstractions, and other systems which I do not fully understand.
+These are standing instructions. The reasons behind them, and candid notes about how I work, are kept privately.
 
-I regularly find myself going directly into the open source code and trying to investigate and understand everything. For example, I have spent a lot of time digging into every single function call which I was making to the langchain library. I felt like I needed to understand how EVERYTHING inside of this library was working before I could utilize it.
-
-Of course it is good to dive deep, but I have noticed that it really slows me down, and as I said, I feel I am UNABLE to move past this. So I need to learn how to be more comfortable with abstractions that I don't fully understand, but be able to utilize them correctly. As of now, if I attempt to utilize a component which I dont't fully understand, I completely break functionality and so this implies that there is a skill to learn and develop here.
-
-## How I take in information (2026-08-08, self-reported)
-
-**I have aphantasia — no voluntary visual imagery at all.** I cannot form an image in my head on demand. For most
-of my life I assumed "picture an apple" was a metaphor. I *do* dream visually (which is the common pattern — the
-visual system works, what's missing is deliberate top-down access to it). **This is the single most useful thing
-for an AI to know about how to help me:** give me diagrams, tables, ASCII, named components and explicit
-relationships; never tell me to "picture" or "imagine" something; and route me to a running system before a
-document. Full analysis in `hand_experiments/lectures/engineering-practice/003-The-Mind-Without-Pictures.md`.
-
-Other things about my cognition that seem relevant, offered as evidence rather than conclusions:
-
-**Procedural text is very hard for me.** In university, the pre-lab documents for chemistry and physics were the
-single hardest part of those courses — harder than the actual physics. I would read the prelab and the lab
-repeatedly and still arrive with no conceptualization at all of what the lab was or what we were doing. This
-seems to generalize: I have real difficulty building a mental model of an unfamiliar procedure from written
-instructions alone. (This is now explained: a prelab asks you to simulate an unseen procedure mentally, which
-requires the voluntary imagery I don't have. Rereading — the only strategy anyone ever suggests — cannot work,
-because text was never the bottleneck.)
-
-**I execute instructions literally without modelling the purpose.** My wife calls this "robotic" — I follow the
-instructions she gives exactly, but never form an understanding of *why*. A senior engineer at work independently
-describes the same thing: when he asks me a question about a task, I answer with a technical analysis of how the
-thing works, when what he was actually asking about was intent — what he was trying to get to, and what that
-should tell me about how to proceed.
-
-**I am single-threaded.** Also my wife's word. One path at a time; I don't hold multiple things concurrently and
-switching is expensive.
-
-**I have wondered whether I am autistic.** Never assessed, no diagnosis, genuinely unsure — offered here as
-context I'm weighing, not as a fact. Analysis in `hand_experiments/lectures/engineering-practice/002-The-Missing-Layer.md`, updated
-in `003`: the traits overlap with common descriptions of autistic cognition, but each also has other explanations,
-and only a qualified assessor can answer it. Note that one plank of that hypothesis — the prelab difficulty — has
-since moved to aphantasia (a distinct condition), which weakens it somewhat; what remains is literal execution,
-weak implicit-intent uptake, and monotropic focus. **The important part for any AI assisting me: the recommended
-interventions are identical either way, so nothing waits on an answer.** Please don't treat this as established,
-don't speculate about it unprompted, and don't let it become an explanation for things that have ordinary causes.
-
-## Feedback from senior engineers at work (2026-08)
-
-Senior engineers on my team have told me directly that I am **too slow** and that I **get too caught up in the
-details**. This is currently my highest-priority thing to fix — it is the main obstacle between me and the
-senior-level backend roles I'm targeting. `hand_experiments/lectures/engineering-practice/` exists specifically to work on this,
-and I want AI assistance to treat it as a standing goal, not a one-off request: when reviewing my work, always
-include process findings (how long between commits, did anything compile, was there a walking skeleton) alongside
-the technical ones.
-
-# AI's Observations About Me
-
-## The missing layer: builds models from contact, not description (2026-08-08)
-Timothy volunteered four unrelated experiences — university prelabs being the hardest part of his science courses,
-his wife calling him "robotic," a senior engineer's recurring complaint that he answers intent questions with
-mechanism, and a Linux deployment where he executed steps correctly but couldn't recover when one failed. They
-share one structure: **mechanism and procedure intact, purpose absent.** Written up in
-`hand_experiments/lectures/engineering-practice/002-The-Missing-Layer.md`.
-
-Two conclusions worth carrying into any future session:
-
-**Confirmed 2026-08-08 (same day): the mechanism is aphantasia.** Raised as one hypothesis among several in 002
-purely from the prelab detail; Timothy confirmed total absence of voluntary visual imagery, with intact visual
-dreaming. See `003-The-Mind-Without-Pictures.md`. This upgrades "contact before description" from a heuristic to a
-mechanism — mental simulation is not a weak faculty for him, it is an absent one, and execution is the substitute.
-Two practical consequences worth carrying everywhere: **(a) his spatial-relational reasoning is intact** (the
-measured aphantasia profile is a dissociation — less pictorial object detail, equal spatial accuracy, *fewer* false
-memories), so architecture diagrams, tables and trees are his strong format, just externally rather than
-internally held; and **(b) his long-standing stated preference for personified named components and ASCII diagrams
-is the documented compensation strategy** (verbal coding of spatial relations), invented independently years
-before he had a name for it — so keep writing lectures that way, it isn't a stylistic quirk. Highest-stakes
-practical item: system design interviews assume mental imagery, and he needs to diagram from the first sixty
-seconds and annotate rather than imagine (003 §7.2).
-
-**1. Contact before description.** He does not build usable mental models from text about things he hasn't
-encountered. Procedural text about unfamiliar objects resolves to nothing for him, and rereading — his default
-recovery move — cannot supply the missing referent. This is the same failure as the Kafka session: he designed
-four projects from reading, against a system he had never seen run. **Practical consequence: always route him to
-a running thing before a document.** The quickstart before the reference docs; `kafka-console-producer` before
-the Confluent API surface. This makes lecture 001's walking-skeleton advice much more important for him than it
-is generically — it isn't just derisking, it's his primary comprehension mechanism. Note also a likely-underrated
-strength here: his non-comprehension alarm is unusually well calibrated (he *notices* the fuzzy model most people
-accept), which is valuable — it just needs a second strategy attached, because his only current response to it is
-to reread.
-
-**2. Intent must be supplied explicitly; he will try to reach it by digging, and digging cannot get there.** His
-instinct when lost is to descend into mechanism. For purpose questions that direction is not merely mistimed (as
-lecture 001 framed it) but structurally incapable of succeeding — purpose is not the sum of mechanisms, it lives
-in someone's head and most people receive it through an implicit social channel he receives poorly. The fix is
-mechanical: an **Intent Header** (goal / done-when / phases / not-doing / unknowns) written before the first step,
-and four questions asked of any human giving him a task ("what's this for," "what does done look like," "what
-would you cut," "what should I avoid"). This also explains the *slowness* precisely: without a goal, the first
-failed step has no fallback, so he descends into unbounded depth-first search with no termination condition —
-which is exactly what "getting caught in the details" looks like from outside. It is a missing ladder upward, not
-self-indulgence.
-
-**When assisting him:** state the purpose of a thing before its mechanism; answer one level above the question and
-*offer* to descend rather than descending by default; and when he asks a mechanism question mid-task, it's fair to
-ask whether the thing is running yet. Also note he is monotropic — deep single-threaded focus with expensive
-switching — which is where his best work comes from (the from-scratch MNA solver, the hash-code identity proof);
-don't treat it as a defect to correct, just support save/restore around interruptions.
-
-## The "slow" diagnosis is an open feedback loop, not excessive depth (2026-08-08)
-The Kafka session gave the first well-instrumented look at what "too slow" actually means for Timothy, and the
-evidence points somewhere other than the obvious answer. Git log: three commits in sixteen minutes
-(`bc4e6fb` → `6bc52c0` → `90aaadb`), **none of which compiled**, against a broker that had never started because
-of a one-character typo in the Compose network name. The most recent commit fixed one real error and introduced a
-new blocker — net progress zero, and unknowable, because nothing ran. Critically, **he did not lose that time to a
-deep dive**; he lost it guessing at questions `dotnet build` answers in four seconds. So the standard prescription
-("stop being a perfectionist, just ship") treats the wrong disease: it would cost him his best habits and not fix
-the actual problem, which is latency between action and signal.
-
-The second pattern, from the same session: **breadth-first scaffolding.** Four projects, a solution file, a
-contracts assembly and a Compose file built before one message ever moved — ~75% of the structure surrounding a
-path never walked once. This is the same shape as `reactive/` on 2026-08-05 (splitting into two OS processes
-before the in-process version worked), so it is now a confirmed recurring pattern, not an incident. Note the
-inversion it causes: he front-loads the *certain* work (writing a record, adding a project) and defers the
-*uncertain* work (does the broker start, can the client connect), which is exactly backwards for risk.
-
-**Framing that seems worth reusing** (from `hand_experiments/lectures/engineering-practice/001-Closing-The-Loop.md`): his
-caution is a *correctly-learned* response to embedded work, where an experiment costs minutes, mistakes can be
-physical, and abstractions are thin enough that reading to the register is genuinely the fast path. Backend
-inverts every one of those costs; the habit isn't bad, it's mis-calibrated, and what needs to change is his
-*estimate of what an experiment costs* — not his standards or his curiosity. Also load-bearing: his stated belief
-"if I use a component I don't fully understand, I completely break functionality" is contradicted by his own
-evidence — every blocker on 2026-08-08 was in something he understood completely (constructors, casing, a typo),
-and every Kafka-specific decision he made was correct. That belief is what justifies the hyperfixation, so it's
-worth challenging with evidence whenever it resurfaces.
-
-Practical implications for future sessions: give corrected code outright (he chose this over hints), but always
-pair it with *why the mistake happened*; check the git log and report process findings as first-class findings;
-and when he's mid-task reaching for a detail, it is welcome to ask which pass he's in (Pass 1 = make it run, Pass
-2 = understand it deeply, with the system running).
-
-## Consolidates after shipping, and asks to be audited (2026-07-26)
-Immediately after the 1.0.0 release, Timothy's instinct was not to start the next toolset but to stop and make sure he *understood everything he had built* — and when offered the choice, he explicitly chose a critical audit ("better you find them than they do") over a flattering walkthrough. That combination — consolidate before advancing, and invite adversarial review of your own work — is a senior habit and worth reinforcing. Practical implication for future sessions: when he ships something, offering a capstone/audit pass is likely to be welcome, and he wants weaknesses stated plainly with severity and a remediation, not softened.
-
-## Asks for the feasibility boundary *before* implementation, not after (2026-07-26)
-Opening plan 004 (the SPICE circuit toolset), Timothy's first instruction was not "build it" but "create a very in-depth concepts document outlining the concepts I need, the feasibility, and the type of things it will and will not be able to accomplish." This is the same instinct as the 2026-07-23 observation below — drive to the mechanism, then derive the limits — but applied *prospectively* to a project not yet started, which is a meaningful maturation. It's also the correct instinct for this particular project: the spikes found that the intuitive difficulty ordering was backwards (simulation easy, schematic drawing an open research problem), which is exactly the kind of thing that sinks an estimate if discovered in week three. What works for him: label every claim as measured vs. assumed, and give the CAN/CANNOT tables as tables. He will use the boundary to scope, not to abandon.
-
-## Domain advantage worth naming out loud (2026-07-26)
-Timothy's day job (embedded C/C++, Raspberry Pi, I2C/SPI, hardware/software integration) makes him one of very few people building MCP toolsets who can *evaluate whether a simulated circuit is sensible*. Most people building agent tooling could not tell a working LED driver from one that cooks the LED. This is the third domain (after the voxel/spatial work and the general embedded angle) where his background is a genuine differentiator rather than a detour from the "backend engineer" track — and framing it that way seems to land better with him than treating hardware experience as something to move past. Worth repeating when he questions whether hardware-flavored projects help the Microsoft goal.
-
-## Drives to first principles even for "black box" tools (2026-07-23)
-When Timothy sees a capability he can't mechanistically explain — e.g. how his voxel agent produces spatially-consistent castle/dragon builds — his instinct is not to accept it but to demand the underlying mechanism (embeddings, attention, emergent composition) AND the resulting capability boundaries. This is the same "hyperfixation on details" he flags about himself, but pointed at *conceptual* understanding rather than source code. Productive framing that works for him: give the mechanism, then explicitly derive the limits/decision-framework *from* that mechanism, so the deep-dive resolves into an actionable engineering judgment ("what is this a fit for?") rather than an open-ended rabbit hole. He explicitly values understanding capability boundaries so he can decide when AI is/ isn't the right solution — a systems-design mindset applied to ML.
+* **Diagrams, tables and ASCII over prose.** Never ask me to "picture" or "imagine" something; draw it instead.
+  Named, personified components work very well for me.
+* **A running system before a document.** Route me to the quickstart / walking skeleton first, then the reference.
+* **Purpose before mechanism.** Say what something is *for* before how it works. Answer one level above my
+  question and offer to go deeper, rather than descending by default.
+* **Intent first on any task:** goal, done-when, phases, what we're *not* doing, unknowns.
+* **Process findings are first-class.** When reviewing my work, include how the work went (time between runs,
+  whether there was a walking skeleton, where I got stuck) alongside the technical findings.
+* **Candid is welcome.** State weaknesses plainly, with severity and a fix. Don't flatter.
+* **When you learn something durable about me:** public-safe facts (projects, skills demonstrated, goals) go in
+  this file; evaluations, weaknesses and personal context go in `private/` (see `private/README.md`).

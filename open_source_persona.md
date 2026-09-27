@@ -2,9 +2,9 @@
 
 > **What this is:** the living reference for my open-source work. It covers why I contribute, what I bring, how issues are chosen, how I work, and the development environment I work in. It's the first thing to read (for me, or for an AI session helping me) before choosing an issue or planning a contribution.
 >
-> **Last updated:** 2026-09-26 · **Update it:** after studying an issue, after every merged PR, after every hardware change, and at each monthly issue-shortlist refresh.
+> **Last updated:** 2026-09-27 · **Update it:** after studying an issue, after every merged PR, after every hardware change, and at each monthly issue-shortlist refresh.
 >
-> **Related:** `implementations/` (actionable plans and issue shortlists) · `concept_notes/` (short, issue-focused concept explanations that unblock the next step) · `private/` (git-ignored candid notes) · the repo-root `persona.md` (broader learning profile)
+> **Related:** `CLAUDE.md` §9 (the growth loop this file is part of) · `scouting/` (issue shortlists) · `<repo>/<issue#>_<slug>/` (issue workspaces: conversation, sample, report) · `<repo>/<repo>_concepts/` and `lectures/` (concept lectures, including `lectures/000-pattern-catalog.md`) · `private/` (git-ignored candid notes) · `persona.md` (how I learn and how to teach me)
 
 ---
 
@@ -56,7 +56,7 @@ These are the strengths to lead with when choosing issues. An issue that uses tw
 | **Telemetry track** | [`open-telemetry/opentelemetry-dotnet`](https://github.com/open-telemetry/opentelemetry-dotnet) and [`-contrib`](https://github.com/open-telemetry/opentelemetry-dotnet-contrib) | Building depth in telemetry and distributed systems. Contrib is organized by component with named owners. |
 | **Reading, not contributing yet** | `Microsoft.Extensions.*` in `dotnet/runtime` | Studying DI, Hosting, and Options design in depth |
 
-The current issue plan is in `implementations/001-issue_shortlist_sept_2026.md`.
+The current issue plan is in `scouting/001-issue_shortlist_sept_2026.md`.
 
 **Long-term direction:** a library-level contribution in dotnet/iot around **I2C target (slave) mode on Linux**, starting with a published platform survey and a design discussion before any API proposal.
 
@@ -131,7 +131,7 @@ When an issue touches one of these, it doubles as study:
 |---|---|---|
 | async/await internals and concurrency | Event loops and observer threads show up in GPIO drivers and network libraries | Issues around edge-event observers, cancellation, and locking |
 | MSBuild, packaging, and multi-targeting | Large repos have custom build infrastructure | Building dotnet/iot and the MCP SDK from source |
-| Navigating large codebases | Going from "one area" to "several areas" fluently | One context card per repo area (`implementations/`) |
+| Navigating large codebases | Going from "one area" to "several areas" fluently | One orientation file per repo (`<repo>/CLAUDE.md`) |
 | Distributed systems and networking | Backend career direction | YARP issues and docs |
 | .NET API design and review | Needed before proposing any new public API | Reading API review threads; the I2C target discussion |
 
@@ -142,10 +142,10 @@ The concept areas I want exposure to, and where I've encountered each one throug
 | Concept area | Examples | Encountered via (issue / PR) | Depth |
 |---|---|---|---|
 | Native interop & memory layout | P/Invoke, struct layout across architectures, native asserts, `SafeHandle` | | |
-| Hardware protocols & drivers | I2C/SPI edge cases, register maps, libgpiod | | |
-| Concurrency & event dispatch | Observer threads, locks vs. concurrent collections, event wrappers | | |
-| Error handling & API compatibility | Exception design, fallbacks, behavior changes vs. breaking changes | | |
-| Networking & proxies | Reverse proxies, WebSockets, timeouts, keep-alives | | |
+| Hardware protocols & drivers | I2C/SPI edge cases, register maps, libgpiod | dotnet/iot#2403 (driver event paths, libgpiod v1/v2) | Read |
+| Concurrency & event dispatch | Observer threads, locks vs. concurrent collections, event wrappers | dotnet/iot#2403 (`sender`, event accessors, delegate identity) | Read |
+| Error handling & API compatibility | Exception design, fallbacks, behavior changes vs. breaking changes | dotnet/iot#2403 (behavioral break → major release; #2341, #2421 precedent) | Read |
+| Networking & proxies | Reverse proxies, WebSockets, timeouts, keep-alives | dotnet/yarp#1764 (idle WebSocket abort at `ActivityTimeout`, keep-alive fix) | Reproduced |
 | Security & identity | OAuth 2.0 / OIDC, TLS, certificate automation (ACME) | | |
 | Protocols & versioning | Capability negotiation, spec-driven SDKs (MCP), JSON-RPC | | |
 | Testing infrastructure | Flaky tests, CI timing, `WebApplicationFactory`, fakes vs. mocks | | |
@@ -156,6 +156,14 @@ The concept areas I want exposure to, and where I've encountered each one throug
 | Cloud & distributed systems | Azure SDK patterns, retries/resilience, messaging | | |
 
 **Depth levels:** *Read* (studied the issue/code) → *Reproduced* → *Contributed* (merged PR) → *Can explain* (wrote a note or lecture about it).
+
+### 7.3 Architecture and pattern catalog
+
+Beyond fixing issues, every repo is a chance to study **how it's built**: its design patterns, how components
+communicate, how it's tested, built and released. Patterns seen in each repo are collected across repos in
+[`lectures/000-pattern-catalog.md`](lectures/000-pattern-catalog.md), so the same idea (e.g. the Strategy pattern,
+or an observer thread) can be compared across YARP, dotnet/iot and the rest. Each repo's `<repo>/CLAUDE.md` also
+has a short architecture summary.
 
 ---
 
@@ -268,7 +276,8 @@ After studying an issue from a shortlist, add a row, even if I decide not to wor
 
 | Date | Issue | Anchor / Explorer | Interest (1–5) | Useful for growth (1–5) | New concepts met | Decision (pursue / park / skip) and why |
 |---|---|---|---|---|---|---|
-| | | | | | | |
+| 2026-09-26 → 09-27 | dotnet/yarp#1764 | 🧭 Explorer | *(rate)* | *(rate)* | WebSocket handshake and framing, proxy byte-pumping, activity/idle timeouts, keep-alive vs. ping/pong, browser heartbeats | Pursue: repro verified, comment drafted |
+| 2026-09-27 | dotnet/iot#2403 | ⚓ Anchor | *(rate)* | *(rate)* | .NET event accessors, delegate identity, driver abstraction, behavioral breaking changes and semver | Studying; route pending (maintainers say it needs a major release) |
 
 ### 10.3 Preference signals
 
@@ -282,7 +291,7 @@ Patterns distilled from §10.2. Update at each shortlist refresh.
 
 ## 11. Notes for AI sessions using this profile
 
-**When producing or refreshing an issue shortlist:**
+**When producing or refreshing an issue shortlist** (see also the growth loop in `CLAUDE.md` §9):
 
 1. **Read §2, §5, §7.2, and §10 first.** They define what "a better issue" means for me, and they change over time.
 2. **Score each candidate on §5's dimensions.** Apply the gates (feasibility against §8.3 and §8.5; unclaimed, labeled, scoped) before anything else.

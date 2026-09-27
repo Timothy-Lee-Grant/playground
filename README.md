@@ -25,7 +25,8 @@ run it themselves.
 | [dotnet/yarp#1764](https://github.com/dotnet/yarp/issues/1764): document the WebSocket keep-alive requirement | [`yarp/1764_websocket_idle_timeout/`](yarp/1764_websocket_idle_timeout/) | 3-process repro (client → YARP → echo server) of the idle-WebSocket abort at `ActivityTimeout`, and the `KeepAliveInterval` fix | Repro verified · issue comment not yet posted |
 | [dotnet/iot#2403](https://github.com/dotnet/iot/issues/2403): `GpioPin` event handlers receive the wrong `sender` | [`iot/2403_gpiopin-event-handler-assing-wrong-sender-value/`](iot/2403_gpiopin-event-handler-assing-wrong-sender-value/) | Investigation of which object each GPIO driver passes as `sender` | Exploring (started 2026-09-27) · nothing verified or posted yet |
 
-Candidate issues I'm still weighing are in [`scouting/`](scouting/).
+Candidate issues I'm still weighing are in [`scouting/`](scouting/). How I choose them, and what I'm aiming to learn, is in
+[`open_source_persona.md`](open_source_persona.md).
 
 ---
 
@@ -35,6 +36,8 @@ Candidate issues I'm still weighing are in [`scouting/`](scouting/).
 .
 ├── README.md                   ← you are here (public index)
 ├── CLAUDE.md                   ← workflow, conventions and templates (for me and for AI assistants)
+├── open_source_persona.md      ← my contributor profile: goals, strengths, how I choose issues, record
+├── persona.md                  ← how I learn (and how AI assistants should teach me)
 ├── scouting/                   ← issue searches: dated shortlists of candidate issues across repos
 ├── <repo>/                     ← one folder per upstream project (iot/, yarp/, ...)
 │   ├── CLAUDE.md               ← orientation for that upstream project
@@ -46,7 +49,8 @@ Candidate issues I'm still weighing are in [`scouting/`](scouting/).
 │       ├── sample/             ← runnable experiments
 │       │   └── evidence/       ← captured run output, dated, with versions
 │       └── report/             ← the finished lab report
-├── lectures/                   ← lectures on concepts that aren't specific to one project
+├── lectures/                   ← lectures on concepts that aren't specific to one project,
+│                                  plus a cross-repo catalog of architecture patterns
 └── hand_experiments/           ← older, hand-written practice projects (Kafka, Redis, Rx, ...); not OSS work
 ```
 

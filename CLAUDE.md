@@ -1,11 +1,19 @@
 # Open-Source Workbench: orientation for Claude (and humans)
 
-This repo is where Timothy and Claude find open-source issues, understand them, reproduce them, fix them, and
-learn the concepts behind them. It's published on GitHub as `Timothy-Lee-Grant/playground` (it started as a general
+This repo has two jobs:
+
+1. **Open-source work:** find issues, understand them, reproduce them, fix them, and learn the concepts and the
+   architecture behind them.
+2. **A self-improving growth system:** get to know Timothy (goals, strengths, gaps, situation, hardware), choose
+   issues that fit and stretch him, and turn every issue into a measurable step toward his goal (a .NET role at
+   Microsoft). See §9.
+
+It It's published on GitHub as `Timothy-Lee-Grant/playground` (it started as a general
 playground; since 2026-09-26 it's organized around open-source work). `README.md` is the public face that
 maintainers land on from PR links. **This file is the working guide.** Read it before doing anything here.
 
 **Before you write anything for Timothy** (a conversation answer, a lecture, a report), read [`persona.md`](persona.md).
+**Before choosing or scouting issues**, also read [`open_source_persona.md`](open_source_persona.md).
 It covers who he is (embedded/firmware engineer moving toward backend and infrastructure), how he learns
 (high-level architecture first, then components → interactions → control flow → code → edge cases; personified,
 named components; ASCII diagrams and tables; running systems before documents), and process habits to watch for.
@@ -22,7 +30,9 @@ named components; ASCII diagrams and tables; running systems before documents), 
 exercises/  (GitHub: Timothy-Lee-Grant/playground)
 ├── README.md               public index: what this repo is + table of every issue worked on
 ├── CLAUDE.md               ← you are here: layout, workflow, conventions, templates
-├── persona.md              who Timothy is and how he learns (living document; read first)
+├── persona.md              public: who Timothy is and how to teach him (living document; read first)
+├── open_source_persona.md  public: contributor profile: goals, strengths, issue scoring, machines/hardware,
+│                           exposure map, contribution record, study log (the public core of §9)
 ├── scouting/               issue searches: dated shortlists of candidate issues + a progress tracker
 ├── iot/                    dotnet/iot work ─────────────── NEW LAYOUT (v2), see §2
 │   ├── CLAUDE.md           orientation for the dotnet/iot project itself
@@ -31,9 +41,11 @@ exercises/  (GitHub: Timothy-Lee-Grant/playground)
 ├── yarp/                   dotnet/yarp work ────────────── LEGACY LAYOUT (v1), see §3; don't restructure
 │   └── 1764_websocket_idle_timeout/
 ├── lectures/               cross-cutting lectures not tied to one upstream project (+ the YARP-era lecture)
+│   └── 000-pattern-catalog.md   cross-repo catalog of design patterns and practices seen in the code
 ├── hand_experiments/       older hand-written practice projects (Kafka, Redis, Rx, RabbitMQ, ...)
 │                           ⚠ strict rules: NO AI-written code; review-and-teach only. See its CLAUDE.md.
-└── private/                personal notes; gitignored, never pushed. Don't read or quote unless Timothy asks.
+└── private/                gitignored, never pushed: candid persona, observation log, monthly reviews (§9).
+                            Copied by Timothy into a private repo. See private/README.md.
 ```
 
 Upstream source code is **never** committed here. Forks are cloned outside this repo (see §5, Contribute).
@@ -178,6 +190,7 @@ characters; ASCII diagrams and tables; code references to the real upstream file
 | **5. Experiment** | Reproduce the issue or prove a fix with the smallest running system. | `sample/` + `sample/evidence/`; 📍 entries in the conversation. |
 | **6. Report** | Write up the results. | `report/`; update the issue `README.md`. |
 | **7. Contribute** | Comment on the issue before substantial work (say what you plan and ask if it's wanted). Implement in a **fork cloned outside this repo**. Open the PR. | Links and outcomes go to the conversation, the issue `CLAUDE.md` status, the root `README.md` table, and the scouting tracker. |
+| **8. Reflect** *(after studying or finishing an issue)* | Close the loop (§9.3). | `open_source_persona.md` §7.2 exposure map, §10.1 record, §10.2 study log; `lectures/000-pattern-catalog.md`; `private/001-observations.md`. |
 
 **Contribution rules that apply everywhere:**
 
@@ -201,11 +214,13 @@ characters; ASCII diagrams and tables; code references to the real upstream file
 4. Say what you understand the current state to be before changing anything.
 
 **Ending a session:** append a 📍 Progress entry to the conversation and update "Where we are now". Update the
-issue `CLAUDE.md` status and the trackers if anything moved.
+issue `CLAUDE.md` status and the trackers if anything moved. If an issue was studied to a decision or finished,
+do the Reflect step (§9.3).
 
-**What Claude may write:** anything in `scouting/`, `<repo>/` (including code in `sample/`), `lectures/`, and these
-orientation docs. **Nothing** in `hand_experiments/` except reviews and teaching docs its `CLAUDE.md` allows.
-Update `persona.md` when something durable is learned about Timothy (it's shared across his projects).
+**What Claude may write:** anything in `scouting/`, `<repo>/` (including code in `sample/`), `lectures/`, these
+orientation docs, and `private/` (following `private/README.md`). **Nothing** in `hand_experiments/` except reviews
+and teaching docs its `CLAUDE.md` allows. Update `persona.md` and `open_source_persona.md` when something durable
+and public-safe is learned about Timothy; put evaluations and personal context in `private/` instead (§9.2).
 
 ---
 
@@ -217,8 +232,8 @@ Update `persona.md` when something durable is learned about Timothy (it's shared
   uses snake_case; `iot/2403_gpiopin-event-handler-...` uses kebab-case. Either is fine; keep the issue number first.)
 - **Dates:** absolute (`2026-09-27`), never "today" or "last week". Say when an upstream fact was checked.
 - **Verified vs. unverified:** a claim is verified only if a saved evidence file shows it. Label everything else.
-- **Public vs. private:** issue `README.md` files and reports are written for a maintainer audience: neutral,
-  factual, short. Learning notes can be personal. Anything that shouldn't be public goes in `private/`.
+- **Public vs. private:** everything outside `private/` is public on GitHub. Apply the test in §9.2 to every line
+  about Timothy. Issue `README.md` files and reports are written for a maintainer audience: neutral, factual, short.
 - **Keep the indexes current:** root `README.md` issues table, scouting tracker, `<repo>/CLAUDE.md` issue list,
   each issue's `CLAUDE.md` status, each concepts `README.md`.
 - **Process findings count.** When reviewing Timothy's work, include process observations (time between runs, was
@@ -349,7 +364,76 @@ Full logs, extra figures, code listings.
 
 ---
 
-## 9. Open questions about the system
+## 9. The growth system
+
+### 9.1 The loop
+
+```
+        ┌──────────────────────────────── WHO I AM / WHERE I'M GOING ─────────────────────────────┐
+        │ public:  persona.md (how I learn) · open_source_persona.md (goals, strengths, scoring,    │
+        │          machines & hardware, exposure map, record, study log, preference signals)        │
+        │ private: private/persona_private.md (full picture) · private/001-observations.md (log)    │
+        └───────────────┬──────────────────────────────────────────────────────────────▲──────────┘
+                        │ informs                                                        │ updates
+                        ▼                                                                │
+   SCOUT: score issues on exposure value,              REFLECT (§9.3): study-log row, exposure map,
+   strength fit, feasibility (machines/hardware),      pattern catalog, contribution record,
+   scope, career signal ─► scouting/NNN-*.md            private observations; monthly review
+                        │                                                                ▲
+                        ▼                                                                │
+   WORK THE ISSUE: conversation/ ─► concepts lectures ─► sample/ + evidence ─► report/ ─► comment / PR
+```
+
+Every issue should leave three things behind: **a public action** (a comment, a reproduction or a PR), **at least
+one concept Timothy can now explain**, and **at least one architecture pattern** added to the catalog.
+
+### 9.2 Public vs. private: the one rule
+
+> **Would Timothy be comfortable if a hiring manager read this line on his public GitHub?**
+> Yes → a public file. No, or "rather not" → `private/`.
+
+| Public (tracked, pushed) | Private (`private/`, gitignored) |
+|---|---|
+| Goals, target areas, projects, skills demonstrated, contribution record | Weaknesses and gaps phrased as weaknesses, AI evaluations of how he works |
+| How-to-teach-me *instructions* ("use diagrams", "running system first") | The *reasons* behind them (health, cognition, feedback from colleagues) |
+| Machines and hardware inventory, time budget | Wellbeing, family, employer specifics, salary, interview outcomes |
+| Exposure map, study log, pattern catalog | Observation log, monthly reviews, growth plans |
+
+When in doubt, write it in `private/`. It can always be made public later; the reverse can't be undone (git history).
+
+### 9.3 Reflect: closing the loop after each issue
+
+Do this when an issue has been studied to a decision (pursue / park / skip) and again when it's finished:
+
+1. **Study log:** add or update a row in `open_source_persona.md` §10.2. Ask Timothy for the two 1–5 ratings
+   (interest, growth). Don't guess them.
+2. **Exposure map:** update §7.2 (area, issue, depth: Read → Reproduced → Contributed → Can explain).
+3. **Contribution record:** §10.1 for anything posted upstream.
+4. **Pattern catalog:** add the architecture patterns and practices this repo showed you to
+   `lectures/000-pattern-catalog.md`.
+5. **Private observations:** append dated rows to `private/001-observations.md` §7 (Observed / Inferred), covering
+   the process as well as the result.
+6. **Preference signals:** if a pattern is emerging in what Timothy found interesting, update §10.3.
+
+### 9.4 Cadence
+
+| When | What |
+|---|---|
+| Every working session | 📍 entry in the issue conversation log |
+| End of each issue (studied or finished) | Reflect (§9.3) |
+| Monthly (next: late October 2026) | `private/reviews/YYYY-MM.md` from the template in `private/README.md`; then a new scouting pass weighted by the study log, exposure-map gaps and preference signals |
+| When hardware, machines or goals change | Update `open_source_persona.md` §8 (machines and hardware) or §2/§4 (goals and venues) |
+
+### 9.5 Guardrails (so the system serves the work)
+
+- **The system exists to produce public work and learning, not documents.** The monthly scoreboard tracks public
+  actions next to planning documents; if planning outpaces public actions, say so plainly.
+- **Keep the structure stable.** Change it only at the monthly review, and only when something clearly didn't
+  work. Park ideas in the review's "changes to the system" section until then.
+- **Studying counts** (📖 Learn items are real progress), but pair roughly every two Learn items with one
+  Contribute action, even a small one.
+
+## 10. Open questions about the system
 
 These aren't settled yet. Revisit them as the system matures.
 
@@ -357,3 +441,7 @@ These aren't settled yet. Revisit them as the system matures.
 2. **What root `lectures/` is for** long term: cross-cutting concepts only, or retired in favor of `<repo>_concepts/`.
 3. **Slug style:** snake_case vs kebab-case for issue folders.
 4. **Whether `scouting/` should also split per upstream repo** once there are several shortlists.
+5. **Public git history:** candid self-assessment was in the public `persona.md` (and in
+   `hand_experiments/lectures/engineering-practice/002`, `003` and `hand_experiments/CLAUDE.md`) from 2026-08. It's
+   been moved out of `persona.md`, but it stays in the GitHub history until the history is rewritten or the repo is
+   made private. Timothy to decide.

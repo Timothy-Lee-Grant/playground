@@ -12,6 +12,7 @@ Concepts tied to one project's domain go in that project's concepts folder inste
 
 | # | Lecture | Prompted by |
 |---|---|---|
+| 000 | [Architecture and pattern catalog](000-pattern-catalog.md): cross-repo table of patterns seen in real code (a living index, not a lecture) | all issues |
 | 001 | [YARP WebSocket activity timeout](001-yarp-websocket-activity-timeout.md) | dotnet/yarp#1764 |
 
 Files are named `NNN-title.md`. Style and conventions: root [`CLAUDE.md`](../CLAUDE.md) §4.4 and

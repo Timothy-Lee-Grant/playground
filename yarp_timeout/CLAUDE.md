@@ -22,23 +22,30 @@ how the two halves of the repo differ.
   bottom of the file. Short and issue-focused, not a full lecture.
 - `implementations/` — research and build logs: what was explored, what was decided, and the plan going
   forward.
-- Both use `NNN-title.md` naming, sequential per folder, oldest first (same convention as
+- `lectures/` — step-by-step, teach-me-what-happened write-ups of the hands-on experiments, once there's
+  something to report. Longer-form than `concept_notes/`.
+- `sample/` — the runnable dotnet solution: `EchoServer` (destination, configurable `KeepAliveInterval`),
+  `Proxy` (YARP, configurable `ActivityTimeout`), `IdleClient` (a console client that goes idle and reports
+  when/if the connection dies). Pinned to SDK `10.0.302` via its own `global.json`.
+- All markdown folders use `NNN-title.md` naming, sequential per folder, oldest first (same convention as
   `hand_experiments/lectures/`).
-- (Not yet created) a runnable dotnet project — a minimal YARP instance proxying to a WebSocket backend —
-  once the research phase below is far enough along to know what to build.
 
-## Status — research phase, no runnable code yet
+## Status — hands-on repro built and verified
 
 - `implementations/001-issue_shortlist_sept_2026.md` is a broader OSS-issue shortlist across several repos,
   not specific to this experiment. Item **A** in it is the YARP WebSocket keep-alive doc issue that seeded
   this folder.
 - `concept_notes/001-questions_from_the_issue_shortlist.md` is the Q&A unpacking sockets, the WebSocket
   handshake, YARP's proxy byte-pumping, idle timeouts, and keep-alives/heartbeats — motivated by item A.
+- `lectures/001-yarp-websocket-activity-timeout.md` builds and runs the three-piece sample, reproduces the
+  100s-idle drop, confirms the `KeepAliveInterval` fix, and confirms the gotcha that ASP.NET Core's own
+  default `KeepAliveInterval` (2 min) is *not* enough against YARP's default `ActivityTimeout` (100s) — all
+  verified against running processes, not just read from docs.
 
 ## Next steps
 
-1. Reproduce the idle timeout locally: a minimal YARP proxy in front of a WebSocket backend, with a client
-   that goes quiet.
-2. Pin down exactly where the timeout comes from — YARP config, Kestrel, or OS socket defaults — and its
-   default value(s).
-3. Decide whether the write-up turns into a contribution back to YARP #1764, or just stays as notes here.
+1. Decide whether the write-up turns into an actual comment/PR on YARP #1764 (draft is in
+   `concept_notes/001-...md` Q2, now backed by `lectures/001-...md`'s verified numbers), or just stays as
+   notes here.
+2. Optional: wire up `Yarp.Telemetry.Consumption` in the `Proxy` project to directly observe
+   `WebSocketCloseReason.ActivityTimeout` firing, closing the loop from Q2's research.

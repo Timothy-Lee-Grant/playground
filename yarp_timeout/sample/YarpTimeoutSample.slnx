@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="EchoServer/EchoServer.csproj" />
-  <Project Path="IdleClient/IdleClient.csproj" />
-  <Project Path="Proxy/Proxy.csproj" />
-</Solution>

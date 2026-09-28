@@ -60,7 +60,10 @@ The public evidence page for this issue is [`README.md`](README.md). Keep it in 
 - 2026-09-27: #1764 re-checked: still open, unassigned, Backlog, no activity since 2023-01-09. Docs unchanged.
 - 2026-09-27: evidence reviewed and judged good enough to post (concept notes **Q6** §3). Mental-model questions
   answered in Q6 §1 and in the new lecture `../yarp_concepts/001-the-gatekeeper-in-the-middle.md`.
-- Nothing posted upstream yet.
+- 2026-09-28: **PR [dotnet/AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747) opened** (branch `Timothy-Lee-Grant/AspNetCore.Docs:patch-2`; one added paragraph in
+  `yarp/websockets.md`; description starts `Contributes to dotnet/yarp#1764` per the repo's PR template). **Commented
+  on #1764** with the PR link and verified numbers. Now waiting for review; #1764 must be closed by a YARP maintainer
+  after merge (cross-repo reference doesn't auto-close).
 
 ## Next steps
 

@@ -2,7 +2,7 @@
 
 **Upstream issue:** [dotnet/yarp#1764](https://github.com/dotnet/yarp/issues/1764) (docs; YARP's docs now live
 in [dotnet/AspNetCore.Docs](https://github.com/dotnet/AspNetCore.Docs) under `aspnetcore/fundamentals/servers/yarp/`)
-· **Related PR:** not yet · **Status:** evidence captured at real defaults (2026-09-27); issue comment not yet posted
+· **Related PR:** [dotnet/AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747) · **Status:** PR open and issue commented (2026-09-28); awaiting review
 
 ## Claim
 

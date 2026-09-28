@@ -1007,6 +1007,5 @@ Each step: do it up to the point of posting, show it for review, then post.
 - [x] **Step 2 (2026-09-28):** PR opened: [dotnet/AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747),
       "YARP WebSockets: Document ActivityTimeout and Keep-alive Interval", from `patch-2`. It shows on #1764's timeline.
 - [ ] **Step 3:** CLA signed if the bot asked; build/preview checks green (note the results here)
-- [ ] **Step 4 (2026-09-28):** comment on #1764 reviewed (text as §3, PR number filled in, folder link); post with
-      **Comment**, not "Close with comment"
+- [x] **Step 4 (2026-09-28):** comment posted on #1764 (text as §3, PR number filled in, folder link)
 - [ ] **Step 5:** review rounds, merge, get #1764 closed, update trackers, Reflect (Q6 §4 step 5)

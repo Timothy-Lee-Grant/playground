@@ -705,7 +705,7 @@ Update this table as you go. It's the "status board" for this repo's open-source
 
 | Item | Issue | Status | Comment posted | PR | Merged | Notes |
 |---|---|---|---|---|---|---|
-| A | yarp#1764 | 🔄 repro verified (2026-09-26) | ☐ | | | Workspace: [`yarp/1764_websocket_idle_timeout/`](../yarp/1764_websocket_idle_timeout/) |
+| A | yarp#1764 | 🔄 PR in review (2026-09-28) | ☑ 2026-09-28 | [AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747) | | Workspace: [`yarp/1764_websocket_idle_timeout/`](../yarp/1764_websocket_idle_timeout/) |
 | B | iot#2297 | ☐ not started | | | | |
 | C | iot#2600 | ☐ not started | | | | |
 | D | iot#2602 | ☐ not started | | | | |

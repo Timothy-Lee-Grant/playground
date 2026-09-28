@@ -972,7 +972,7 @@ browsers send nothing (008 tap), 2-minute default (002), shorter interval fixes 
 **PR description:**
 
 ```markdown
-Fixes dotnet/yarp#1764.
+Contributes to dotnet/yarp#1764
 
 The Timeout section of the YARP WebSockets page says that request timeouts are disabled after the WebSocket handshake, but not that the cluster's `ActivityTimeout` (default 100 seconds) still applies. This PR adds a second paragraph to that section and links to the WebSockets section of the Timeouts page, which covers the behavior in more detail. It also notes that ASP.NET Core's default `KeepAliveInterval` (two minutes) is longer than the default `ActivityTimeout`. That matters for browser clients, which don't send keep-alives themselves. The existing paragraph is unchanged.
 
@@ -997,10 +997,16 @@ Replace `NNNNN` with the real PR number (GitHub turns it into a link). The link 
 Each step: do it up to the point of posting, show it for review, then post.
 
 - [ ] **Step 0:** open the evidence link in a private browser window; confirm it's publicly visible
-- [ ] **Step 1:** in `dotnet/AspNetCore.Docs`, open `websockets.md` and click the pencil; paste the §1 paragraph; use
-      the **Preview** tab to check it renders (xref links won't resolve in GitHub's preview; that's normal)
-- [ ] **Step 2:** "Propose changes" with the §2 commit message (this creates your fork and branch), then fill in the
-      PR title and description from §2. Show before clicking **Create pull request**
-- [ ] **Step 3:** sign the CLA if the bot asks; note the PR number and the build/preview check results
-- [ ] **Step 4:** post the §3 comment on #1764 with the PR number filled in
+- [x] **Step 1 (2026-09-28):** committed to fork branch `Timothy-Lee-Grant/AspNetCore.Docs:patch-2` as `0ef735d`
+      ("Enhance WebSocket timeout documentation to fix dotnet/yarp issue 1764"). Reviewed: text correct ("for that
+      duration" instead of "for that long" is fine). One fix before the PR: remove the extra blank line at the end of the
+      file (diff line 41), so the diff is 2 additions.
+- [x] **2026-09-28:** trailing blank line removed (checked on `patch-2`). The repo's PR template requires
+      `Contributes to owner/repo#N` (not `Fixes`) for issues in other repos, so §2's first line was changed; #1764
+      has to be closed by a YARP maintainer after merge.
+- [x] **Step 2 (2026-09-28):** PR opened: [dotnet/AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747),
+      "YARP WebSockets: Document ActivityTimeout and Keep-alive Interval", from `patch-2`. It shows on #1764's timeline.
+- [ ] **Step 3:** CLA signed if the bot asked; build/preview checks green (note the results here)
+- [ ] **Step 4 (2026-09-28):** comment on #1764 reviewed (text as §3, PR number filled in, folder link); post with
+      **Comment**, not "Close with comment"
 - [ ] **Step 5:** review rounds, merge, get #1764 closed, update trackers, Reflect (Q6 §4 step 5)

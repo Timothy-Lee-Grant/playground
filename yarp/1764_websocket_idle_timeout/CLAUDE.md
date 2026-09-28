@@ -64,7 +64,8 @@ The public evidence page for this issue is [`README.md`](README.md). Keep it in 
 
 ## Next steps
 
-The live checklist is **concept notes Q6 §5**; the steps, with the PR text, PR description and comment, are in Q6 §4:
+The live checklist is **concept notes Q7 §4**. The final file edit, PR description and comment are in Q7 §1–§3
+(they supersede the drafts in Q6 §4):
 
 1. Confirm the evidence link is publicly visible.
 2. Open the PR in `dotnet/AspNetCore.Docs` (web editor, one paragraph in `websockets.md`).

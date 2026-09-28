@@ -17,7 +17,8 @@
 | Q3 | What are sockets and WebSockets, what does YARP do with them, what is the proxy timeout, and how do keep-alives and browser heartbeats fix it? | YARP #1764 (item A) | Sockets, WebSocket handshake, proxy byte-pumping, idle timeouts, keep-alives |
 | Q4 | Getting my bearings: where does #1764 stand, what evidence do I still need, and what do I do with it? | YARP #1764 (item A) | Status check, evidence plan, comment + PR plan (tracker continued in Q5) |
 | Q5 | My E1 run stayed open past 300 s with defaults on both sides. Did I collect it wrong? | YARP #1764 (item A) | **Correction to Q3/Q4 (C3)**: the .NET client's own 30 s keep-alive; browsers are the real failure case (tracker continued in Q6) |
-| Q6 | Checking my mental model (sockets, who owns the connection, why YARP hangs up), are the tests good enough, and how do I close this out? | YARP #1764 (item A) | Model check, evidence verdict, close-out plan (**the current progress tracker**) |
+| Q6 | Checking my mental model (sockets, who owns the connection, why YARP hangs up), are the tests good enough, and how do I close this out? | YARP #1764 (item A) | Model check, evidence verdict, close-out plan (tracker continued in Q7) |
+| Q7 | Is my edit to the Timeout section right, and what's the final text for the file, PR and comment? | YARP #1764 (item A) | Final wording review; step-by-step posting plan (**the current progress tracker**) |
 
 ---
 
@@ -915,3 +916,91 @@ this folder's `CLAUDE.md`, and do the Reflect step (root `CLAUDE.md` §9.3).
 - [ ] Comment on #1764 with the PR link (§4 step 3)
 - [ ] Review rounds (§4 step 4)
 - [ ] Merged; #1764 closed; trackers updated; Reflect (§4 step 5)
+
+---
+
+## Q7. Is my edit to the Timeout section right, and what's the final text?
+
+**Related:** [YARP #1764](https://github.com/dotnet/yarp/issues/1764) · **Asked:** 2026-09-28 · **This entry is now
+the progress tracker** (§4).
+
+### The question
+
+I planned to splice two sentences into the existing Timeout paragraph of `websockets.md`. The suggested text in Q6
+seemed to drop the sentences about HTTP request timeouts and gRPC. Which is right, and what's the final text for the
+file edit, the PR description and the issue comment?
+
+### The short answer
+
+- **Nothing gets dropped.** The Q6 text is a **new second paragraph**, added *after* the existing one, which stays
+  exactly as it is. (Q6 §4 says "add this paragraph at the end of the `## Timeout` section", but that was easy to
+  miss.)
+- **Your spliced version has two problems:**
+  1. **It says "enable keep-alives", and your own run 008 shows that isn't enough.** The ASP.NET Core server *had*
+     keep-alives enabled (every 2 minutes) and the browser connection was still aborted at 100 s. What matters is the
+     interval being shorter than `ActivityTimeout`. That's the one new fact your evidence adds; without it, the edit
+     only repeats what the Timeouts page already says.
+  2. **Inserting sentences in the middle breaks a pronoun.** In the original, "They will still apply to gRPC
+     requests" refers back to *HTTP request timeouts*. With `ActivityTimeout` sentences in between, you had to change
+     "They" to "Timeouts", which now reads as if it could mean `ActivityTimeout`. Leaving the original paragraph
+     alone avoids that.
+
+### 1. The file edit (final)
+
+`aspnetcore/fundamentals/servers/yarp/websockets.md`, section `## Timeout`. The first paragraph is **unchanged**.
+Add the second paragraph after it, separated by a blank line:
+
+```markdown
+## Timeout
+
+[Http Request Timeouts](/aspnet/core/performance/timeouts) (.NET 8+) can apply timeouts to all requests by default or by policy. These timeouts will be disabled after a WebSocket handshake. They will still apply to gRPC requests. For additional configuration see [Timeouts](xref:fundamentals/servers/yarp/timeouts).
+
+The cluster's `ActivityTimeout` (100 seconds by default) still applies after the handshake. If no data or WebSocket keep-alive frames are sent in either direction for that long, YARP closes the connection. To keep idle connections open, have the client or the destination server send WebSocket keep-alives at an interval shorter than `ActivityTimeout`, or increase `ActivityTimeout` for the cluster. Browser clients don't send keep-alives on their own, so they depend on the destination server's interval. In ASP.NET Core, <xref:Microsoft.AspNetCore.Builder.WebSocketOptions.KeepAliveInterval%2A> defaults to two minutes, which is longer than the default `ActivityTimeout`. For more information, see [Timeouts](xref:fundamentals/servers/yarp/timeouts#websockets).
+```
+
+Checked 2026-09-28: the Timeouts page's heading is `## WebSockets` (so `#websockets` resolves), and the
+`<xref:...KeepAliveInterval%2A>` form is copied from AspNetCore.Docs' own `fundamentals/websockets.md`. Every claim
+in the paragraph maps to evidence: 100 s abort (004, 006, 008), either direction (009: server-only frames),
+browsers send nothing (008 tap), 2-minute default (002), shorter interval fixes it (005, 009).
+
+### 2. The PR (final)
+
+**Commit message** (web editor's "Propose changes" box): `Document ActivityTimeout for proxied WebSockets`
+
+**PR title:** `YARP WebSockets: document ActivityTimeout and keep-alive interval`
+
+**PR description:**
+
+```markdown
+Fixes dotnet/yarp#1764.
+
+The Timeout section of the YARP WebSockets page says that request timeouts are disabled after the WebSocket handshake, but not that the cluster's `ActivityTimeout` (default 100 seconds) still applies. This PR adds a second paragraph to that section and links to the WebSockets section of the Timeouts page, which covers the behavior in more detail. It also notes that ASP.NET Core's default `KeepAliveInterval` (two minutes) is longer than the default `ActivityTimeout`. That matters for browser clients, which don't send keep-alives themselves. The existing paragraph is unchanged.
+
+**Verification** (.NET SDK 10.0.302, Yarp.ReverseProxy 2.3.0, Chrome 153, macOS): with a browser client and the destination server at its default `KeepAliveInterval`, an idle WebSocket through YARP was aborted after 100 seconds (YARP logged `UpgradeActivityTimeout`; the browser reported close code 1006). With a 30-second `KeepAliveInterval` on the server, the connection stayed open. Repro, logs and screenshots: https://github.com/Timothy-Lee-Grant/playground/tree/main/yarp/1764_websocket_idle_timeout
+
+I used an AI assistant (Claude) to help build the repro and draft this text. I ran the experiments and checked the results myself.
+```
+
+### 3. The comment on #1764 (final, post after the PR exists)
+
+```markdown
+I've opened dotnet/AspNetCore.Docs#NNNNN for this. The Timeouts page already covers `ActivityTimeout` for WebSockets, but the WebSockets page doesn't mention it, so the PR adds a short paragraph there with a link.
+
+One detail neither page mentioned: ASP.NET Core's default `KeepAliveInterval` (two minutes) is longer than YARP's default `ActivityTimeout` (100 seconds). On .NET 10 / YARP 2.3.0, a browser client (which doesn't send keep-alives itself) was aborted after 100 seconds with the server at its defaults, and stayed open with a 30-second interval. A .NET `ClientWebSocket` survives at defaults, because it sends its own keep-alive every 30 seconds. Repro and logs: https://github.com/Timothy-Lee-Grant/playground/tree/main/yarp/1764_websocket_idle_timeout
+```
+
+Replace `NNNNN` with the real PR number (GitHub turns it into a link). The link goes to the issue folder, not
+`/sample`, because the folder's README is the page written for maintainers.
+
+### 4. Checklist (progress tracker, continues Q6 §5)
+
+Each step: do it up to the point of posting, show it for review, then post.
+
+- [ ] **Step 0:** open the evidence link in a private browser window; confirm it's publicly visible
+- [ ] **Step 1:** in `dotnet/AspNetCore.Docs`, open `websockets.md` and click the pencil; paste the §1 paragraph; use
+      the **Preview** tab to check it renders (xref links won't resolve in GitHub's preview; that's normal)
+- [ ] **Step 2:** "Propose changes" with the §2 commit message (this creates your fork and branch), then fill in the
+      PR title and description from §2. Show before clicking **Create pull request**
+- [ ] **Step 3:** sign the CLA if the bot asks; note the PR number and the build/preview check results
+- [ ] **Step 4:** post the §3 comment on #1764 with the PR number filled in
+- [ ] **Step 5:** review rounds, merge, get #1764 closed, update trackers, Reflect (Q6 §4 step 5)

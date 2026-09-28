@@ -58,13 +58,16 @@ The public evidence page for this issue is [`README.md`](README.md). Keep it in 
   true for browsers, which can't send keep-alives. The Q4 §5.2 comment draft needs its verification sentence
   replaced; the text is in the lab report §6.3 and concept notes Q5.
 - 2026-09-27: #1764 re-checked: still open, unassigned, Backlog, no activity since 2023-01-09. Docs unchanged.
+- 2026-09-27: evidence reviewed and judged good enough to post (concept notes **Q6** §3). Mental-model questions
+  answered in Q6 §1 and in the new lecture `../yarp_concepts/001-the-gatekeeper-in-the-middle.md`.
 - Nothing posted upstream yet.
 
 ## Next steps
 
-The live checklist is **concept notes Q5 §4** (it continues Q4 §8). In short:
+The live checklist is **concept notes Q6 §5**; the steps, with the PR text, PR description and comment, are in Q6 §4:
 
-1. Review the evidence and the lab report; commit and push, so the README link in the comment works.
-2. Re-check #1764, then post the comment using the **corrected** verification sentence (lab report §6.3).
-3. Follow Q4 §6 depending on the reply; the PR text in Q4 §5.3 still stands as written.
-4. Update the trackers (root `README.md`, scouting tracker) when anything is posted.
+1. Confirm the evidence link is publicly visible.
+2. Open the PR in `dotnet/AspNetCore.Docs` (web editor, one paragraph in `websockets.md`).
+3. Comment on #1764 with the PR link and the verified numbers.
+4. Handle review; after merge, get #1764 closed and update the trackers (root `README.md`, scouting tracker), then
+   Reflect (root `CLAUDE.md` §9.3).

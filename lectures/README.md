@@ -8,7 +8,7 @@ Concepts tied to one project's domain go in that project's concepts folder inste
 | Project | Concepts folder |
 |---|---|
 | dotnet/iot | [`../iot/iot_concepts/`](../iot/iot_concepts/) |
-| dotnet/yarp | none yet. `001-yarp-websocket-activity-timeout.md` lives here for now and moves to `yarp/yarp_concepts/` when the YARP folder is migrated to the new layout. |
+| dotnet/yarp | [`../yarp/yarp_concepts/`](../yarp/yarp_concepts/). The older `001-yarp-websocket-activity-timeout.md` still lives here and moves there when the YARP folder is migrated to the new layout. |
 
 | # | Lecture | Prompted by |
 |---|---|---|

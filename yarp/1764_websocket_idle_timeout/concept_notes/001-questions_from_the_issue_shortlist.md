@@ -16,7 +16,8 @@
 | Q2 | I found `src/TelemetryConsumption/WebSockets/` in YARP, but it's all C#. Where are the docs, and what am I misunderstanding? | YARP #1764 (item A) | Code vs. docs repos; finding a doc's source; verifying before contributing |
 | Q3 | What are sockets and WebSockets, what does YARP do with them, what is the proxy timeout, and how do keep-alives and browser heartbeats fix it? | YARP #1764 (item A) | Sockets, WebSocket handshake, proxy byte-pumping, idle timeouts, keep-alives |
 | Q4 | Getting my bearings: where does #1764 stand, what evidence do I still need, and what do I do with it? | YARP #1764 (item A) | Status check, evidence plan, comment + PR plan (tracker continued in Q5) |
-| Q5 | My E1 run stayed open past 300 s with defaults on both sides. Did I collect it wrong? | YARP #1764 (item A) | **Correction to Q3/Q4 (C3)**: the .NET client's own 30 s keep-alive; browsers are the real failure case (**the current progress tracker**) |
+| Q5 | My E1 run stayed open past 300 s with defaults on both sides. Did I collect it wrong? | YARP #1764 (item A) | **Correction to Q3/Q4 (C3)**: the .NET client's own 30 s keep-alive; browsers are the real failure case (tracker continued in Q6) |
+| Q6 | Checking my mental model (sockets, who owns the connection, why YARP hangs up), are the tests good enough, and how do I close this out? | YARP #1764 (item A) | Model check, evidence verdict, close-out plan (**the current progress tracker**) |
 
 ---
 
@@ -732,3 +733,185 @@ too slow as well (run 007). The 8 s override wasn't a faithful scale model of th
 - [ ] Maintainer response → follow Q4 §6
 - [ ] PR in `dotnet/AspNetCore.Docs` (Q4 §5.3–5.4)
 - [ ] PR merged / issue closed; trackers updated (Q4 §5.5)
+
+---
+
+## Q6. Checking my mental model, are the tests good enough, and how do I close this out?
+
+**Related:** [YARP #1764](https://github.com/dotnet/yarp/issues/1764), item A · **Asked:** 2026-09-27 ·
+**Deep dive:** [`yarp/yarp_concepts/001-the-gatekeeper-in-the-middle.md`](../../yarp_concepts/001-the-gatekeeper-in-the-middle.md)
+· **This entry is now the progress tracker** (§5).
+
+### The question (summarized)
+
+I explained my understanding: a client connects through YARP, which routes to a server using clusters and routes; a
+WebSocket is the four numbers (both IPs and ports); open sockets are expensive, and a vanished client never says
+goodbye, so something has to time them out; each party has its own timeout defaults; normally the client sends the
+ping, but somehow client pings "aren't valid" with YARP. Then I got stuck: **who actually manages the connection?**
+If the socket is four numbers, is it client↔YARP or client↔server? Why does YARP close it and not the server? If
+YARP is a router for stateless requests, and a WebSocket is a permanent connection between client and server, why is
+YARP involved at all after the handshake? And I'm not sure how my experiment configurations relate to the issue, or
+how to move forward.
+
+### The short answer
+
+Most of your model is right. **One wrong picture caused every other confusion:** there is no connection from the
+client to the server. There are **two** TCP connections, client↔YARP and YARP↔server, and **YARP owns one end of
+each**. YARP copies every byte between them for the whole life of the WebSocket. So YARP is never "out of the
+picture"; it's holding two sockets per idle WebSocket, and it hangs up on idle ones to protect its own resources.
+Any byte from either side (including invisible keep-alive frames) resets its 100 s timer, so client keep-alives
+**are** valid; browsers just can't send them.
+
+**The tests are good enough. Stop experimenting and post.** §3 has the verdict and §4 the close-out steps.
+
+### 1. Your model, checked line by line
+
+| You said | Verdict | The correction (lecture section) |
+|---|---|---|
+| Client → YARP → server; YARP picks the server from its config (clusters, routes) | ✅ | Small fix: **routes** point at **clusters**, clusters contain **destinations**. `ActivityTimeout` is a *cluster* setting (§3.1) |
+| A WebSocket is four values: both IPs and ports | ⚠️ | That's the definition of a **TCP connection** (the 4-tuple). A WebSocket is a protocol spoken *over* one TCP connection (§2.1) |
+| Open sockets are expensive at scale | ✅ | For YARP: 2 sockets + 2 × 64 KB buffers + 2 waiting tasks **per WebSocket**, idle or not (§5.4, §6.1) |
+| A vanished client sends no stop signal, so the connection could live forever | ✅ | Called a **half-open connection**. TCP only notices when it tries to *send*; TCP's own keep-alive is off by default and waits 2 h (§6.1) |
+| Each party has its own timeout defaults and keep-alive methods | ✅ | Exactly: each owner polices only **its own** sockets, and the shortest active timer on the path fires first (§6.2) |
+| Normally the client sends the pings | ⚠️ | Either side may. Servers most commonly send protocol pings; browser apps use **app-level heartbeats** because the browser API can't send pings (§8.3) |
+| With YARP, client keep-alives aren't valid | ❌ | They're valid. Run **003**: the .NET client's Pong every 30 s kept the connection open. The issue says "client **or** server (not the proxy)": YARP won't generate keep-alives itself (§8.3) |
+| Maybe YARP manages the connections | ✅, precisely | YARP manages **its two sockets**; the client and server each manage their own. Nobody manages "the connection" from outside (§2.3) |
+| Is it client↔YARP or client↔server? | → | **Both hops exist, as separate connections. Client↔server does not exist** (§2.2) |
+| Why doesn't the server close it? | → | It could, with its own policy (`KeepAliveTimeout`, off by default). That protects the *server's* memory, not YARP's. In your lab YARP's 100 s is the shortest active timer, so it fires first (§6.2) |
+| YARP routes stateless requests, so why is it involved with a stateful WebSocket? | → | The route/cluster/destination decision is made **once**, on the handshake request, then pinned. YARP stays in the data path because the client's bytes arrive at **YARP's** socket; nobody else can forward them (§5.3–5.4) |
+
+The picture to keep:
+
+```
+ Caller ═══ conn #1 ═══ [ YARP: socket A ⇄ Pump ⇄ socket B ] ═══ conn #2 ═══ Echo
+                                  one Watchdog, 100 s
+            any byte, either direction, either hop → Watchdog reset
+            no bytes for 100 s → YARP closes BOTH sockets (no Close frame)
+```
+
+### 2. What the issue is, and what your experiments show
+
+**The issue:** it's a **gap**, not a mismatch. Nothing in the docs is wrong. The WebSockets page tells readers that
+request timeouts are switched off after the handshake, but not that `ActivityTimeout` still applies. The Timeouts
+page does say it, but neither page says that the keep-alive interval has to be *shorter* than the timeout, or that
+ASP.NET Core's default (2 min) isn't.
+
+**Your experiments are three knobs and one comparison:**
+
+```
+ KNOB 1  Caller's keep-alive     .NET 30 s by default · browser: never
+ KNOB 2  Server's keep-alive     ASP.NET Core 2 min by default
+ KNOB 3  YARP's ActivityTimeout  100 s by default
+
+ survives  ⇔  min(KNOB 1, KNOB 2)  <  KNOB 3
+```
+
+Which runs matter for the PR, and why each exists:
+
+| Run | Role in the argument |
+|---|---|
+| **008** (browser, server default) → aborted at 100.1 s | **The problem**, in the configuration real users have. The headline. |
+| **009** (browser, server 30 s) → open at 310 s | **The fix** the docs will recommend. |
+| 004 / 005 | The same problem and fix with a .NET client (keep-alive off), with full frame-level logs |
+| 003 (.NET client, all defaults) → survives | Explains why .NET-client tests hide the problem (it brings its own 30 s keep-alive) |
+| 006 | Control: the taps don't change the result |
+| 007 | Explains why the early 8 s runs looked like "defaults always die" |
+| 002 | The framework defaults, printed by the runtime rather than quoted from docs |
+
+For the comment and PR you only need to *cite* 008 and 009, and link the rest.
+
+### 3. Are the tests good enough? Yes.
+
+| Standard | Met? | Notes |
+|---|---|---|
+| Real defaults, not a scaled model | ✅ | 100 s timeout, framework-default keep-alives |
+| The client users actually run | ✅ | Headless Chrome, plus .NET |
+| Problem **and** fix both shown | ✅ | 008/009 and 004/005 |
+| Mechanism observed, not inferred | ✅ | Frame logs on both hops; YARP's own `UpgradeActivityTimeout` warning |
+| Control for the instrument | ✅ | 006 |
+| Reproducible | ✅ | Pinned SDK, one-command harness, headers on every file, port checks |
+| Honest about scope | ✅ | Loopback, HTTP/1.1, no TLS, one browser, one run each: all stated |
+
+Things that are *not* worth doing before posting: repeating runs, HTTP/2, TLS, other browsers, telemetry. None of
+them would change the docs sentence. Two small notes, neither blocking:
+
+- The evidence headers say `repo: 6cbe9d4 (+ uncommitted sample changes, if any)`, so a header can't prove exactly
+  which code ran. That's fine for a docs issue; next time, commit the sample before the evidence session.
+- The README says Ping *or* Pong resets the timer. Your runs only show Pong. Ping is covered by YARP's source (any
+  bytes reset it) and its docs, so the claim holds, but it isn't something you measured.
+
+### 4. Close-out plan
+
+Everything is committed and pushed (`main` = `origin/main` as of 2026-09-27). The remaining work is about an hour.
+
+**Recommended route: open the PR and comment in the same sitting.** AspNetCore.Docs' CONTRIBUTING says small
+content changes go straight to a PR via the web editor, no issue first. #1764 is already `help wanted`, and the
+maintainer who opened it wrote the content. If the reviewers want the text somewhere else, they'll say so in review,
+and that's a two-minute change. Waiting a week for permission to add one paragraph is the "too slow" pattern.
+(The alternative, comment first and PR after a reply, is Q4 §6. It's also fine, just slower.)
+
+**Step 1: check the link works publicly (2 min).** Open
+`https://github.com/Timothy-Lee-Grant/playground/tree/main/yarp/1764_websocket_idle_timeout` in a private browser
+window. If it 404s, the repo is private and the link is useless to maintainers.
+
+**Step 2: open the PR (30 min).** Go to
+[`websockets.md`](https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/fundamentals/servers/yarp/websockets.md),
+click the pencil, and add this paragraph at the end of the `## Timeout` section (v2 of Q4 §5.3, now saying what the
+browser run showed):
+
+```markdown
+The cluster's `ActivityTimeout` (100 seconds by default) still applies after the handshake. If no data or WebSocket keep-alive frames are sent in either direction for that long, YARP closes the connection. To keep idle WebSocket connections open, send keep-alives from the client or the destination server at an interval shorter than `ActivityTimeout`, or increase `ActivityTimeout` for the cluster. Browser clients don't send WebSocket keep-alives, so they rely on the destination server: ASP.NET Core's default <xref:Microsoft.AspNetCore.Builder.WebSocketOptions.KeepAliveInterval> is two minutes, which is longer than the default `ActivityTimeout`. For more information, see [Timeouts](xref:fundamentals/servers/yarp/timeouts#websockets).
+```
+
+Before committing the edit: preview it; check the `#websockets` anchor exists on the Timeouts page; look at how other
+pages write `<xref:...>` API links. Leave `ms.date` and the `ai-usage` metadata alone unless the PR template or a
+reviewer says otherwise. Sign the CLA if the bot asks.
+
+PR title: **YARP WebSockets: document ActivityTimeout and keep-alive interval**. Description:
+
+```markdown
+Fixes dotnet/yarp#1764.
+
+The WebSockets page's Timeout section says request timeouts are disabled after the handshake, but not that
+`ActivityTimeout` (default 100 s) still applies. This adds a short paragraph and links to the Timeouts page, which
+covers it in more detail. It also notes that ASP.NET Core's default `KeepAliveInterval` (2 min) is longer than the
+default `ActivityTimeout`, which matters for browser clients because they don't send keep-alives themselves.
+
+Verification (.NET 10.0.302, Yarp.ReverseProxy 2.3.0, Chrome 153): with a browser client and the server at its
+default keep-alive, an idle connection through YARP was aborted after 100 s (`UpgradeActivityTimeout`, close code
+1006); with a 30 s server `KeepAliveInterval` it stayed open. Repro, logs and screenshots:
+https://github.com/Timothy-Lee-Grant/playground/tree/main/yarp/1764_websocket_idle_timeout
+
+I used an AI assistant (Claude) to help build the repro and draft this text; I ran the experiments and checked the
+results myself.
+```
+
+**Step 3: comment on #1764 (5 min)**, after the PR exists:
+
+> I've opened dotnet/AspNetCore.Docs#<PR> for this. The Timeouts page already covers `ActivityTimeout` for
+> WebSockets, but the WebSockets page doesn't mention it, so the PR adds a short paragraph there with a link.
+>
+> One detail neither page mentioned: ASP.NET Core's default `KeepAliveInterval` (2 min) is longer than YARP's default
+> `ActivityTimeout` (100 s). I verified on .NET 10 / YARP 2.3.0 that a browser client (which can't send pings) is
+> aborted after 100 s with server defaults and stays open with a 30 s interval. (A .NET `ClientWebSocket` survives at
+> defaults because it sends its own keep-alive every 30 s.) Repro and logs: <link>
+
+**Step 4: respond to review.** Reviewers may reword it or ask for it on the Timeouts page instead. Say yes and adjust.
+Log each round as a short entry here.
+
+**Step 5: after merge.** If #1764 doesn't close automatically (cross-repo "Fixes" may not work), comment on #1764 with
+the merged PR link and ask a maintainer to close it. Then update the root `README.md` table, the scouting tracker,
+this folder's `CLAUDE.md`, and do the Reflect step (root `CLAUDE.md` §9.3).
+
+### 5. Checklist (progress tracker, continues Q5 §4)
+
+- [x] Evidence at real defaults, both client types, with controls (runs 002–009, 2026-09-27)
+- [x] Lab report written (`implementations/001`)
+- [x] Committed and pushed (checked 2026-09-27)
+- [x] Mental model checked; YARP concepts lecture 001 written (2026-09-27)
+- [x] Evidence reviewed: good enough to post (this entry, §3)
+- [ ] Confirm the evidence link is publicly visible (§4 step 1)
+- [ ] Open the AspNetCore.Docs PR (§4 step 2)
+- [ ] Comment on #1764 with the PR link (§4 step 3)
+- [ ] Review rounds (§4 step 4)
+- [ ] Merged; #1764 closed; trackers updated; Reflect (§4 step 5)

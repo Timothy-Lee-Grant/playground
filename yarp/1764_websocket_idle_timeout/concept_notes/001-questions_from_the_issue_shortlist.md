@@ -1008,4 +1008,10 @@ Each step: do it up to the point of posting, show it for review, then post.
       "YARP WebSockets: Document ActivityTimeout and Keep-alive Interval", from `patch-2`. It shows on #1764's timeline.
 - [ ] **Step 3:** CLA signed if the bot asked; build/preview checks green (note the results here)
 - [x] **Step 4 (2026-09-28):** comment posted on #1764 (text as §3, PR number filled in, folder link)
+- [x] **Step 3 (2026-09-28):** all 5 checks passed; Learn preview link posted by the bot.
+- [ ] **Review round 1 (2026-09-28, guardrex, "changes requested"):** (a) restructure into an "either of the following"
+      list, imperative tone, cross-link `ActivityTimeout` to `http-client-config#HttpRequest`, link text "YARP Request
+      Timeouts" (apply his suggestion as-is); (b) set `ms.date` on line 7 to the date of the commit (`M/D/YYYY`, e.g.
+      `9/28/2026`); (c) reply, answering his question: the comma wasn't meant to rank the two approaches; (d) re-request
+      review.
 - [ ] **Step 5:** review rounds, merge, get #1764 closed, update trackers, Reflect (Q6 §4 step 5)

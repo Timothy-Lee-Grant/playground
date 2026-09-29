@@ -591,7 +591,7 @@ Each of these is a candidate for its own lecture in this folder. #1, #3 and #9 a
 1. **Assuming `new GpioController()` works everywhere.** It only knows Linux boards (and legacy Windows IoT). On a
    Mac you need a fake driver or a USB adapter.
 2. **Mixing up numbering.** Physical pin 12 is GPIO18. dotnet/iot wants **18**.
-3. **Forgetting to dispose.** Lines stay claimed until the process exits; the next run fails with "busy".
+3. **Forgetting to dispose.** Lines stay claimed until the process exits, so a second process (or a stale copy of yours still running) fails with "busy".
 4. **Treating callbacks as if they run on the main thread.** Race conditions, especially with UI or shared lists.
 5. **Casting `sender`** to `GpioPin` inside a handler (today it throws, #2403).
 6. **Editing the core library for something a binding could do.** Core changes need API review; bindings don't.

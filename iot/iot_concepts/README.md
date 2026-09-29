@@ -19,8 +19,10 @@ Concept notes that are only about one issue belong in that issue's conversation 
 | # | Lecture | Prompted by | Status |
 |---|---|---|---|
 | 001 | [The Big Picture: what dotnet/iot is, how it's built, and how to use it](001-the-big-picture-dotnet-iot.md) | #2403 (orientation before starting) | Written 2026-09-27; behavior claims unverified until samples run |
+| 002 | [Delegates, events, callbacks and threads (plus extension methods and `this`)](002-delegates-events-callbacks-and-threads.md) | #2403 (taught from working code: `Button`, Arduino and libgpiod v2 drivers; #2403 as a spot-the-difference) | Written 2026-09-28; includes "Try it" programs to run on the Mac |
+| 003 | [Bindings, OOP architecture, interfaces, `IDisposable` and ownership, UnitsNet, testing without hardware](003-bindings-oop-architecture-disposal-and-testing.md) | Questions after 001 | Written 2026-09-28; includes the failing-test sketch for #2403 |
 
-## Candidates (from #2403, entry #1 §12)
+## Candidates (from #2403, entry #1 §12; 002 and 003 cover the first two and most of the fourth)
 
 | Topic | Why it matters here |
 |---|---|

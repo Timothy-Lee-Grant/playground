@@ -24,9 +24,9 @@
 | | |
 |---|---|
 | **Stage** | Explore: understanding the issue. No code yet, nothing posted upstream. |
-| **Last entry** | #2 (2026-09-27) |
+| **Last entry** | #3 (2026-09-28) |
 | **Open decision** | Which route to take (entry #1 §10). |
-| **Next step** | Timothy reads lecture 001 (the big picture) and entry #1, then asks questions (entry #3 onward). Then pick a route. |
+| **Next step** | Timothy works through lectures 002 and 003 (and their "Try it" programs on the Mac), then asks questions (entry #4 onward). Then pick a route. |
 
 ---
 
@@ -36,6 +36,7 @@
 |---|---|---|---|
 | 1 | 2026-09-27 | 📍 Briefing | What #2403 is, what's going on, what the source shows, and whether it's still a good pick |
 | 2 | 2026-09-27 | 📍 Progress | Wrote concepts lecture 001 (the big picture of dotnet/iot); one new docs lead |
+| 3 | 2026-09-28 | ❓→💬 / 📍 | Concept questions (bindings, OOP/factory, delegates/events/threads, `IDisposable`/ownership, UnitsNet, testing, extension methods and `this`) answered as lectures 002 and 003 |
 
 ---
 
@@ -274,4 +275,50 @@ where it runs, and the concepts he'll need.
   `PlatformNotSupportedException("No unix driver appears to be runnable")`, because .NET reports macOS as
   `PlatformID.Unix`. It's a two-minute walking skeleton that confirms the driver-selection path before E1.
 - Nothing posted upstream. Route decision still pending.
+
+## #3 · 2026-09-28 · ❓ → 💬 Concept questions, answered as two lectures
+
+### ❓ The question (summarized from Timothy's message)
+
+After lecture 001: what does *binding* actually mean? Abstraction, strategy and factory selection (seen before in
+other projects but never understood). Delegates, multicast delegates, event accessors, and how threads interact with
+callbacks, since his habit is a polling `while` loop and his hand-written `reactive/` attempt at events didn't work.
+`IDisposable` and all the other interfaces on a class: how should he read them? Ownership, with examples. What
+"every sensor binding returns UnitsNet types" means. How testing, fakes, mocks and test traits work. Extension methods
+and the `this` keyword, which made the sentence *"sender is the object that raised the event, which normally means
+the object you subscribed on"* unreadable. And: is it a bad idea to learn these from code (#2403) that is broken in
+exactly these concepts?
+
+### 💬 Short answer
+
+Two lectures, each teaching from dotnet/iot code that does things **right**:
+
+- [`../../iot_concepts/002-delegates-events-callbacks-and-threads.md`](../../iot_concepts/002-delegates-events-callbacks-and-threads.md):
+  delegates (as function pointer + captured target), multicast, delegate identity, events and custom accessors, the
+  `(sender, e)` convention (with the quoted sentence explained step by step in §6.2), the four meanings of `this`,
+  extension methods (`I2cBusExtensions.PerformBusScan`, `builder.Services.AddSingleton`), which thread runs your
+  handler, a full trace of one button press from kernel to handler, the `reactive/` attempt revisited, and **#2403 as
+  a spot-the-difference exercise at the end** (§12).
+- [`../../iot_concepts/003-bindings-oop-architecture-disposal-and-testing.md`](../../iot_concepts/003-bindings-oop-architecture-disposal-and-testing.md):
+  what a binding is (BME280 traced from I2C bytes to `Temperature`), OOP building blocks, reading a class
+  declaration, Strategy / Template Method / Factory / Adapter, `IDisposable` and the `Dispose(bool)` pattern,
+  ownership (`shouldDispose`), UnitsNet, and testing (xUnit, fakes vs. mocks, Moq, `MockableGpioDriver`, traits),
+  ending with a **sketch of the failing unit test for #2403** (§8.8).
+
+On the "broken code" question: the concepts are taught from working code (`ButtonBase`/`GpioButton` follow the
+event convention correctly), and #2403 comes last, once the correct shape is familiar. Seen that way, the broken
+code shows exactly which rule it breaks.
+
+### Takeaways / next steps
+
+1. Work through 002, then 003. Run the "Try it" programs on the Mac (002 §15, 003 §10). They're the fastest way to
+   make these concepts concrete, and any output that differs from the prediction is worth an entry here.
+2. The #2403 test sketch in 003 §8.8 is effectively experiment **E1** as a unit test. It's a natural first thing to
+   build in `../sample/`.
+3. New leads noticed while writing (all **unverified**, from reading only):
+   - An exception thrown by a user's handler under `LibGpiodV2Driver` appears to end that request's observer loop
+     and remove its subscriptions, so the pin silently stops reporting (002 §9.3).
+   - `LibGpiodV2EventObserver` calls user handlers while holding its lock (002 §9.5).
+   - `ButtonBase._holdingTimer` is touched from two threads without a lock (002 §9.4).
+4. Route decision for #2403 still pending (entry #1 §10).
 

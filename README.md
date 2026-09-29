@@ -24,6 +24,7 @@ run it themselves.
 |---|---|---|---|
 | [dotnet/yarp#1764](https://github.com/dotnet/yarp/issues/1764): document the WebSocket keep-alive requirement | [`yarp/1764_websocket_idle_timeout/`](yarp/1764_websocket_idle_timeout/) | 3-process repro (client → YARP → echo server) of the idle-WebSocket abort at `ActivityTimeout`, and the `KeepAliveInterval` fix | PR [dotnet/AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747) open, issue commented (2026-09-28) · awaiting review |
 | [dotnet/iot#2403](https://github.com/dotnet/iot/issues/2403): `GpioPin` event handlers receive the wrong `sender` | [`iot/2403_gpiopin-event-handler-assing-wrong-sender-value/`](iot/2403_gpiopin-event-handler-assing-wrong-sender-value/) | Investigation of which object each GPIO driver passes as `sender` | Exploring (started 2026-09-27) · nothing verified or posted yet |
+| [dotnet/iot#2600](https://github.com/dotnet/iot/issues/2600): `LibGpiodV2Driver` aborts the process on 32-bit ARM | [`iot/2600_libgpiodv2-edge-event-abort-on-arm32/`](iot/2600_libgpiodv2-edge-event-abort-on-arm32/) | Test of the proposed root cause (C `unsigned long` declared as `ulong` in the P/Invoke binding) on 64-bit and 32-bit ARM | Exploring (started 2026-09-29) · nothing verified or posted yet |
 
 Candidate issues I'm still weighing are in [`scouting/`](scouting/). How I choose them, and what I'm aiming to learn, is in
 [`open_source_persona.md`](open_source_persona.md).

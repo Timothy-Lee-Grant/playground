@@ -135,6 +135,8 @@ Each entry: **Problem → Why it fits → How to fix it → Steps → Done when 
 
 > **🟢 Open, available · 🛠️ Contribute.**
 
+> ⚠️ **Update (2026-09-29, see `iot/2600_libgpiodv2-edge-event-abort-on-arm32/conversation/001-conversation-log.md` #1):** this entry was out of date when written. The issue is **assigned to krwq and Copilot**, and **PR #2601** (the null check and loop bound below) was already open, approved and not yet merged. A commenter (2026-09-23) traced the root cause to an **ABI mismatch** on 32-bit ARM: C `unsigned long` is declared as C# `ulong` in the V2 binding. **Revised task:** the `nuint` root-cause fix plus a signature test, offered on the issue as a follow-up to #2601. Don't duplicate #2601.
+
 **Link:** https://github.com/dotnet/iot/issues/2600 · Labels: `untriaged` · Opened 2026-08-19 · No PR linked
 
 **Problem.** In the libgpiod **v2** driver, the edge-event observer loop reads a batch of events and then fetches each one by index:
@@ -707,7 +709,7 @@ Update this table as you go. It's the "status board" for this repo's open-source
 |---|---|---|---|---|---|---|
 | A | yarp#1764 | 🔄 PR in review (2026-09-28) | ☑ 2026-09-28 | [AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747) | | Workspace: [`yarp/1764_websocket_idle_timeout/`](../yarp/1764_websocket_idle_timeout/) |
 | B | iot#2297 | ☐ not started | | | | |
-| C | iot#2600 | ☐ not started | | | | |
+| C | iot#2600 | 🔎 exploring (2026-09-29) | ☐ | | | Workspace: [`iot/2600_libgpiodv2-edge-event-abort-on-arm32/`](../iot/2600_libgpiodv2-edge-event-abort-on-arm32/). ⚠ Assigned to krwq + Copilot; PR #2601 (null check) already open. Open slice: `nuint` root-cause fix; see conversation #1 §10 |
 | D | iot#2602 | ☐ not started | | | | |
 | E | mcp#1806 | ☐ not started | | | | |
 | F | iot#2356 | ☐ not started | | | | Order MPU-6050 |

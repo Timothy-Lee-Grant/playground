@@ -17,15 +17,17 @@ read that first.
 | `CLAUDE.md` | This file. |
 | [`iot_concepts/`](iot_concepts/) | Lecture notes on IoT and dotnet/iot concepts (GPIO, drivers, .NET events, Linux GPIO APIs, ...), reusable across issues. Index in its `README.md`. |
 | [`2403_gpiopin-event-handler-assing-wrong-sender-value/`](2403_gpiopin-event-handler-assing-wrong-sender-value/) | [#2403](https://github.com/dotnet/iot/issues/2403): `GpioPin` event handlers receive the wrong `sender`. |
+| [`2600_libgpiodv2-edge-event-abort-on-arm32/`](2600_libgpiodv2-edge-event-abort-on-arm32/) | [#2600](https://github.com/dotnet/iot/issues/2600): `LibGpiodV2Driver` aborts the process on 32-bit ARM (`ulong` vs C `unsigned long`). |
 
 ### Issues in this project
 
 | Issue | Folder | Scouting item | Status |
 |---|---|---|---|
 | [#2403](https://github.com/dotnet/iot/issues/2403) `GpioPin` handlers get the wrong `sender` | `2403_gpiopin-event-handler-assing-wrong-sender-value/` | G | Exploring since 2026-09-27 |
+| [#2600](https://github.com/dotnet/iot/issues/2600) LibGpiodV2 abort on 32-bit ARM | `2600_libgpiodv2-edge-event-abort-on-arm32/` | C | Exploring since 2026-09-29. Safety net already in PR #2601 (others); open slice is the `nuint` root-cause fix |
 
 Other dotnet/iot candidates in [`../scouting/001-issue_shortlist_sept_2026.md`](../scouting/001-issue_shortlist_sept_2026.md):
-B (#2297, Pi samples and `config.txt`), C (#2600, LibGpiodV2 null pointer crash), D (#2602, `GpiodException`
+B (#2297, Pi samples and `config.txt`), D (#2602, `GpiodException`
 escapes `TryCreate`), F (#2356, MPU-6050 calibration, needs hardware), J (#2352, FT4232H, stretch).
 
 ---
@@ -120,6 +122,9 @@ Timothy's machine is a MacBook Air, so anything needing real GPIO needs a Raspbe
 | pgrawehr (Patrick Grawehr) | Very active contributor/maintainer; author of the virtual GPIO controller and many driver changes |
 | Ellerbach (Laurent Ellerbach) | Maintainer; co-author of the virtual GPIO controller |
 | RoySalisbury | Community user; reported #2403 |
+| raffaeler | Reviewer/maintainer; approved PR #2601 (#2600) |
+| kai-melchior | Community user; reported #2600 |
+| wolfgang-knobloch | Community user; proposed the ARM32 ABI root cause on #2600 (2026-09-23) |
 
 ## 6. Where the fork lives
 

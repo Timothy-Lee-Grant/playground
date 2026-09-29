@@ -24,7 +24,7 @@
 | | |
 |---|---|
 | **Stage** | Explore: understanding the issue. No code yet, nothing posted upstream. |
-| **Last entry** | #1 (2026-09-29) |
+| **Last entry** | #2 (2026-09-29) |
 | **Open decisions** | (1) Which route (entry #1 §10). (2) What 32-bit ARM target is available for E2/E3 (entry #1 §11). |
 | **Next step** | Timothy reads entry #1 and asks questions (entry #2 onward). Then build E1, the walking skeleton (runs on the Mac, no hardware). |
 
@@ -35,6 +35,7 @@
 | # | Date | Type | Title |
 |---|---|---|---|
 | 1 | 2026-09-29 | 📍 Briefing | What #2600 is, the root cause in the thread, the PR that already exists, and the slice that's still open |
+| 2 | 2026-09-29 | ❓→💬 | If the solution is already found, is there any point working on this issue? |
 
 ---
 
@@ -276,3 +277,58 @@ with the usual header.
   v2.2.4, v2.3, v2.3.1; v2.2.1 wasn't available there)
 - Background (not re-read for this entry): the ARM AAPCS rule that 64-bit arguments occupy an even/odd register pair;
   .NET docs on `nint`/`nuint` and `CLong`/`CULong`
+
+---
+
+## #2 · 2026-09-29 · ❓ → 💬 Is there any point, if the solution is already found?
+
+### ❓ The question
+
+"So if the solution is already found, is there any use in looking at or doing anything with this Issue?"
+
+### 💬 Short answer
+
+Yes, but be clear about which part is still open. The root cause has been **proposed**, not **proven** or
+**implemented**, and those are three different stages. The open work is proof, a complete fix, and a test. The
+window may be short, though, so the first move should be quick.
+
+### 💬 Explanation
+
+| Stage | Status on 2026-09-29 | Who |
+|---|---|---|
+| Symptom reported | ✅ Done | kai-melchior |
+| Safety net (null check) | 🔄 PR #2601, approved, unmerged | Copilot agent for krwq |
+| Root cause **proposed** | ✅ One comment, reasoned from the ABI, no evidence attached | wolfgang-knobloch |
+| Root cause **acknowledged** by a maintainer | ❌ No reply. pgrawehr and raffaeler were still asking how the handle could be invalid. | — |
+| Root cause **proven** (a run showing the junk index on ARM32) | ❌ Nobody | **open** |
+| Root cause **fixed** (`nuint` across the V2 binding, not just one line) | ❌ Nobody has offered | **open** |
+| **Regression test** (signature check that runs without hardware) | ❌ Nobody | **open** |
+| Knock-on effect of #2601 on ARM32 (silent deafness, #1 §7) | ❌ Not mentioned | **open** |
+
+In professional work, "someone said what's probably wrong" is the start of a fix, not the end of one. A maintainer
+merging an interop change on 32-bit ARM, which they don't test in CI, wants evidence that the diagnosis is right,
+that the fix works, and that it won't regress. That's the part still missing.
+
+**Risks, stated plainly:**
+
+- **The fix itself is small.** The code change is mostly swapping `ulong`/`int` for `nuint` in one file, plus a few
+  casts. If krwq decides to act on wolfgang's comment, a Copilot agent could open that PR in minutes. The part that's
+  hard to automate is the evidence and the test, because they need a 32-bit ARM target and judgment about what to prove.
+- **Someone may move first.** wolfgang could open a PR himself. The way to handle that is to comment early and say
+  what you plan to do, not to hurry the code.
+- **If you'd rather have a problem where you do the diagnosis yourself,** this isn't that issue. The detective work
+  is done; what's left is verification and engineering. It's still valuable, just a different kind of contribution.
+
+**The learning value stays regardless.** ABI and data models, register-level argument passing, and P/Invoke
+marshalling are interview-grade topics, and E1 teaches them on your Mac in an evening whether or not a PR happens.
+
+### Takeaways / next steps
+
+1. If you're going ahead, post a short comment on #2600 **soon**, before building much: agree with wolfgang's
+   analysis, point out that #2601 alone would likely leave ARM32 pins silently deaf (#1 §7) and that the debounce setter has
+   the same bug (#1 §6), and offer to verify it on ARM32 and follow up #2601 with the `nuint` changes and a
+   signature test. Claude can draft it.
+2. Then E1 on the Mac, then E2 once a 32-bit ARM target is sorted out.
+3. If a maintainer or wolfgang says they'll do it themselves, switch this to 📖 learn-only: finish E1 and E2 for
+   understanding, and review their PR against the §6 table.
+

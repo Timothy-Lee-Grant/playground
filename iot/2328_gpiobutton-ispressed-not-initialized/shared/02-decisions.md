@@ -12,3 +12,4 @@
 
 - **P1** First pin reading: (a) immediate / (b) settle delay / (c) lazy with #1715 (brief §5). Wait for maintainers.
 - **P2** Base branch: on top of PR #2608, or on `main` and rebase later (brief §6).
+- **P3** Order of the initial read vs. callback registration (brief §5, second question; raised by the CLI, session 001).

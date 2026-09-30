@@ -6,7 +6,8 @@ Wrap up this session for the planner (desktop Claude), who will read only what y
 
 1. **Ask Timothy four quick scores (1–5), in one message:** Understanding (could you explain today's diff to a
    reviewer without notes?), Speed, Quality, Energy. Also ask: "Anything about working this way you'd change?"
-   Wait for his answers (a single line is fine; if he skips, record "not given").
+   Wait for his answers (a single line is fine). Scores are optional: if he skips, record "not given" and move on
+   without asking again.
 2. **Write the session report** at `shared/sessions/NNN-YYYY-MM-DD.md`, where NNN is one more than the highest
    existing number (start at 001). Follow `shared/sessions/_TEMPLATE.md` exactly, every section, "none" where empty.
    Include his questions in his words where you can. Mark every discovery verified (with evidence file) or unverified.

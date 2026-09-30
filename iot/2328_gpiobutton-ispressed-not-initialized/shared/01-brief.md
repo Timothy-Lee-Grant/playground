@@ -41,6 +41,11 @@ is enabled (RC time), causing a false startup `Press`. So a `Read()` immediately
 unsettled level. Options: (a) read immediately; (b) short settle delay then read; (c) read lazily on first event
 subscription, which is #1715's agreed fix (move the native subscription into the events' `add` accessors).
 
+**Second question: read before or after registering the callback?** (found by the CLI in session 001; unverified)
+Read-then-register can miss an edge that lands between the two calls. Register-then-read lets an edge callback run
+while the constructor is still setting `IsPressed`. It's the firmware "sample the level vs. enable the interrupt"
+race. Option (c) may make it moot or change it. Tracked as P3 in `02`.
+
 ## 6. Coordination: PR #2608
 
 pgrawehr (maintainer) opened [PR #2608](https://github.com/dotnet/iot/pull/2608) on 2026-09-27: "The button tests are

@@ -62,7 +62,7 @@ One row per CLI session. Newest at the bottom.
 
 | Date | Issue | Work order | Mode(s) | U | S | Q | E | Note (what worked, what didn't) |
 |---|---|---|---|---|---|---|---|---|
-| | | | | | | | | |
+| 2026-09-30 | iot#2328 | WO-1 (1–3) | M0 | – | – | – | – | Mostly a setup test; scores skipped. Tour came as one monologue, no questions from Timothy → CLI now told to chunk + checkpoint |
 
 ---
 

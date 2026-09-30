@@ -53,12 +53,15 @@ How to explain things to him:
 ## 4. Every session
 
 **Start:**
-1. Read `shared/STATUS.md`, then `shared/02-decisions.md` (01, 03 and 04 are already loaded).
+1. Read `shared/STATUS.md`, then `shared/02-decisions.md`. (00, 01, 03, 04 should be auto-loaded by the workspace
+   `CLAUDE.md`; if they aren't in your context, read them too and say so in the report.)
 2. Check the fork: `git -C develop/yarp status` and current branch.
 3. Tell Timothy in 3–6 lines: where things stand, the work order you'll work on, and the mode you'll use. **Wait for
    his go-ahead.**
 
 **During:** follow the mode. When Timothy asks a question, answer it well; questions are the point, not a detour.
+**Explanations and tours come in short chunks** (one idea, one screen), each ending with a checkpoint: a question
+for him, or "want to go on?". Don't deliver a whole tour in one message; a monologue gives him nothing to react to.
 
 **End:** Timothy runs `/handoff` (or you suggest it when the order's "done when" is met or he's wrapping up).
 

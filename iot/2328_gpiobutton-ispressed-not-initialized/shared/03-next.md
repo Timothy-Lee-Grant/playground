@@ -4,6 +4,10 @@
 
 ## WO-1 · Orientation: build, baseline, and a guided tour  *(mode: M0 Tutor)*
 
+> **Progress (session 001):** steps 1–3 done (evidence 001; tour given). **Remaining: steps 4 and 5, then the
+> own-words check.** First thing next session: confirm the fixed imports loaded (ask Timothy to run `/memory`, or
+> just say whether 00–04 were in context at start).
+
 **Goal:** Timothy has the Button tests running on his machine and understands how `GpioButton`, `ButtonBase` and
 `GpioController` fit together, and what PR #2608 changes. No product or test code is written.
 

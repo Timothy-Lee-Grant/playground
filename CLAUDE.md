@@ -37,6 +37,8 @@ exercises/  (GitHub: Timothy-Lee-Grant/playground)
 ├── open_source_persona.md  public: contributor profile: goals, strengths, issue scoring, machines/hardware,
 │                           exposure map, contribution record, study log (the public core of §9)
 ├── scouting/               issue searches: dated shortlists of candidate issues + a progress tracker
+├── ai-workflow/            how desktop Claude and the Claude Code CLI share work on an issue (shared/ mailbox,
+│                           CLI workspace, /handoff) + the interaction-modes experiment. Read for any coding issue
 ├── iot/                    dotnet/iot work ─────────────── NEW LAYOUT (v2), see §2
 │   ├── CLAUDE.md           orientation for the dotnet/iot project itself
 │   ├── iot_concepts/       lecture notes on IoT / dotnet/iot concepts, reusable across issues
@@ -83,6 +85,12 @@ One top-level folder per upstream repository, named after the repo in lowercase 
 └── report/          the finished lab report(s)                                            (§4.3)
     └── README.md    what belongs here + the lab-report outline
 ```
+
+**Coding issues add two folders** (since 2026-09-30; see [`ai-workflow/README.md`](ai-workflow/README.md)):
+`shared/` (the mailbox between desktop Claude and the CLI: brief, decisions, work order, interaction mode, CLI
+status, session reports, evidence) and `workspace/` (the CLI workspace's `CLAUDE.md`, settings, `/handoff`
+command and `setup.sh`). For these issues, test/build evidence from the fork goes in `shared/evidence/`;
+`sample/` is only for experiments outside the fork.
 
 | Folder | Question it answers | Audience | Edited how |
 |---|---|---|---|
@@ -216,6 +224,11 @@ NotebookLM follow a different format (§10.7).
 ---
 
 ## 6. Working with Claude sessions (desktop and CLI)
+
+**For coding issues, the desktop + CLI split in [`ai-workflow/README.md`](ai-workflow/README.md) applies:** the CLI
+runs in a workspace outside this repo and sees only the fork and the issue's `shared/` folder (it follows
+`shared/00-start-here.md`, not this file). Desktop sessions read `shared/STATUS.md` and the newest session report
+before anything else, and after each CLI session do the four duties listed in the issue's `CLAUDE.md`.
 
 **Starting a session on an issue** (e.g. `claude` in the issue folder, or "let's continue on iot#2403"):
 

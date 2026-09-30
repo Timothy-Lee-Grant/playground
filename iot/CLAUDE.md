@@ -18,6 +18,7 @@ read that first.
 | [`iot_concepts/`](iot_concepts/) | Lecture notes on IoT and dotnet/iot concepts (GPIO, drivers, .NET events, Linux GPIO APIs, ...), reusable across issues. Index in its `README.md`. |
 | [`2403_gpiopin-event-handler-assing-wrong-sender-value/`](2403_gpiopin-event-handler-assing-wrong-sender-value/) | [#2403](https://github.com/dotnet/iot/issues/2403): `GpioPin` event handlers receive the wrong `sender`. |
 | [`2600_libgpiodv2-edge-event-abort-on-arm32/`](2600_libgpiodv2-edge-event-abort-on-arm32/) | [#2600](https://github.com/dotnet/iot/issues/2600): `LibGpiodV2Driver` aborts the process on 32-bit ARM (`ulong` vs C `unsigned long`). |
+| [`2328_gpiobutton-ispressed-not-initialized/`](2328_gpiobutton-ispressed-not-initialized/) | [#2328](https://github.com/dotnet/iot/issues/2328): `GpioButton.IsPressed` wrong when held at startup. First issue on the desktop + CLI workflow ([`../ai-workflow/`](../ai-workflow/)). |
 
 ### Issues in this project
 
@@ -25,6 +26,7 @@ read that first.
 |---|---|---|---|
 | [#2403](https://github.com/dotnet/iot/issues/2403) `GpioPin` handlers get the wrong `sender` | `2403_gpiopin-event-handler-assing-wrong-sender-value/` | G | Exploring since 2026-09-27 |
 | [#2600](https://github.com/dotnet/iot/issues/2600) LibGpiodV2 abort on 32-bit ARM | `2600_libgpiodv2-edge-event-abort-on-arm32/` | C | Exploring since 2026-09-29. Safety net already in PR #2601 (others); open slice is the `nuint` root-cause fix |
+| [#2328](https://github.com/dotnet/iot/issues/2328) `GpioButton.IsPressed` not initialized | `2328_gpiobutton-ispressed-not-initialized/` | scouting 002 #1 | **Active: first code PR, target 2026-10-04.** Set up 2026-09-30 |
 
 Other dotnet/iot candidates in [`../scouting/001-issue_shortlist_sept_2026.md`](../scouting/001-issue_shortlist_sept_2026.md):
 B (#2297, Pi samples and `config.txt`), D (#2602, `GpiodException`
@@ -128,5 +130,8 @@ Timothy's machine is a MacBook Air, so anything needing real GPIO needs a Raspbe
 
 ## 6. Where the fork lives
 
-Not cloned yet. When it is, clone it **outside this repo** and record the path here, e.g.
-`~/Desktop/projects/forks/iot` (upstream `dotnet/iot`, origin `Timothy-Lee-Grant/iot`).
+Forks are cloned **outside this repo**, one CLI workspace per issue (see [`../ai-workflow/README.md`](../ai-workflow/README.md)):
+
+| Issue | Workspace | Fork clone |
+|---|---|---|
+| #2328 | `~/Desktop/projects/oss-work/iot-2328/` | `develop/iot` (origin `Timothy-Lee-Grant/iot`, upstream `dotnet/iot`); created by the issue's `workspace/setup.sh` |

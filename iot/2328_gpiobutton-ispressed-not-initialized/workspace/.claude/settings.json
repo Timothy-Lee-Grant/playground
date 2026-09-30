@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/Users/timothygrant/Desktop/projects/exercises/iot/2328_gpiobutton-ispressed-not-initialized/shared"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(gh:*)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(git clean:*)"
+    ]
+  }
+}

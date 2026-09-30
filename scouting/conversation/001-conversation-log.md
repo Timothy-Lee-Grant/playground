@@ -18,10 +18,10 @@
 
 | | |
 |---|---|
-| **Stage** | Choosing. Nothing posted upstream yet. |
-| **Last entry** | #1 (2026-09-29) |
-| **Open decisions** | (1) Which issue is this week's PR (§5). (2) Whether to post the "ask" comment on the other one too. |
-| **Next step** | Timothy reads entry #1 and asks questions. Then decide, then post the comment(s). |
+| **Stage** | **Closed.** Both issues set up (entry #2); work continues in their folders. |
+| **Last entry** | #2 (2026-09-30) |
+| **Open decisions** | none here |
+| **Next step** | See `iot/2328_*/` conversation log. |
 
 ---
 
@@ -30,6 +30,7 @@
 | # | Date | Type | Title |
 |---|---|---|---|
 | 1 | 2026-09-29 | 📍 Briefing | The two candidates in depth: what they are, the work, the skills, the risks, and a recommendation |
+| 2 | 2026-09-30 | 🧭 | Set up both issues with a desktop + CLI workflow |
 
 ---
 
@@ -351,3 +352,29 @@ running the code comes first.
 2. Decide (🧭 entry).
 3. Post the comment(s). Claude can adapt the drafts in the shortlist to include the §1.4 finding and the §1.5
    question.
+
+---
+
+## #2 · 2026-09-30 · 🧭 Decision: set up both issues, with a desktop + CLI workflow
+
+**Decided (Timothy):** create issue folders for both candidates now. iot#2328 is this week's PR; yarp#275 is queued
+behind it and waits for a maintainer's "still wanted?".
+
+**How the work is split between AIs** (agreed in chat; now documented in
+[`../../ai-workflow/README.md`](../../ai-workflow/README.md)):
+
+- Coding happens in Claude Code (the CLI) in a workspace **outside** `exercises`:
+  `~/Desktop/projects/oss-work/<repo>-<issue#>/` containing `develop/<repo>` (the fork) and a **symlink** to the
+  issue's `shared/` folder. One real copy of the mailbox, versioned in `exercises`; no copy/paste.
+- `shared/` has one writer per file: desktop writes the brief, decisions, work order; Timothy owns the interaction
+  mode; the CLI writes `STATUS.md`, session reports (via `/handoff`) and evidence.
+- The CLI workspace's config (`CLAUDE.md` with `@` imports, settings that block `git push` and `gh`, the `/handoff`
+  command, `setup.sh`) lives in each issue's `workspace/` folder and is symlinked in.
+
+**Timothy's addition:** the *way* of working with the AI is an experiment, not fixed. The modes (M0 Tutor → M4
+Spike), what each must not do, and a per-session scoring log are in
+[`../../ai-workflow/interaction-modes.md`](../../ai-workflow/interaction-modes.md). Both issues start in M0 for
+orientation.
+
+**Where the work continues:** [`../../iot/2328_gpiobutton-ispressed-not-initialized/`](../../iot/2328_gpiobutton-ispressed-not-initialized/)
+and [`../../yarp/275_remove-autofac-from-tests/`](../../yarp/275_remove-autofac-from-tests/). This log is closed.

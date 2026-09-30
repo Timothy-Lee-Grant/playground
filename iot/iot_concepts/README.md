@@ -30,3 +30,14 @@ Concept notes that are only about one issue belong in that issue's conversation 
 | dotnet/iot architecture: controller, driver, pin, bindings | Explains why the driver, not the pin, ends up calling your handler. |
 | GPIO on Linux: sysfs vs libgpiod v1 vs v2, edge events | What the drivers are actually talking to, and why there are three of them. |
 | Breaking changes in libraries: binary, source and behavioral breaks; semver | Why a one-line-looking fix "needs a major release". |
+
+## Audio lectures (for NotebookLM)
+
+Written to be **listened to**: loaded into Google NotebookLM to generate a podcast-style Audio Overview. Only written
+when Timothy explicitly asks for one. Format: root [`../../CLAUDE.md`](../../CLAUDE.md) §10.7. Files live in
+[`audio/`](audio/): `NNN-audio-<topic>.md` (the source to upload) + `NNN-audio-<topic>.prompt.md` (paste into
+NotebookLM's "Customize" box; don't upload it).
+
+| # | Audio lecture | Prompted by | Status |
+|---|---|---|---|
+| — | *(none yet)* | | |

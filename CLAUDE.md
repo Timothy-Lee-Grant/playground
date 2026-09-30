@@ -104,6 +104,7 @@ One top-level folder per upstream repository, named after the repo in lowercase 
 | The final write-up of results | `report/NNN-lab-report-*.md` |
 | The fix itself | a fork **outside** this repo (§5) |
 | Status for a maintainer | the issue `README.md` |
+| A lecture he'll **listen to** via NotebookLM (only when he asks for audio) | `<repo>/<repo>_concepts/audio/NNN-audio-*.md` + `.prompt.md` (§10.7) |
 | A teach-back transcript and its analysis | `private/teachbacks/NNN-*.md` (§10.4) |
 | An observation about how Timothy learns (a question, what landed, what didn't) | `private/002-learner-model.md` §7 (§10.3) |
 
@@ -184,7 +185,8 @@ characters; ASCII diagrams and tables; code references to the real upstream file
 (number, title, prompted by, status). Every lecture ends with a **teach-back checklist**: the 5–10 key ideas
 Timothy should be able to say back in his own words. Teach-backs are scored against it (§10.4). Prefer shorter
 lectures, and split long topics: whether 1,000-line lectures actually get read is an open question the
-reading ledger is tracking (§10.2).
+reading ledger is tracking (§10.2). Once Timothy has read a lecture, **don't edit it** (§10.6). Audio lectures for
+NotebookLM follow a different format (§10.7).
 
 ---
 
@@ -465,7 +467,7 @@ stuck, and what his own explain-it-back sessions reveal. This section is the pro
         │                      ▼                                                              ▼
         │            learning-log rows (§10.3)                              analysis + reply (§10.4)
         │                      │                                                              │
-        └──── technique ledger, hypotheses, lecture edits (§10.6) ◄───────────────────────────┘
+        └──── technique ledger, hypotheses, lessons for FUTURE lectures (§10.6) ◄───────────────────────────┘
                          private/002-learner-model.md
 ```
 
@@ -527,34 +529,72 @@ off and reasons toward what makes sense.
 4. **Analyze how he reasoned:** what his first sentence was about (purpose or mechanism); where he caught his own
    gaps; whether his **repairs** (what he reasoned his way to after a gap) are right. Wrong repairs are the
    highest-value thing to catch. Also note the analogies he used unprompted (what stuck) and where he went vague.
-5. **Decide whose gap it is:** the lecture's (unclear, missing, too long, wrong order) → **edit the lecture** and
-   note the change; a missing prerequisite → suggest the next lecture; a misconception → state the exact wrong
-   belief and the corrected one.
+5. **Decide whose gap it is:** the lecture's (unclear, missing, too long, wrong order) → record a **lesson for
+   future lectures** in `private/002-learner-model.md` §10, and **don't edit the lecture** (§10.6); a missing
+   prerequisite → suggest the next lecture; a misconception → state the exact wrong belief and the corrected one
+   in the reply.
 6. **Reply in chat**, in this shape:
    - one-line verdict;
    - what he got right, quoting a few of his own words;
    - gaps and misconceptions as a table: *concept · what you said · what's actually true · why it matters*;
    - the corrected model as a small diagram, if one is needed;
    - 1–3 **retrieval questions** for the next walk (optional; he chooses);
-   - what will change in the lecture, if anything.
+   - what I'll do differently in future lectures, if anything.
 7. **Update** the learner model (log row, technique ledger, hypotheses, reading ledger) and the teachbacks index.
 
 ### 10.5 Lectures and answers: what this changes
 
 - Every lecture ends with a **teach-back checklist** (§4.4, §8.5).
-- Use the techniques the ledger says work; stop using ones it says don't. Check the ledger before writing.
+- **Before writing any lecture**, read the learner model's technique ledger (§4) and **lessons for future lectures**
+  (§10), and apply them. That's where the teach-backs pay off.
 - When he returns to an old topic, a **re-test** (1–2 retrieval questions a week or more later) is the best
   evidence of retention. Offer it; don't force it.
 
 ### 10.6 Self-improvement: updating the techniques
 
-- **Every teach-back** updates the technique ledger (Effect / Confidence) and the hypotheses.
+- **Every teach-back** updates the technique ledger (Effect / Confidence), the hypotheses, and the list of lessons
+  for future lectures.
+- **Never edit a lecture Timothy has already read** (his rule, 2026-09-29). Hunting for what changed in a document
+  he's read is a poor use of his time. The teach-back's purpose is to analyze his thinking and write *better future
+  lectures*. Correct misconceptions in the chat reply (and the teach-back file). If a read lecture turns out to
+  contain an outright factual error, tell him in chat and let him decide.
 - **When the evidence changes an instruction** (e.g. "shorter lectures retain better"), update the public
   instruction too: `persona.md` "Working With Me" and §4.4 / §8.5 here, without the private reasons.
 - **Monthly review** (§9.4): add a "Learning" section: teach-backs done vs lectures generated, patterns
   improving/unchanged/resolved, hypotheses settled, technique changes made.
 - **Guardrail:** the loop is judged by teach-backs that actually happen, not by documents produced. If lectures
   pile up unread, generate fewer and shorter ones, and say so plainly.
+
+### 10.7 Audio lectures (for NotebookLM)
+
+Some lectures are meant to be **listened to**, not read: Timothy loads them into Google **NotebookLM** and generates
+an Audio Overview (a podcast-style conversation between two AI hosts) to listen to on walks.
+
+**Trigger: only when he explicitly asks** for an audio / listening / NotebookLM / podcast lecture. A plain request
+for "a lecture" always means the normal reading lecture (§4.4).
+
+**Where:** `<repo>/<repo>_concepts/audio/NNN-audio-<topic>.md` (own numbering), plus a sibling
+`NNN-audio-<topic>.prompt.md` with a suggested **NotebookLM customization prompt** (pasted into the Audio Overview
+"Customize" box, **not** uploaded as a source). List both in the concepts `README.md` under "Audio lectures".
+
+**How to write one.** The reader is a pair of AI podcast hosts, and the listener can't see anything:
+
+| Do | Don't |
+|---|---|
+| Plain Markdown headings + prose paragraphs; short sentences | Tables, ASCII diagrams, emoji, status icons, checkboxes |
+| A narrative arc: the problem → the characters → one event traveling through the system, step by step → why it's designed this way → mistakes → recap | Reference-style lists of facts; "see §3" or links that carry meaning |
+| Introduce the **personified characters** by name and job, and keep the names consistent (they survive audio well) | "Picture this" / "imagine" (he has no voluntary imagery); describe **sequences and relationships in words** instead |
+| Describe code in words: "the plus-equals operator", "the question-mark-dot operator". Spell awkward identifiers once ("GpioController, the G-P-I-O controller") | Code blocks longer than a line; symbols that only work visually |
+| Explicit "the key idea is…" sentences, contrasts ("X, not Y"), and "a common misconception is… actually…" (the hosts pick these up and discuss them) | Nuance buried in parentheses |
+| Analogies to embedded C and firmware | |
+| A spoken recap at the end of each section and at the end, covering the same 5–10 key ideas as a teach-back checklist | |
+| Say out loud what's verified and what isn't ("this hasn't been tested yet") | |
+
+**Length:** start around 2,000–4,000 words and tune from Timothy's feedback on how the audio came out.
+
+**Caveat for teach-backs:** the NotebookLM hosts paraphrase and can get things wrong. When a teach-back follows an
+audio lecture (mode "NotebookLM audio"), check whether a misconception could have come from the podcast rather than
+from him, and ask if unsure. Mark audio lectures **Listened** (not Read) in the reading ledger.
 
 ---
 

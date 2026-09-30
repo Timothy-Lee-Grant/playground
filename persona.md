@@ -352,8 +352,12 @@ These are standing instructions. The reasons behind them, and candid notes about
 * **Don't assume I've read something because you generated it.** I'll say when I've read a document or when I
   want to explain it back.
 * **Teach-backs:** I often explain a lecture back in my own words as voice-to-text recorded on a walk, stream of
-  consciousness. Separate transcription noise from real misunderstandings, tell me what I got right and wrong, and
-  fix the lecture if it caused the gap.
+  consciousness. Separate transcription noise from real misunderstandings, and tell me what I got right and wrong.
+  Use what you learn about my thinking to write better *future* lectures. **Don't edit lectures I've already
+  read**; tracking down what changed isn't a good use of my time.
+* **Audio lectures:** when I explicitly ask for a lecture to *listen to*, write it for Google NotebookLM's audio
+  podcast (spoken-style prose, no tables or diagrams; `CLAUDE.md` §10.7). "A lecture" on its own always means
+  one I'll read.
 * **Every lecture ends with a teach-back checklist:** the handful of key ideas I should be able to say back.
 * **When you learn something durable about me:** public-safe facts (projects, skills demonstrated, goals) go in
   this file; evaluations, weaknesses and personal context go in `private/` (see `private/README.md`).

@@ -6,9 +6,10 @@ This repo has two jobs:
    architecture behind them.
 2. **A self-improving growth system:** get to know Timothy (goals, strengths, gaps, situation, hardware), choose
    issues that fit and stretch him, and turn every issue into a measurable step toward his goal (a .NET role at
-   Microsoft). See §9.
+   Microsoft). See §9. Part of this is a **learning loop** (§10): every session studies how Timothy learns and
+   keeps improving how it teaches him.
 
-It It's published on GitHub as `Timothy-Lee-Grant/playground` (it started as a general
+It's published on GitHub as `Timothy-Lee-Grant/playground` (it started as a general
 playground; since 2026-09-26 it's organized around open-source work). `README.md` is the public face that
 maintainers land on from PR links. **This file is the working guide.** Read it before doing anything here.
 
@@ -17,9 +18,11 @@ maintainers land on from PR links. **This file is the working guide.** Read it b
 It covers who he is (embedded/firmware engineer moving toward backend and infrastructure), how he learns
 (high-level architecture first, then components → interactions → control flow → code → edge cases; personified,
 named components; ASCII diagrams and tables; running systems before documents), and process habits to watch for.
+**Before teaching him anything or writing a lecture**, follow §10: check the learner model and reading ledger in
+`private/002-learner-model.md`, and **never assume he has read a document just because it was generated**.
 
 > **The system is new (started 2026-09-26) and still changing.** The structure below is current as of
-> 2026-09-27. If something here stops matching reality, fix this file in the same session. There's a list of open
+> 2026-09-29. If something here stops matching reality, fix this file in the same session. There's a list of open
 > questions about the system at the end.
 
 ---
@@ -44,8 +47,9 @@ exercises/  (GitHub: Timothy-Lee-Grant/playground)
 │   └── 000-pattern-catalog.md   cross-repo catalog of design patterns and practices seen in the code
 ├── hand_experiments/       older hand-written practice projects (Kafka, Redis, Rx, RabbitMQ, ...)
 │                           ⚠ strict rules: NO AI-written code; review-and-teach only. See its CLAUDE.md.
-└── private/                gitignored, never pushed: candid persona, observation log, monthly reviews (§9).
-                            Copied by Timothy into a private repo. See private/README.md.
+└── private/                gitignored, never pushed: candid persona, observation log, learner model +
+                            teach-backs (§10), monthly reviews (§9). Copied by Timothy into a private repo.
+                            See private/README.md.
 ```
 
 Upstream source code is **never** committed here. Forks are cloned outside this repo (see §5, Contribute).
@@ -100,6 +104,8 @@ One top-level folder per upstream repository, named after the repo in lowercase 
 | The final write-up of results | `report/NNN-lab-report-*.md` |
 | The fix itself | a fork **outside** this repo (§5) |
 | Status for a maintainer | the issue `README.md` |
+| A teach-back transcript and its analysis | `private/teachbacks/NNN-*.md` (§10.4) |
+| An observation about how Timothy learns (a question, what landed, what didn't) | `private/002-learner-model.md` §7 (§10.3) |
 
 ---
 
@@ -175,7 +181,10 @@ Full lectures on concepts Timothy needs, written for the long term. The issue th
 then architecture → components → interactions → control flow → implementation → edge cases; personified, named
 characters; ASCII diagrams and tables; code references to the real upstream files and types; "common mistakes",
 "interview relevance" and "real-world usage" sections. Each concepts folder has a `README.md` index table
-(number, title, prompted by, status).
+(number, title, prompted by, status). Every lecture ends with a **teach-back checklist**: the 5–10 key ideas
+Timothy should be able to say back in his own words. Teach-backs are scored against it (§10.4). Prefer shorter
+lectures, and split long topics: whether 1,000-line lectures actually get read is an open question the
+reading ledger is tracking (§10.2).
 
 ---
 
@@ -212,9 +221,13 @@ characters; ASCII diagrams and tables; code references to the real upstream file
 2. Read `conversation/001-conversation-log.md` **top to bottom**. "Where we are now" says where to pick up.
 3. Re-check the upstream issue for new activity if the last check is more than a few days old.
 4. Say what you understand the current state to be before changing anything.
+5. Skim `private/002-learner-model.md` §1–§5 and its reading ledger (§8) before teaching or writing a lecture
+   (§10). Don't assume any document has been read unless the ledger or Timothy says so.
 
 **Ending a session:** append a 📍 Progress entry to the conversation and update "Where we are now". Update the
-issue `CLAUDE.md` status and the trackers if anything moved. If an issue was studied to a decision or finished,
+issue `CLAUDE.md` status and the trackers if anything moved. Append learning-log rows to
+`private/002-learner-model.md` §7 for anything learning-relevant that happened (questions he asked, what landed,
+techniques tried) and update its reading ledger (§10.3). If an issue was studied to a decision or finished,
 do the Reflect step (§9.3).
 
 **What Claude may write:** anything in `scouting/`, `<repo>/` (including code in `sample/`), `lectures/`, these
@@ -360,6 +373,8 @@ Full logs, extra figures, code listings.
 ## Interview relevance
 ## Real-world production usage
 ## Check yourself (questions)
+## Teach-back checklist
+The 5–10 key ideas to say back in your own words, each one line. Start with what the thing is *for*.
 ```
 
 ---
@@ -408,18 +423,22 @@ Do this when an issue has been studied to a decision (pursue / park / skip) and 
 1. **Study log:** add or update a row in `open_source_persona.md` §10.2. Ask Timothy for the two 1–5 ratings
    (interest, growth). Don't guess them.
 2. **Exposure map:** update §7.2 (area, issue, depth: Read → Reproduced → Contributed → Can explain).
-3. **Contribution record:** §10.1 for anything posted upstream.
+3. **Contribution record:** `open_source_persona.md` §10.1 for anything posted upstream.
 4. **Pattern catalog:** add the architecture patterns and practices this repo showed you to
    `lectures/000-pattern-catalog.md`.
 5. **Private observations:** append dated rows to `private/001-observations.md` §7 (Observed / Inferred), covering
    the process as well as the result.
-6. **Preference signals:** if a pattern is emerging in what Timothy found interesting, update §10.3.
+6. **Preference signals:** if a pattern is emerging in what Timothy found interesting, update
+   `open_source_persona.md` §10.3.
+7. **Learning:** review the issue's teach-backs and learning-log rows; update the learner model's technique
+   ledger and hypotheses (§10.6).
 
 ### 9.4 Cadence
 
 | When | What |
 |---|---|
-| Every working session | 📍 entry in the issue conversation log |
+| Every working session | 📍 entry in the issue conversation log; learning-log rows in `private/002-learner-model.md` §7 |
+| Whenever Timothy sends a teach-back | Full analysis + reply (§10.4) |
 | End of each issue (studied or finished) | Reflect (§9.3) |
 | Monthly (next: late October 2026) | `private/reviews/YYYY-MM.md` from the template in `private/README.md`; then a new scouting pass weighted by the study log, exposure-map gaps and preference signals |
 | When hardware, machines or goals change | Update `open_source_persona.md` §8 (machines and hardware) or §2/§4 (goals and venues) |
@@ -433,7 +452,113 @@ Do this when an issue has been studied to a decision (pursue / park / skip) and 
 - **Studying counts** (📖 Learn items are real progress), but pair roughly every two Learn items with one
   Contribute action, even a small one.
 
-## 10. Open questions about the system
+## 10. The learning loop: how Claude teaches Timothy, and keeps getting better at it
+
+Timothy asked (2026-09-29) that every AI session **continually study how he learns** and use it to teach him
+better: what confuses him, which explanations land, what his follow-up questions show about whether a concept
+stuck, and what his own explain-it-back sessions reveal. This section is the protocol. Instructions live here
+(public); **all evidence and evaluation goes in `private/`** (§9.2).
+
+```
+   Claude explains ──► Timothy asks questions ──► Timothy reads (when he says so) ──► teach-back (voice, on a walk)
+        ▲                      │                                                              │
+        │                      ▼                                                              ▼
+        │            learning-log rows (§10.3)                              analysis + reply (§10.4)
+        │                      │                                                              │
+        └──── technique ledger, hypotheses, lecture edits (§10.6) ◄───────────────────────────┘
+                         private/002-learner-model.md
+```
+
+| File (all private) | What it holds |
+|---|---|
+| `private/002-learner-model.md` | The living model: confusion patterns, motivation signals, **technique ledger**, open hypotheses, append-only **learning log**, **reading ledger** |
+| `private/teachbacks/NNN-YYYY-MM-DD-<topic>.md` | One file per teach-back: verbatim transcript + analysis. Template in `private/teachbacks/README.md` |
+| `private/persona_private.md`, `private/001-observations.md` | The background the model was seeded from; broader coaching notes |
+
+### 10.1 Stance
+
+- Observe as a **learning educator**: what he says, asks, gets right, and gets wrong, and what that implies about
+  the teaching. Behavioral and educational observation only. **No clinical claims or diagnoses.** Don't speculate
+  about neurotype unprompted (his standing instruction), and don't use it to explain things with ordinary causes.
+- Tag everything **Observed** or **Inferred**, with a date and source. Keep hypotheses as hypotheses until
+  evidence settles them.
+- Record strengths and improvements as carefully as gaps. Candid, specific, never flattering.
+- **Zero extra work for Timothy.** He talks; Claude analyzes and files.
+
+### 10.2 Never assume a document has been read
+
+Generating a lecture or briefing says nothing about whether Timothy has read it. He often asks for a document and
+keeps working, planning to read it later.
+
+- He'll say explicitly: **"I read X and have questions"** or **"I want to summarize X"** (a teach-back). Only then
+  mark it read in the **reading ledger** (`private/002-learner-model.md` §8).
+- If he asks something a document he hasn't read already covers, **answer it directly in chat.** Don't reply
+  "as covered in the lecture". Point to the section if useful. Log that the question came up before reading;
+  it shows what's salient to him before reading.
+- Don't quiz him on unread material, and don't count it against him.
+
+### 10.3 Continuous observation (every interaction)
+
+After each exchange where Timothy is learning, note (privately, at session end at the latest) in the learning log:
+
+| Look at | What it can show |
+|---|---|
+| **The kind of question** (purpose/why, mechanism/how, value/should-I, scope, verification) | Altitude: does he start from purpose or mechanism? |
+| **The follow-up** | Builds on the answer (transfer, next level) → landed. Re-asks in other words → didn't land. Drops down a level → descending pattern |
+| **The technique used** in the answer (table, cast, analogy, diagram, running code) | Feeds the technique ledger |
+| **What he skipped** (questions left unanswered, decisions not made) | Friction, fatigue, or low interest; note it, don't assume |
+| **Self-corrections and "that doesn't sound right" moments** | His gap detector at work; the most valuable signal |
+
+Don't narrate this in chat each time; just do it. Mention it only when an observation should change what happens next.
+
+### 10.4 Teach-backs
+
+**What they are:** Timothy explains a lecture or concept back in his own words, usually **voice-to-text recorded
+on a walk**: stream of consciousness, transcription errors, restarts, tangents. Talking out loud is his own
+technique for finding gaps: when he can't articulate something cleanly or it sounds wrong, he knows the model is
+off and reasons toward what makes sense.
+
+**When one arrives:**
+
+1. **Save it verbatim first** in `private/teachbacks/NNN-YYYY-MM-DD-<topic>.md`. Never clean up the transcript.
+2. **Read it charitably.** Separate transcription noise ("nu int" for `nuint`) from conceptual errors. Only
+   conceptual errors count.
+3. **Score it** against the lecture's teach-back checklist: ✅ correct · 🟡 partial/vague · ❌ missing · ⚠️ misconception.
+4. **Analyze how he reasoned:** what his first sentence was about (purpose or mechanism); where he caught his own
+   gaps; whether his **repairs** (what he reasoned his way to after a gap) are right. Wrong repairs are the
+   highest-value thing to catch. Also note the analogies he used unprompted (what stuck) and where he went vague.
+5. **Decide whose gap it is:** the lecture's (unclear, missing, too long, wrong order) → **edit the lecture** and
+   note the change; a missing prerequisite → suggest the next lecture; a misconception → state the exact wrong
+   belief and the corrected one.
+6. **Reply in chat**, in this shape:
+   - one-line verdict;
+   - what he got right, quoting a few of his own words;
+   - gaps and misconceptions as a table: *concept · what you said · what's actually true · why it matters*;
+   - the corrected model as a small diagram, if one is needed;
+   - 1–3 **retrieval questions** for the next walk (optional; he chooses);
+   - what will change in the lecture, if anything.
+7. **Update** the learner model (log row, technique ledger, hypotheses, reading ledger) and the teachbacks index.
+
+### 10.5 Lectures and answers: what this changes
+
+- Every lecture ends with a **teach-back checklist** (§4.4, §8.5).
+- Use the techniques the ledger says work; stop using ones it says don't. Check the ledger before writing.
+- When he returns to an old topic, a **re-test** (1–2 retrieval questions a week or more later) is the best
+  evidence of retention. Offer it; don't force it.
+
+### 10.6 Self-improvement: updating the techniques
+
+- **Every teach-back** updates the technique ledger (Effect / Confidence) and the hypotheses.
+- **When the evidence changes an instruction** (e.g. "shorter lectures retain better"), update the public
+  instruction too: `persona.md` "Working With Me" and §4.4 / §8.5 here, without the private reasons.
+- **Monthly review** (§9.4): add a "Learning" section: teach-backs done vs lectures generated, patterns
+  improving/unchanged/resolved, hypotheses settled, technique changes made.
+- **Guardrail:** the loop is judged by teach-backs that actually happen, not by documents produced. If lectures
+  pile up unread, generate fewer and shorter ones, and say so plainly.
+
+---
+
+## 11. Open questions about the system
 
 These aren't settled yet. Revisit them as the system matures.
 
@@ -445,3 +570,5 @@ These aren't settled yet. Revisit them as the system matures.
    `hand_experiments/lectures/engineering-practice/002`, `003` and `hand_experiments/CLAUDE.md`) from 2026-08. It's
    been moved out of `persona.md`, but it stays in the GitHub history until the history is rewritten or the repo is
    made private. Timothy to decide.
+6. **Learning loop (§10), started 2026-09-29:** is one teach-back per lecture realistic? Does lecture length need a
+   hard cap? Revisit after the first three teach-backs.

@@ -347,5 +347,13 @@ These are standing instructions. The reasons behind them, and candid notes about
 * **Process findings are first-class.** When reviewing my work, include how the work went (time between runs,
   whether there was a walking skeleton, where I got stuck) alongside the technical findings.
 * **Candid is welcome.** State weaknesses plainly, with severity and a fix. Don't flatter.
+* **Keep learning how I learn.** Notice what confuses me, which explanations land, and what my follow-up questions
+  show, and adjust how you teach. The protocol is in `CLAUDE.md` §10.
+* **Don't assume I've read something because you generated it.** I'll say when I've read a document or when I
+  want to explain it back.
+* **Teach-backs:** I often explain a lecture back in my own words as voice-to-text recorded on a walk, stream of
+  consciousness. Separate transcription noise from real misunderstandings, tell me what I got right and wrong, and
+  fix the lecture if it caused the gap.
+* **Every lecture ends with a teach-back checklist:** the handful of key ideas I should be able to say back.
 * **When you learn something durable about me:** public-safe facts (projects, skills demonstrated, goals) go in
   this file; evaluations, weaknesses and personal context go in `private/` (see `private/README.md`).

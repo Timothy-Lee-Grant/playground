@@ -40,4 +40,4 @@ NotebookLM's "Customize" box; don't upload it).
 
 | # | Audio lecture | Prompted by | Status |
 |---|---|---|---|
-| — | *(none yet)* | | |
+| A001 | [How a .NET application fits together: from a callback to a running program on a Raspberry Pi](audio/001-audio-how-a-dotnet-app-fits-together.md) ([customize prompt](audio/001-audio-how-a-dotnet-app-fits-together.prompt.md)) | Follow-up to lecture 002; aimed at the application-model layer (library vs framework, IL/packages/`using`, solution/project/process, the host and DI lifetimes, web + GPIO in one host) | Written 2026-09-29 (~4,400 words); not yet listened to |

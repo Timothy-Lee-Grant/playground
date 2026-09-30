@@ -1,0 +1,22 @@
+Command: dotnet test src/devices/Button/tests/  (run from develop/iot)
+Date: 2026-09-30 02:18:23 PDT
+dotnet --version: 10.0.302
+Fork commit: 1eb0b2f6 (main)
+Machine: Darwin arm64
+----
+  Determining projects to restore...
+  Restored /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/src/devices/Button/Button.csproj (in 3.44 sec).
+  Restored /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/src/System.Device.Gpio/System.Device.Gpio.csproj (in 3.44 sec).
+  Restored /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/src/devices/Common/Common.csproj (in 3.44 sec).
+  Restored /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/src/devices/System.Device.Model/System.Device.Model.csproj (in 3.44 sec).
+  Restored /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/src/devices/Button/tests/Button.Tests.csproj (in 3.52 sec).
+  System.Device.Gpio -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/System.Device.Gpio/Debug/net8.0/System.Device.Gpio.dll
+  System.Device.Model -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/System.Device.Model/Debug/net8.0/System.Device.Model.dll
+  Common -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Common/Debug/net8.0/Common.dll
+  Button -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button/Debug/net8.0/Button.dll
+  Button.Tests -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button.Tests/Debug/net8.0/Button.Tests.dll
+Test run for /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button.Tests/Debug/net8.0/Button.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     8, Skipped:     0, Total:     8, Duration: 8 s - Button.Tests.dll (net8.0)
+exit code: 0

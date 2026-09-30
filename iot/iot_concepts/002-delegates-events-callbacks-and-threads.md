@@ -6,6 +6,7 @@
 | **Date** | 2026-09-28 |
 | **Upstream code quoted** | dotnet/iot `main` @ `1eb0b2f` (2026-09-24). Quotes are trimmed (XML doc comments removed); file paths are given so you can open the full source. |
 | **Prerequisites** | [Lecture 001](001-the-big-picture-dotnet-iot.md) §3–§6 (the layers, and how a GPIO callback travels) |
+| **Revised** | 2026-09-29, after Timothy's first teach-back: clarified `=` vs `+=` (§3.1), what immutability applies to (§3.2), that the `event` doorman restricts operations and not identity (§1.3, §5.1), library vs framework (§1.2), and added a teach-back checklist (§18). |
 | **Evidence status** | Code quotes are copied from the source. Statements about **runtime behavior** (which thread, what happens on an exception) come from reading the code and from how .NET works; none has been run in this repo yet. The "Try it" programs in §15 are there so you can confirm them yourself. |
 
 ---
@@ -105,9 +106,23 @@ Two differences from your polling loop:
 2. **It's written once, in the library**, and any number of subscribers plug into it. Your code no longer contains
    a loop at all; it only contains *reactions*.
 
-You already know this idea under another name: **inversion of control.** You register your code with a framework,
-and the framework calls you. `BackgroundService`, ASP.NET Core controllers and GPIO callbacks are all the same move.
-Events are the smallest version of it.
+You already know this idea under another name: **inversion of control** ("don't call us, we'll call you"). You
+hand over a piece of code, and someone else decides when it runs. `BackgroundService`, ASP.NET Core controllers
+and GPIO callbacks all use that move. Events are the smallest version of it.
+
+**Careful: using inversion of control in one spot doesn't make something a framework.** The test is *who owns the
+program's flow*:
+
+| | **Library** (you call it) | **Framework** (it calls you) |
+|---|---|---|
+| Who runs `Main`'s flow? | Your code. You call the library's methods when you decide to | The framework. You configure it, then hand over control (`app.Run()`) |
+| Inversion of control? | Only in small, local places: a callback you register | Everywhere: your code is mostly reactions |
+| Examples | **dotnet/iot** (`GpioController`, `I2cDevice`, bindings), `HttpClient`, Newtonsoft.Json | ASP.NET Core, the Generic Host, xUnit |
+
+dotnet/iot is a **library**. You `new` a `GpioController`, call `Read`/`Write` when you choose, and there's no
+`Run()`. The callback is a small pocket of inversion inside a program you still control. When you want web + GPIO in
+one app, the **Generic Host** is the framework: it runs Kestrel and your `BackgroundService`s, and your
+`BackgroundService` uses dotnet/iot as a library.
 
 ### 1.3 The cast of characters
 
@@ -117,7 +132,7 @@ Events are the smallest version of it.
 | **The Subscriber** | your class, with a handler method | Hands over a "phone number" and does something when called. |
 | **The Phone-Number Card** | a **delegate** instance | A small object holding *which method to call* and *on which object*. |
 | **The Guest List** | the delegate's **invocation list** (multicast) | All the cards handed in, in order. |
-| **The Doorman** | the **`event`** keyword and its `add`/`remove` accessors | Lets outsiders add or remove their own card. Only the Publisher may read the list or make the calls. |
+| **The Doorman** | the **`event`** keyword and its `add`/`remove` accessors | Lets outsiders do exactly two things: add a card, remove a card. He doesn't check *who* is asking; he limits *what* anyone outside may do. Only the Publisher may read, replace or clear the list, or make the calls. |
 | **The Message** | `EventArgs` subclass (`PinValueChangedEventArgs`) | What happened: which pin, which edge. |
 | **The Return Address** | the `sender` parameter | *Who* is calling you. |
 | **The Courier** | a **thread** | The one who actually walks down the guest list and makes each call. Whichever thread raises the event runs every handler. |
@@ -259,10 +274,25 @@ What this shows:
  OnPinChanged.Invoke(…) →  calls A, then B, in that order, on the thread that called Invoke
 ```
 
+**`=` is not `+=`.** Easy to mix up, because with a C function pointer `=` is the only operator there is:
+
+```
+ h = A;     →  h is [A]          (h now points at a NEW delegate holding only A)
+ h += B;    →  h is [A, B]       (a NEW delegate: the old list plus B)
+ h = C;     →  h is [C]          (A and B are gone: = REPLACES, it never adds)
+ h = null;  →  nobody left
+```
+
+That's why `=` from outside is so dangerous (§5.1): one `=` silently throws away every other subscriber.
+
 (Ignore for now that Arduino passes `PinNumber`, a boxed `int`, as `sender`. That's one of the wrong senders from
 #2403; §12.)
 
 ### 3.2 Delegates are immutable (and why that matters)
+
+**The rule in one line:** a delegate **object**, including the invocation list inside it, never changes after it's
+created. What changes is the **field or variable** that points at it: `+=` and `-=` build a new object and re-point
+the field.
 
 `+=` never modifies the existing delegate. It builds a **new** one and stores it back into the field. That's why the
 "thread-safe copy" idiom above works:
@@ -373,8 +403,13 @@ But then *anyone* could do things only the publisher should do:
 | `x.OnPinChanged = null;` | allowed 😬 | **compile error** |
 | `x.OnPinChanged.Invoke(...)` (fake an event) | allowed 😬 | **compile error** |
 
-`event` is the doorman: from **outside** the class you may only add or remove *your own* card. Only the owning class
-can look at the list, clear it, or make the calls. That enforces the rule you wrote in your `StateService` comment,
+`event` is the doorman: from **outside** the class you may only **add** or **remove** a card. Only the owning class
+can look at the list, replace or clear it, or make the calls.
+
+Note what the doorman does **not** do: he doesn't know *who* is at the door. There's no caller identity in .NET that
+an event could check. He restricts **which operations compile** outside the class. So `-=` from outside removes any
+card equal to the one you pass (§4), whether or not you added it; in practice you can only name delegates you can
+reach, which is usually your own. That enforces the rule you wrote in your `StateService` comment,
 *"no other entity is allowed to publish events"*, in the compiler.
 
 ### 5.2 Field-like events (the normal case)
@@ -403,6 +438,9 @@ This is a **field-like event**. The compiler generates three things behind it:
  public void add_ButtonDown(EventHandler<EventArgs> v)    { /* thread-safe: field = field + v */ }
  public void remove_ButtonDown(EventHandler<EventArgs> v) { /* thread-safe: field = field - v */ }
 ```
+
+If you'd designed this yourself ("keep the delegate private, expose an Add method and a Remove method"), you'd have
+written exactly this. `event` is that pattern, generated for you and made thread-safe.
 
 Outside code's `button.ButtonDown += H` becomes a call to `add_ButtonDown(H)`. Inside `ButtonBase`, the name
 `ButtonDown` refers to the hidden field, which is why `ButtonBase` can write `ButtonDown?.Invoke(...)`. The generated
@@ -1062,6 +1100,21 @@ static class AddressExtensions
 | **Extension method** | A static method with `this` on its first parameter, callable like an instance method. |
 | **Re-entrant lock** | A lock the same thread can take again while holding it (.NET `lock` is re-entrant). |
 | **`Channel<T>`** | A thread-safe async queue for handing work between threads. |
+
+## 18. Teach-back checklist
+
+Say each of these back in your own words (on a walk is fine). Start with what the thing is *for*.
+
+1. A delegate **type** declares a method shape; an **instance** is an object; **invoking** runs the method(s).
+2. What an instance holds that a C function pointer doesn't: the **method and the target object** (`.Target`), with type checking.
+3. `+=` builds a **new** delegate with a longer invocation list; `=` **replaces** it; `Invoke` calls each entry in order, on the calling thread; an exception stops the rest.
+4. Immutability: the delegate object never changes, the **field** is re-pointed. Why reading the field once (`?.Invoke`, or a local copy) prevents the null race.
+5. Why `-=` sometimes silently removes nothing (same method + same target; the lambda trap).
+6. What `event` restricts (outsiders: only `+=`/`-=`; owner: everything) and what it compiles into (private field + `add`/`remove`).
+7. Custom `add`/`remove` accessors, and why `GpioPin` has no list of its own.
+8. The `(sender, e)` convention, and what `sender` should be.
+9. Which thread runs your handler, and three consequences (keep it short, exceptions land on the raiser's thread, protect shared data).
+10. Events as the smallest inversion of control, and why that doesn't make dotnet/iot a framework.
 
 ## Sources
 

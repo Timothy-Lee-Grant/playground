@@ -33,7 +33,7 @@ The condensed version the CLI works from is [`shared/01-brief.md`](shared/01-bri
 | `shared/STATUS.md`, `shared/sessions/`, `shared/evidence/` | CLI state, session reports, test output | CLI |
 | `workspace/` | The CLI workspace's `CLAUDE.md`, settings, `/handoff` command, `setup.sh` | desktop |
 | `sample/` | Experiments outside the fork (e.g. a Pi console app with a real button), if needed | either |
-| `lectures/` | Lectures specific to this issue (lecture 1: the change end to end) | desktop |
+| `lectures/` | Lectures specific to this issue (001: the change end to end); `lectures/audio/` for NotebookLM versions (+ `.prompt.md`) | desktop |
 | `report/` | Lab report, once there are results | desktop |
 
 **CLI workspace:** `~/Desktop/projects/oss-work/iot-2328/` (fork at `develop/iot`, origin

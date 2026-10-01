@@ -304,6 +304,10 @@ Lecture 1: [`../lectures/001-the-change-end-to-end.md`](../lectures/001-the-chan
 the spec, plus a 5-minute "watch it fail, then pass" start). §5.3 has a **revised comment** (v2 of Stage 4's draft):
 it now says the change exists, and states the ordering trade-off honestly. Stage 4's v1 draft is superseded.
 
+**[Desktop — 2026_10_01] Audio version of lecture 1** (Timothy asked):
+[`../lectures/audio/001-audio-the-button-that-was-already-pressed.md`](../lectures/audio/001-audio-the-button-that-was-already-pressed.md)
++ its NotebookLM customization prompt (`.prompt.md`, paste into "Customize"; don't upload as a source).
+
 # Stage 7 (Contribution)
 
 *(PR description draft; Timothy's final test run, push, PR link.)*

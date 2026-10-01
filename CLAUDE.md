@@ -106,6 +106,7 @@ command and `setup.sh`). For these issues, test/build evidence from the fork goe
 | An answer to Timothy's question about this issue | `conversation/` (new entry) |
 | A record of what was just done (ran E1, posted a comment, decided a route) | `conversation/` (📍 or 🧭 entry) |
 | A general explanation of a concept (events, GPIO, sysfs vs libgpiod, semver) | `<repo>/<repo>_concepts/NNN-*.md`, linked from the conversation |
+| A lecture about **one issue's change** (mode P: what was built, why, the tests, the comment) | `<issue>/lectures/NNN-*.md` |
 | A concept that isn't specific to any one upstream project | root `lectures/` |
 | Code that reproduces or tests something | `sample/` |
 | Raw output of a run | `sample/evidence/NNN-*.txt` |

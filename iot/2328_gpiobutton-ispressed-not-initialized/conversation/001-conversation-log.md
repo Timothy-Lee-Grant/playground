@@ -12,10 +12,10 @@
 
 | | |
 |---|---|
-| **Stage** | Mode P, plan **v2**. **G1 open**: CLI builds Steps 0, 2–7 tonight. Comment deferred until after lecture 1. |
-| **Last entry** | #4 (2026-10-01) |
+| **Stage** | Mode P. **Code done** (Steps 0–7, 2 local commits, 15/15 green). Lecture 1 written. Nothing pushed or posted. |
+| **Last entry** | #5 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
-| **Next step** | CLI session: Steps 0, 2–7, then `/handoff`. Then desktop writes lecture 1 (spec: plan Stage 6). |
+| **Next step** | Timothy reads lecture 1 (start with §0), asks questions; posts the comment (§5.3) when ready (G2). CLI: run `/handoff` for the build session. |
 
 ## Index
 
@@ -25,6 +25,7 @@
 | 2 | 2026-09-30 | 📍 | First CLI session read: setup works, imports fixed, P3 found |
 | 3 | 2026-09-30 | 🧭 | Switch to mode P (plan-driven); plan v1 written |
 | 4 | 2026-10-01 | 🧭 | G1 granted; code first, comment after lecture 1 (plan v2) |
+| 5 | 2026-10-01 | 📍 | Code reviewed; lecture 1 written |
 
 ---
 
@@ -90,3 +91,13 @@ it or knowing he can deliver. Since writing code isn't the bottleneck, the CLI b
 the Stage 2 defaults; lecture 1 (spec in plan Stage 6) then explains the change, the tests and the comment, and he
 posts only once he understands it. Desktop agreed: it's his own rule applied to communication, and the risk of
 waiting (someone else claiming a two-year-quiet issue) is low. Plan revised to v2; D4 recorded.
+
+---
+
+## #5 · 2026-10-01 · 📍 Code reviewed; lecture 1 written
+
+The CLI completed plan Steps 0–7 in one session: branch `fix/2328-gpiobutton-initial-state`, two local commits
+(tests, then fix), 4 red → 15/15 green, 0 warnings, stable over 5 runs, +98/−0 in 3 files. Desktop reviewed it
+against the evidence (see the plan's Stage 6 entry) and wrote
+[`../lectures/001-the-change-end-to-end.md`](../lectures/001-the-change-end-to-end.md). Its §5.3 holds the revised
+comment. The build session's `/handoff` wasn't run (STATUS.md is stale).

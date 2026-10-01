@@ -290,6 +290,20 @@ Timothy asked for exactly these parts:
 6. Teach-back checklist (5–10 ideas). Kept as short as these six parts allow; concept lectures (Moq, events,
    `GpioController`) only if lecture 1 shows they're needed.
 
+**[Desktop — 2026_10_01_00_52] Review of Steps 0–7, and lecture 1 written**
+
+Review: the CLI's work holds up. Checked against the evidence: 4 red on assertions (`003`), 15/15 green (`004`), 0
+warnings under `TreatWarningsAsErrors`, 5 stable runs, diff 3 files / +98 / −0 (`005`, `006`). Its deviations are
+all sound implementation details (linked mock, doc remark on `GpioButton` so `ButtonBase.cs` is untouched, guard rows
+kept). Its two corrections to the desktop's own reasoning are right and are taught in the lecture: (1) the U2
+"lost-update window" remains with register-then-read; (2) raising events in the ctor reaches no subscriber, so
+"would recreate #1715" was the wrong reason. **Not done:** `/handoff` for this session (STATUS.md and a session
+report are missing).
+
+Lecture 1: [`../lectures/001-the-change-end-to-end.md`](../lectures/001-the-change-end-to-end.md) (all six parts of
+the spec, plus a 5-minute "watch it fail, then pass" start). §5.3 has a **revised comment** (v2 of Stage 4's draft):
+it now says the change exists, and states the ordering trade-off honestly. Stage 4's v1 draft is superseded.
+
 # Stage 7 (Contribution)
 
 *(PR description draft; Timothy's final test run, push, PR link.)*

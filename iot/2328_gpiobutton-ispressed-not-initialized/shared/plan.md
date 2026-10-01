@@ -48,26 +48,29 @@ propose and build so it's cheap to change).
 
 # Stage 3 (Implementation Planning)
 
-**[Desktop — 2026_09_30_22_33] Implementation Plan v1**
+**[Desktop — 2026_10_01_00_25] Implementation Plan v2** (v1 → v2: Timothy's decision of 2026_10_01_00_25, Stage 3 Discussion. The
+upstream comment moves from *before* the code to *after* lecture 1, because he won't post what he can't explain. The
+code is built tonight on the Stage 2 defaults. Nothing public happens until he understands it.)
 
-Ordering: check the plan against reality first, then the public question, then local work (which doesn't wait for
-a maintainer reply), then understanding, then the PR.
+Ordering (v2): check the plan against reality, build the whole change locally on the Stage 2 defaults, then
+understanding (lecture 1 covers the code, the tests **and** the comment), then the public steps. If the maintainers
+later choose differently, it's a plan revision: the tests' structure stays and only the expected behavior changes.
 
 | Step | What | Who | Proof | Gate |
 |---|---|---|---|---|
 | **0** | **Plan review against the code** (no edits): confirm brief §3 paths and line numbers; read PR #2608's diff for `src/devices/Button` and list exact collisions; evaluate O2 (Mockable driver vs. any in-repo virtual/fake controller); sanity-check U2's reasoning in the code (which thread callbacks run on, whether `IsPressed` writes race). Write one Stage 5 entry: "plan holds" or change requests | CLI | Stage 5 entry | — |
-| **1** | **Post the upstream comment** (draft in Stage 4) | **Timothy** posts; desktop drafted | Link to the comment in a `[Timothy]` entry | **G2** |
+| **1** | *(moved, v2)* **Post the upstream comment**: now after lecture 1 (between Steps 8 and 9) | **Timothy** posts; desktop drafted | Link in a `[Timothy]` entry | **G2** |
 | **2** | Branch `fix/2328-gpiobutton-initial-state` from `upstream/main`. Add the mock driver to `src/devices/Button/tests/` and a helper that builds a `GpioButton` over it. One smoke test (construct + dispose) | CLI | `evidence/002-harness-smoke.txt` | G1 must be open |
 | **3** | **Failing tests** (red): pull-up + Low → pressed; pull-up + High → not pressed; pull-down mirror (High → pressed); external resistor (pull-up wiring, `hasExternalResistor: true`); held at startup + debounce on → releasing raises `ButtonUp` and `Press` | CLI | `evidence/003-red.txt`: each new test fails **for the stated reason** (assertion on `IsPressed` / missing event), not a crash | — |
 | **4** | **The fix** in the `GpioButton` constructor, per U1/U2 defaults: after registering the callback, read the pin once and set `IsPressed` from the active level, raising no events. XML-doc remark on `IsPressed` | CLI | `evidence/004-green.txt`: all Button tests pass (old 8 + new) | — |
 | **5** | **Hygiene:** build with no new warnings (StyleCop/analyzers); run the Button tests 5× to check for flakiness; diff is only the intended files | CLI | `evidence/005-hygiene.txt` + `git diff --stat` | — |
 | **6** | **Commits** per O4 (CLI asks; settings require approval) | CLI proposes, Timothy approves | `git log --oneline` in the entry | — |
-| **7** | **Implementation summary entry:** every changed line grouped by purpose; the "why" of each choice and the alternatives rejected; open questions. This is the raw material for the lectures | CLI | Stage 5 entry | — |
-| **8** | **Lectures + teach-back** (Stage 6) | Desktop writes; **Timothy** reads, then teaches back | Teach-back analysis | **G3** |
+| **7** | **Implementation summary entry:** every changed line grouped by purpose; the "why" of each choice and the alternatives rejected; for **each test**, one line on what it proves and what it doesn't; open questions. Save the full diff (`git diff upstream/main...HEAD > evidence/006-diff.patch`). This is the raw material for lecture 1 | CLI | Stage 5 entry + `evidence/006-diff.patch` | — |
+| **8** | **Lecture 1 tonight** (spec in Stage 6), then the comment (Step 1, G2), further lectures only if needed, then the teach-back | Desktop writes; **Timothy** reads, posts, teaches back | Teach-back analysis | **G2**, then **G3** |
 | **9** | **Contribution** (Stage 7): Timothy runs the final test command himself, pushes the branch, opens the PR. CLI drafts the description; desktop reviews it | **Timothy** acts; AI drafts | PR link | after G3 |
 | **10** | **Review** (Stage 8): each review comment becomes a step here; the AI drafts code and replies, Timothy posts | all | — | G2 applies to each reply |
 
-**Timothy's own work, per step:** Step 1 (post), Step 6 (approve commits), Step 8 (read, teach back), Step 9
+**Timothy's own work, per step:** Step 6 (approve commits), Step 8 (read lecture 1), Step 1 (post, after lecture 1), Step 8 (teach back), Step 9
 (test, push, open PR), Step 10 (post replies). Everything else he may watch or skip.
 
 **Acceptance criteria**
@@ -87,16 +90,26 @@ a maintainer reply), then understanding, then the PR.
 | A maintainer prefers (b) or (c), or the other order | A plan revision: change one step and the expected values; the tests' structure stays |
 | pgrawehr folds the fix into #2608 | Switch to 📖 learn mode; review his version against ours. Still a win for understanding |
 | #2608 merges first and conflicts | Rebase (a learning moment for Timothy; desktop explains it) |
-| No maintainer reply by Sunday | Open the PR anyway: we asked first, and the description states the defaults as questions |
+| No maintainer reply by Sunday | Open the PR anyway; the description states the defaults as questions. (v2: the comment now goes out later, so a reply before Sunday is less likely. That's acceptable) |
+| Someone else claims #2328 before Timothy comments | Low (no activity since 2024). Re-check the issue right before posting. If claimed: switch to 📖 learn mode with our working version to compare |
 | Understanding isn't ready by Sunday | **The PR slips.** Understanding beats the deadline (Timothy's rule) |
 | The mock pattern doesn't fit `GpioButton` | Step 0 catches it; change request |
 
-**Timeline:** Thu 10/1: Step 0, Timothy posts the comment, Steps 2–4. Fri 10/2: Steps 5–7, lectures start.
-Sat 10/3: lectures, teach-back on a walk. Sun 10/4: G3, Step 9.
+**Timeline (v2):** Tonight (Wed/Thu night): Steps 0, 2–7 in one CLI session, then lecture 1. Thu–Fri: read lecture 1,
+questions, post the comment when ready (G2). Sat: teach-back on a walk. Sun 10/4: G3, Step 9.
 
 ### Stage 3 Discussion Subsection
 
 *(Questions about the plan, and the G1 grant, go here.)*
+
+**[Timothy — 2026_10_01_00_25, via desktop] G1 granted, with a reorder**
+
+Doesn't want to post the comment yet: he'd be committing to something others rely on without understanding what it
+says or being sure he can deliver it. Writing code isn't the bottleneck, so: the CLI builds the whole change
+tonight on the most likely direction (the Stage 2 defaults). If the maintainers choose differently, little is lost
+and we re-implement. Then lecture 1 tonight, covering what changed and why, how it solves the issue, the tests and
+their output and what they prove, and what the comment means and implies. **G1 is open for Steps 0 and 2–7.**
+G2 (posting) stays closed until he's read lecture 1.
 
 # Stage 4 (Upstream Communication)
 
@@ -126,6 +139,22 @@ grants or declines them.)*
 # Stage 6 (Understanding)
 
 *(Desktop: lecture list and links; Timothy: reading confirmations and teach-back; G3.)*
+
+**[Desktop — 2026_10_01_00_25] Lecture 1 spec: "The change, end to end"** (written tonight from the CLI's Stage 5 entries,
+`evidence/` and `006-diff.patch`; destination `../../iot_concepts/` or this issue's `report/`, linked here)
+
+Timothy asked for exactly these parts:
+1. **The problem in the issue**, shown happening: the two broken paths (property wrong; release swallowed with
+   debounce), traced through the real code.
+2. **What changed, line by line, and why**: each choice and the alternatives rejected (from the CLI's *why*s).
+3. **How it fits together and solves the issue**: the constructor's new sequence, the callback, `ButtonBase`, and
+   why no events are raised.
+4. **The tests**: the harness (why a fake driver), each test with its **red output before the fix and green output
+   after**, what each one proves, and what none of them proves (real hardware timing, the settle question).
+5. **The comment**: every sentence explained; what it commits him to; what each possible maintainer answer (timing
+   a/b/c, order, "#2608 will do it", "not wanted") would mean for the code and for him.
+6. Teach-back checklist (5–10 ideas). Kept as short as these six parts allow; concept lectures (Moq, events,
+   `GpioController`) only if lecture 1 shows they're needed.
 
 # Stage 7 (Contribution)
 

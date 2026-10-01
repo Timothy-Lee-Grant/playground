@@ -12,10 +12,10 @@
 
 | | |
 |---|---|
-| **Stage** | Mode P. Plan v1 written, **waiting for G1** (Timothy approves the plan). Nothing posted upstream. |
-| **Last entry** | #3 (2026-09-30) |
-| **Open decisions** | G1: approve plan v1, including the proposals for U1/U2 (upstream) and O1–O4 (ours) |
-| **Next step** | Timothy reads `shared/plan.md` (Stages 1–4), grants G1, posts the comment (G2). Then a CLI session runs Step 0. |
+| **Stage** | Mode P, plan **v2**. **G1 open**: CLI builds Steps 0, 2–7 tonight. Comment deferred until after lecture 1. |
+| **Last entry** | #4 (2026-10-01) |
+| **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
+| **Next step** | CLI session: Steps 0, 2–7, then `/handoff`. Then desktop writes lecture 1 (spec: plan Stage 6). |
 
 ## Index
 
@@ -24,6 +24,7 @@
 | 1 | 2026-09-30 | 📍 | Folder set up with the AI workflow; briefing lives in scouting |
 | 2 | 2026-09-30 | 📍 | First CLI session read: setup works, imports fixed, P3 found |
 | 3 | 2026-09-30 | 🧭 | Switch to mode P (plan-driven); plan v1 written |
+| 4 | 2026-10-01 | 🧭 | G1 granted; code first, comment after lecture 1 (plan v2) |
 
 ---
 
@@ -79,3 +80,13 @@ his own projects (he shared `003-ToolBox_Integration_And_Hosted_LLM_Migration.md
 Written: [`../shared/plan.md`](../shared/plan.md) v1; `00-start-here.md` §6 (mode P rules); `04` (current mode P);
 `03-next.md` marked superseded; `/handoff` and the workspace `CLAUDE.md` updated;
 [`ai-workflow/interaction-modes.md`](../../../ai-workflow/interaction-modes.md) gained mode P.
+
+---
+
+## #4 · 2026-10-01 · 🧭 G1 granted; build first, comment after understanding (plan v2)
+
+Timothy didn't want to post the comment yet: he'd be committing to something others rely on without understanding
+it or knowing he can deliver. Since writing code isn't the bottleneck, the CLI builds the whole change tonight on
+the Stage 2 defaults; lecture 1 (spec in plan Stage 6) then explains the change, the tests and the comment, and he
+posts only once he understands it. Desktop agreed: it's his own rule applied to communication, and the risk of
+waiting (someone else claiming a two-year-quiet issue) is low. Plan revised to v2; D4 recorded.

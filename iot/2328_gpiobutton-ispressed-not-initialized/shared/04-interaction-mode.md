@@ -6,7 +6,8 @@
 
 ## Current mode
 
-**M0 — Tutor** (for WO-1). Set 2026-09-30.
+**P — Plan-driven (Timothy observes).** Set 2026-09-30 by Timothy. Work from `shared/plan.md`; rules in
+`00-start-here.md` §6. (M0 was used for session 001.)
 
 ## The menu (summary)
 
@@ -17,8 +18,9 @@
 | **M2 Pair** | CLI, small steps | proposes one small change + why, waits for a yes | batches changes or applies without a yes |
 | **M3 Delegate + review** | CLI, whole order | implements on a branch, then walks Timothy through the diff; he explains it back before commit | commits before the walkthrough and explain-back |
 | **M4 Spike** | CLI, freely | explores on a throwaway branch to answer a question | lets spike code into the real branch |
+| **P Plan-driven** | CLI, per `plan.md` | drives the plan between Timothy's gates (G1–G3), narrates in short chunks, writes the "why" of every step | starts before G1; decides ours/upstream decisions; skips the why |
 
-All modes: never push/PR/comment; present options instead of making design decisions. Mixing is fine
+M0–M4 are kept for later, once Timothy is ready to steer more. All modes: never push/PR/comment; present options instead of making design decisions. Mixing is fine
 ("tests M1, fix M2"); Timothy can switch any time by saying so.
 
 ## Scoring (asked during /handoff)

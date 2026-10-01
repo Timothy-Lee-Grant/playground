@@ -12,10 +12,10 @@
 
 | | |
 |---|---|
-| **Stage** | WO-1 in progress (session 001 done: setup verified, baseline 8/8, tour). Nothing posted upstream. |
-| **Last entry** | #2 (2026-09-30) |
-| **Open decisions** | P1 when to read the pin · P2 base branch · P3 read vs. register order (`shared/02-decisions.md`) |
-| **Next step** | Timothy posts the upstream comment (now with P3). Next CLI session: confirm imports, finish WO-1 steps 4–5. |
+| **Stage** | Mode P. Plan v1 written, **waiting for G1** (Timothy approves the plan). Nothing posted upstream. |
+| **Last entry** | #3 (2026-09-30) |
+| **Open decisions** | G1: approve plan v1, including the proposals for U1/U2 (upstream) and O1–O4 (ours) |
+| **Next step** | Timothy reads `shared/plan.md` (Stages 1–4), grants G1, posts the comment (G2). Then a CLI session runs Step 0. |
 
 ## Index
 
@@ -23,6 +23,7 @@
 |---|---|---|---|
 | 1 | 2026-09-30 | 📍 | Folder set up with the AI workflow; briefing lives in scouting |
 | 2 | 2026-09-30 | 📍 | First CLI session read: setup works, imports fixed, P3 found |
+| 3 | 2026-09-30 | 🧭 | Switch to mode P (plan-driven); plan v1 written |
 
 ---
 
@@ -57,3 +58,24 @@ Report: [`../shared/sessions/001-2026-09-30.md`](../shared/sessions/001-2026-09-
   asked no code questions. `00` now tells the CLI to explain in short chunks with a checkpoint after each.
   Scores were skipped; `/handoff` now treats them as optional.
 - WO-1 remains open: steps 4 (PR #2608 diff) and 5 (`MockableGpioDriver`), then the own-words check.
+
+---
+
+## #3 · 2026-09-30 · 🧭 Decision: mode P (plan-driven, Timothy observes)
+
+**Timothy:** the steering modes put him in charge of decisions he isn't confident making yet. Save them for later;
+for now the AI drives, and he learns from a working example afterwards, as with the staged implementation plans on
+his own projects (he shared `003-ToolBox_Integration_And_Hosted_LLM_Migration.md` as the model).
+
+**Agreed design** (desktop proposal, accepted):
+- Desktop writes the plan; the CLI reviews it against the code first, then implements with deviation rules
+  (details: decide and record; scope: CHANGE REQUEST; behavior/API/ours/upstream decisions: stop and lay out options).
+- Gates only Timothy opens: **G1** plan approved, **G2** before anything public, **G3** after his teach-back. No
+  per-step grants in between.
+- Changes from his old format for open source: decisions are tagged ours vs. upstream; communication is planned
+  (AI drafts, Timothy posts); the **understanding stage comes before the PR**; review reopens the plan.
+- The public, hands-on actions stay his: post comments, run the final tests, push, open the PR, answer review.
+
+Written: [`../shared/plan.md`](../shared/plan.md) v1; `00-start-here.md` §6 (mode P rules); `04` (current mode P);
+`03-next.md` marked superseded; `/handoff` and the workspace `CLAUDE.md` updated;
+[`ai-workflow/interaction-modes.md`](../../../ai-workflow/interaction-modes.md) gained mode P.

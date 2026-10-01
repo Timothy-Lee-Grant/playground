@@ -1,6 +1,9 @@
 # 03 — Next: the current work order
 
 > Owner: desktop Claude. CLI: read-only. One order at a time; finished orders move to "Done" (one line each).
+>
+> **Superseded since 2026-09-30: the current mode is P, so the work comes from [`plan.md`](plan.md).** WO-1's
+> leftover steps 4–5 are folded into plan Step 0. Work orders come back if Timothy returns to M0–M4.
 
 ## WO-1 · Orientation: build, baseline, and a guided tour  *(mode: M0 Tutor)*
 
@@ -33,4 +36,4 @@ driver is needed; the session report lists his questions.
 
 ## Done
 
-(none yet)
+- WO-1 steps 1–3 (session 001, 2026-09-30). Steps 4–5 moved into plan Step 0.

@@ -70,6 +70,37 @@ for him, or "want to go on?". Don't deliver a whole tour in one message; a monol
 | File | Owner | You may |
 |---|---|---|
 | `00-start-here.md`, `01-brief.md`, `03-next.md` | desktop | read |
+| `plan.md` (mode P) | body: desktop · entries: append-only | append Stage 5 entries and **CHANGE REQUEST**s; never edit the body or others' entries |
 | `04-interaction-mode.md` | Timothy | change the **Current mode** block only when he says so, and log it |
 | `02-decisions.md` | append-only | append a decision **Timothy** made in your session |
 | `STATUS.md`, `sessions/`, `evidence/` | **you** | write |
+
+## 6. Mode P: plan-driven (Timothy observes)
+
+When `04` says the current mode is **P**, `shared/plan.md` replaces `03-next.md` as your source of work. You drive
+the implementation; Timothy watches and learns it afterwards (lectures + teach-back, before the PR).
+
+**Gates.** Only Timothy opens them, by saying so (recorded as a `[Timothy]` entry). **G1** plan approved: no
+code before it. **G2** before anything is posted upstream (you never post anyway; you draft). **G3** after his
+teach-back: the PR may be opened. Between gates, work through the plan's steps **without asking for a "go" at
+each one**; keep him informed in short updates.
+
+**Deviation rules.**
+
+| You run into... | Do this |
+|---|---|
+| An implementation detail (names, helper placement, test layout, how to do a step) | Decide, do it, record it as a deviation in your Stage 5 entry |
+| Something that changes a step's scope, or adds/removes a step | Stop those steps. Append a **CHANGE REQUEST** entry (what, why, options). Continue unaffected steps |
+| Behavior, public API, or any decision tagged **ours** or **upstream** in Stage 2 | Stop. Lay out options. Never decide |
+| A finding that changes the picture | Record it in a Stage 5 entry immediately; continue if nothing depends on it |
+
+**Stage 5 entries** (append-only, `[CLI — YYYY_MM_DD_HH_MM]`): one per step or meaningful finding, each with
+*Changed* (files, commits), *Deviations*, *Evidence* (file names), and **Why** (the reasoning and the alternatives
+you rejected). The "why" is the most important part: desktop turns these entries into Timothy's lectures, so write
+them for a reader who wasn't watching.
+
+**Teaching while driving.** Timothy is observing, not idle. As you go, narrate in short chunks: what you're about
+to do and why (one or two sentences), then do it. If he asks a question, stop and answer it well.
+
+**Still true in mode P:** never push, open PRs or comment; don't decide ours/upstream decisions; label claims
+verified/unverified; save evidence; ask before commits.

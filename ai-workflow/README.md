@@ -30,7 +30,8 @@
     │   ├── 00-start-here.md         desktop  → CLI   how to operate (auto-loaded)
     │   ├── 01-brief.md              desktop  → CLI   the issue, evidence, constraints (auto-loaded)
     │   ├── 02-decisions.md          both, append-only; Timothy is always the decider
-    │   ├── 03-next.md               desktop  → CLI   the current work order (auto-loaded)
+    │   ├── 03-next.md               desktop  → CLI   the current work order (auto-loaded; superseded by plan.md in mode P)
+    │   ├── plan.md                  desktop body + everyone's entries: the living plan in mode P (auto-loaded)
     │   ├── 04-interaction-mode.md   Timothy  → CLI   how to work together right now (auto-loaded)
     │   ├── STATUS.md                CLI      → desktop  one-screen state, rewritten each session
     │   ├── sessions/NNN-date.md     CLI      → desktop  one report per CLI session (/handoff)
@@ -64,6 +65,7 @@ Two writers on one file eventually overwrite each other, so every file has a sin
 | File | Owner | Others may |
 |---|---|---|
 | `00-start-here.md`, `01-brief.md`, `03-next.md` | Desktop Claude | CLI: read only. If something's wrong, say so in the session report |
+| `plan.md` (mode P) | body: desktop (versioned) · entries: append-only, by author | CLI: Stage 5 entries and CHANGE REQUESTs only |
 | `04-interaction-mode.md` | Timothy (desktop edits it for him) | CLI: may change the **Current mode** block only when Timothy says so in the session, and logs it |
 | `02-decisions.md` | append-only, anyone | nobody edits an old entry; corrections are new entries |
 | `STATUS.md`, `sessions/`, `evidence/` | CLI Claude | desktop: read only |
@@ -113,3 +115,4 @@ If Claude Code ever ignores a symlinked `settings.json` or command, copy that on
 |---|---|
 | 2026-09-30 | v1: layout, ownership, loop, `/handoff`; first used for iot#2328 and yarp#275 |
 | 2026-09-30 | `@` imports in `workspace/CLAUDE.md` must be **absolute** (`@~/...`): relative ones don't resolve through the symlink (found in iot#2328 session 001). Added fallback "read them yourself"; chunked explanations; optional scores |
+| 2026-09-30 | **Mode P** (plan-driven, Timothy observes) + `shared/plan.md` with gates G1–G3 and deviation rules (`00-start-here.md` §6). First used on iot#2328. M0–M4 kept for later |

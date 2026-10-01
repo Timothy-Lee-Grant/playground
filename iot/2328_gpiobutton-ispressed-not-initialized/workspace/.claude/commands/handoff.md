@@ -15,8 +15,10 @@ Wrap up this session for the planner (desktop Claude), who will read only what y
    mode, branch and last commit (`git -C develop/iot log -1 --oneline`), test status with evidence file, upstream
    state if you know it, blockers, what's needed from Timothy or desktop, link to the new report.
 4. **Append to `shared/02-decisions.md`** any decision Timothy made this session (never edit old rows).
-5. Don't edit `00`, `01`, `03`, or `04` (except a mode switch Timothy asked for, already logged).
-6. Reply to Timothy with 3 lines: what the report says, the single most important thing for desktop, and a reminder
+5. **Mode P:** make sure every step you worked on has its Stage 5 entry in `shared/plan.md` (with the *why*), and
+   that any open CHANGE REQUEST is listed under "Needs Timothy / desktop" in STATUS.
+6. Don't edit `00`, `01`, `03`, or `04` (except a mode switch Timothy asked for, already logged).
+7. Reply to Timothy with 3 lines: what the report says, the single most important thing for desktop, and a reminder
    to commit the `exercises` repo when convenient.
 
 $ARGUMENTS

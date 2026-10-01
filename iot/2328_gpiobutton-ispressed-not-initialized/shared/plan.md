@@ -136,6 +136,140 @@ G2 (posting) stays closed until he's read lecture 1.
 and **why**. Change requests are marked **CHANGE REQUEST** and stop work on the affected steps until Timothy
 grants or declines them.)*
 
+**[CLI — 2026_10_01_00_33] Step 0: plan review against the code. Verdict: plan holds; one deviation, one U2 refinement**
+
+*Changed:* nothing in `develop/` (fetched `upstream/main` and `pr-2608` refs only). *Evidence:* code reading; line
+numbers below are on `upstream/main` @ `1eb0b2f6`, unchanged since the brief.
+
+1. **Brief §3 paths confirmed (by reading; Step 3 proves them by test).** `ButtonBase.cs:73` `IsPressed` starts
+   `false`. `GpioButton.cs:87-91`: `OpenPin` then `RegisterCallbackForPinValueChangedEvent`; the pin is never read.
+   `ButtonBase.cs:126`: `if (_debounceTime.Ticks > 0 && !IsPressed) return;` swallows the first release.
+2. **PR #2608 collisions** (head `a1563be0`, 3 commits on `1eb0b2f6`). In our files: `GpioButton.cs:40` (the
+   short ctor's `this(...)` defaults renamed to `DefaultDoublePressTime/DefaultHoldingTime`); `ButtonBase.cs` time
+   fields, `TimeSource`, and every `DateTime.UtcNow` in the handlers; `TestButton.cs` (adds `AddTime`); most of
+   `ButtonTests.cs`. **Our change touches none of those lines**: we add lines after `GpioButton.cs:91`, a doc
+   remark on `ButtonBase.cs:70-73` (untouched by #2608, though the hunk at :73 is adjacent: a possible trivial
+   textual conflict), a csproj line and a new test file. Expected rebase: clean or one adjacent-hunk conflict.
+3. **O2: test harness. Keep the pattern, but link instead of copy (deviation, implementation detail).**
+   `MockableGpioDriver` exists twice: the original in `src/System.Device.Gpio.Tests/` and a byte-identical copy
+   (except namespace) in `Ili934x/tests/`. Three test projects (Tca955x, Gpio, Board) **link** the original with
+   `<Compile Include="..\..\..\System.Device.Gpio.Tests\MockableGpioDriver.cs" Link="MockableGpioDriver.cs" />`.
+   *Why link:* 3 precedents vs. 1; no duplicated 100-line file in our diff; a reviewer sees one csproj line.
+   *Rejected:* copying (the Ili934x way: more diff, a 3rd copy to drift); `Iot.Device.Gpio.VirtualGpioController`
+   (in `src/devices/Board`): it's a real in-repo fake, but Button doesn't reference Board, and adding that
+   project reference to the tests drags a big dependency in for one test file; it also routes events through its
+   own pin objects, so we'd test Board's plumbing as much as ours. Moq reaches every test project via
+   `eng/Versions.external.props:13` (Moq 4.20.72), no csproj change needed.
+   Mock gotchas found (they shape the tests): `MockBehavior.Loose` returns `false` for `IsPinModeSupportedEx`, so
+   `GpioButton`'s ctor throws unless the test sets it up; `ReadEx` returns `default(PinValue)` (Low) unless set up,
+   so every test sets the level explicitly; `FireEventHandler` invokes the callback **synchronously on the test
+   thread**.
+4. **U2 sanity check: "register, then read" still the better default, but the plan's reason needs one correction.**
+   Callbacks run on **driver-owned background threads** (`SysFsDriver._eventDetectionThread`;
+   `LibGpiodDriverEventHandler` `Task.Run`; `LibGpiodV2EventObserver` dedicated threads), so the ctor and
+   `PinStateChanged` can truly overlap, and `IsPressed` is an unlocked auto-property (existing code has no locking
+   anywhere). The plan says register-then-read "ends at the level that was actually read". Not quite: there is a
+   **lost-update window** between `Read()` returning and the ctor assigning `IsPressed`. If an edge's callback runs
+   inside that window, the ctor then overwrites the newer value with the older reading → wrong until the next
+   edge. That's the same failure *kind* as read-then-register, but the window is a few instructions instead of the
+   whole `RegisterCallback…` call (which on libgpiod starts a thread). Closing it fully needs a lock shared with
+   the handlers, i.e. `ButtonBase` changes (out of O3 scope, and #2608 territory). **Not a change request:**
+   nothing in Steps 2-7 changes; it's a sentence for the PR's open question and for lecture 1. Also note: no
+   test can reproduce it, since the mock fires synchronously (tests pin behavior, not this timing).
+5. **Environment:** in `develop/iot`, `dotnet --version` = 10.0.302 (global.json 9.0.306, `rollForward: major`,
+   `allowPrerelease: true`). Outside the repo the default SDK is now `11.0.100-preview.5`; irrelevant to us, but
+   if someone runs `dotnet` from another directory they'll see a different version.
+
+**[CLI — 2026_10_01_00_44] Steps 2-6: harness, red, fix, hygiene, commits. All done; acceptance criteria 1-3 met**
+
+*Changed:* branch `fix/2328-gpiobutton-initial-state` from `upstream/main` @ `1eb0b2f6` (tracks `upstream/main`;
+nothing pushed). Commits (both verified authored **and** committed by `Timothy-Lee-Grant <timothyleegrant1995@gmail.com>`,
+no co-author trailer: Timothy asked for this check):
+```
+395b9fbf Initialize GpioButton.IsPressed from the pin level        (GpioButton.cs, +9)
+bd01e163 Add GpioButton tests for the initial pressed state        (Button.Tests.csproj +4, GpioButtonTests.cs +85)
+```
+*Evidence:* `002-harness-smoke.txt` (9/9), `003-red.txt` (15 run: 11 pass, 4 fail on assertions), `004-green.txt`
+(15/15), `005-hygiene.txt` (clean rebuild 0 warnings/0 errors; 5 runs × 15/15; diff = 3 files, 98 insertions,
+0 deletions), `006-diff.patch`.
+
+*Deviations* (all implementation details, decided per §6):
+1. **Mock linked, not copied** (see Step 0 entry §3).
+2. **Doc remark on `GpioButton`'s class `<remarks>`, not on `ButtonBase.IsPressed`.** *Why:* `ButtonBase` is the
+   hardware-independent base; a remark there about a subclass's constructor is the wrong direction of knowledge,
+   and leaving `ButtonBase.cs` untouched means **zero** overlap with #2608 (it edits 56 lines there).
+   Acceptance criterion 2 allowed `ButtonBase.cs` "doc remark only, if needed"; it wasn't needed.
+3. **Two of the plan's tests are guards, not red tests.** Pull-up + High → not pressed, and pull-down + Low → not
+   pressed, *pass on `main`* because `false` is already the default. Step 3's "each new test fails" can't hold for
+   them. Kept anyway: they catch a wrong fix (always `true`, or the wiring inverted). The four level cases are one
+   `[Theory]` with four `[InlineData]` rows (levels as `0`/`1`: `PinValue` is a struct and can't appear in an
+   attribute; `int` converts implicitly, `PinValue.cs:32`). *Rejected:* four separate `[Fact]`s (4× the same body).
+4. **Smoke test checks the wiring, not just construct+dispose:** open, mode `InputPullUp`, callback on
+   `Falling|Rising`; on dispose, callback removed and pin closed. *Why:* cheap, and it proves the mock actually sees
+   `GpioButton`'s calls, so later passes aren't vacuous.
+5. **Commit 2's body ends with `Fixes #2328`.** Needs Timothy's eye before he pushes: GitHub shows a "referenced
+   this issue" line on #2328 as soon as a public commit mentioning it is pushed, even to his fork. That's a public
+   trace, so it should come **after** the comment is posted (G2). Options: keep it (push only after G2, which Step
+   9 does anyway), or amend it out before pushing and keep `Fixes #2328` only in the PR description. Not changed
+   without his say.
+
+*Why the harness looks the way it does:* `Mock<MockableGpioDriver>` with `CallBase = true` (the Tca955x pattern;
+the mock's own doc comment says it's required: without it Moq replaces the protected overrides that forward to
+the `…Ex` methods). Every test sets `IsPinModeSupportedEx → true` (otherwise the ctor throws) and the startup level
+via `ReadEx` (otherwise Moq returns `default(PinValue)` = Low, which would silently mean "pressed" for pull-up).
+`FireEventHandler` plays the hardware: it calls the registered callback synchronously, like an edge.
+
+**[CLI — 2026_10_01_00_44] Step 7: implementation summary (raw material for lecture 1)**
+
+**A. Every changed line, by purpose** (`006-diff.patch`)
+
+| Purpose | Lines | Why this way · alternatives rejected |
+|---|---|---|
+| The fix | `GpioButton.cs`: `PinValue initialValue = _gpioController.Read(_buttonPin);` | One read through the controller (which also checks the pin is open). Placed **after** `RegisterCallback…` = U2 default (Step 0 §4 for the remaining window). Placed **inside the existing `try`**, so a failing `Read` gets the same cleanup as a failing `OpenPin` (controller disposed if we own it). *Rejected:* reading before registering (U2 alternative); reading outside the `try` (leaks the controller on failure). |
+| | `IsPressed = _eventPinMode == PinMode.InputPullUp ? initialValue == PinValue.Low : initialValue == PinValue.High;` | Uses **`_eventPinMode`**, not `_gpioPinMode`: with `hasExternalResistor: true` the pin mode is plain `Input`, and only `_eventPinMode` still records the wiring (the external-resistor test proves this). Same decision shape as `PinStateChanged` (`if (_eventPinMode == PinMode.InputPullUp)`), so a reader sees one rule twice. *Rejected:* `initialValue == (pullUp ? Low : High)` (shorter but needs a second look). Sets the property directly: **no** `HandleButtonPressed()`, so no `ButtonDown`, no holding timer, no debounce bookkeeping. |
+| Comment | the two `//` lines above | Says *why* (no edge at startup) and the one non-obvious rule (no events). The file has few comments; two lines kept it proportionate. |
+| Doc | `<remarks>` on `GpioButton` | Public behavior change, stated where users of `GpioButton` look. See deviation 2. |
+| Harness | `Button.Tests.csproj`: one `<Compile Include=… Link=…>` | Deviation 1. |
+| Tests | `GpioButtonTests.cs` | Below. |
+
+**A correction to brief §4's reasoning (for the lecture, not the code):** the brief says raising `ButtonDown` in
+the ctor "would recreate #1715". Strictly, nobody *can* be subscribed while the constructor is still running
+(`button.ButtonDown += …` only happens after `new` returns), so an event raised there reaches no one, and
+`IsHoldingEnabled` can't be `true` yet either. The real reasons not to call `HandleButtonPressed()`: `ButtonDown`
+means "a press **happened**", and none did; and it keeps the fix to "set state" with no side effects that a
+later refactor (e.g. #1715's lazy subscription) could turn into real events.
+
+**B. Behavior before → after** (verified by tests where marked)
+
+| Situation | Before | After |
+|---|---|---|
+| Created while held (pull-up Low / pull-down High / external pull-up Low) | `IsPressed == false` | `true` (*verified*, Theory rows 1 and 3, external test) |
+| Created while released | `false` | `false` (*verified*, guard rows) |
+| Held at startup, debounce on, then released | release swallowed: no `ButtonUp`, no `Press` | `ButtonUp` + `Press`, `IsPressed` false (*verified*) |
+| Held at startup, debounce off, then released | `ButtonUp` + `Press`, no prior `ButtonDown` | same (*unverified*, by reading: unchanged path) |
+| Held at startup with `IsHoldingEnabled` | no `Holding` | still no `Holding`: the timer starts only on a press edge; release raises `Press` (*unverified*, by reading). Worth one line in the PR? Open question 4 |
+
+**C. Each test: what it proves, and what it doesn't**
+
+| Test | Proves | Doesn't prove |
+|---|---|---|
+| `If_Button_Is_Created_And_Disposed_Pin_Is_Opened_And_Closed` (smoke) | The mock sees the real wiring: open, pull-up mode, both edges, cleanup on dispose | Anything about `IsPressed` (passes before and after the fix) |
+| `If_Button_Is_Created_IsPressed_Reflects_Pin_Level` (pull-up, Low → true) | **The bug** (red on `main`) and the fix for the default wiring | That the level is settled at that moment (U1/#1715): the mock answers instantly |
+| …(pull-up, High → false) | Guard: a released button stays released | Nothing about the bug (green on `main`) |
+| …(pull-down, High → true) | The fix honors pull-down wiring (red on `main`) | — |
+| …(pull-down, Low → false) | Guard for pull-down | Nothing about the bug |
+| `If_Button_Has_External_PullUp_And_Pin_Is_Low_At_Startup_Button_Is_Pressed` | Pin mode is `Input` and the fix still uses the wiring (`_eventPinMode`) (red on `main`) | External pull-*down* (symmetric code path, not tested separately) |
+| `If_Button_Is_Held_At_Startup_With_Debouncing_Release_Raises_ButtonUp_And_Press` | The issue's real consequence: the swallowed release is gone (red on `main` at `Assert.True(buttonUp)`) | Real time: debounce never matters here because the release path doesn't check time |
+| **None of them** | | Real hardware; the read-vs-callback order (U2) or its race (the mock fires synchronously on the test thread); settle time (U1) |
+
+**D. Open questions** (for lecture 1 and the PR description; none blocks anything)
+1. **U1** timing (a/b/c): built (a). Upstream.
+2. **U2** order: built register-then-read; the remaining lost-update window (Step 0 §4) should be mentioned
+   honestly in the comment/PR. Upstream.
+3. `Fixes #2328` in commit 2's body: keep, or amend before pushing (deviation 5). Timothy.
+4. Held-at-startup + holding enabled: say it in the PR, or leave it. Timothy/desktop.
+5. Test naming copies `ButtonTests.cs` (`If_…_…`); the repo's newer tests use other styles. Kept local consistency.
+
 # Stage 6 (Understanding)
 
 *(Desktop: lecture list and links; Timothy: reading confirmations and teach-back; G3.)*

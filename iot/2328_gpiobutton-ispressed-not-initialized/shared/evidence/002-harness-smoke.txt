@@ -1,0 +1,38 @@
+Command:  dotnet test src/devices/Button/tests/ --logger 'console;verbosity=normal'
+Date:     2026-10-01 00:34 PDT
+dotnet:   10.0.302
+Branch:   fix/2328-gpiobutton-initial-state
+Commit:   1eb0b2f6  (Make OneWire sysfs paths instance-level and configurable via constructors (#2603))
+Machine:  Darwin arm64
+Worktree:  M src/devices/Button/tests/Button.Tests.csproj;?? src/devices/Button/tests/GpioButtonTests.cs;
+----------------------------------------------------------------
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  System.Device.Gpio -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/System.Device.Gpio/Debug/net8.0/System.Device.Gpio.dll
+  System.Device.Model -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/System.Device.Model/Debug/net8.0/System.Device.Model.dll
+  Common -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Common/Debug/net8.0/Common.dll
+  Button -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button/Debug/net8.0/Button.dll
+  Button.Tests -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button.Tests/Debug/net8.0/Button.Tests.dll
+Test run for /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button.Tests/Debug/net8.0/Button.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 8.0.13)
+[xUnit.net 00:00:00.11]   Discovering: Button.Tests
+[xUnit.net 00:00:00.16]   Discovered:  Button.Tests
+[xUnit.net 00:00:00.18]   Starting:    Button.Tests
+  Passed Iot.Device.Button.Tests.GpioButtonTests.If_Button_Is_Created_And_Disposed_Pin_Is_Opened_And_Closed [72 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Double_Pressed_And_DoublePress_Is_Disabled_DoublePress_Event_Does_Not_Fire [407 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Held_Holding_Event_Fires [508 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Double_Pressed_DoublePress_Event_Fires [403 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Pressed_Too_Fast_Debouncing_Removes_Events [4 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Once_Pressed_Press_Event_Fires [101 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Held_And_Holding_Is_Disabled_Holding_Event_Does_Not_Fire [2 s]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Pressed_Twice_DoublePress_Event_Does_Not_Fire [3 s]
+[xUnit.net 00:00:09.16]   Finished:    Button.Tests
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Held_Down_Longer_Than_Debouncing [2 s]
+
+Test Run Successful.
+Total tests: 9
+     Passed: 9
+ Total time: 9.9875 Seconds
+----------------------------------------------------------------
+Exit code: 0

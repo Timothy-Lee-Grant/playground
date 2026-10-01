@@ -1,0 +1,49 @@
+Command:  zsh /private/tmp/claude-501/-Users-timothygrant-Desktop-projects-oss-work-iot-2328/1d0397f0-4673-484d-be7a-d9fb0e5e1b40/scratchpad/hygiene.sh
+Script contents (run from develop/iot):
+  | echo "== 1. Clean rebuild (eng/Compilers.props:14 sets TreatWarningsAsErrors=true, so success means 0 warnings) =="
+  | dotnet build src/devices/Button/tests/ --no-incremental 2>&1 | tail -6
+  | echo
+  | echo "== 2. Five test runs =="
+  | for i in 1 2 3 4 5; do echo "-- run $i --"; dotnet test src/devices/Button/tests/ --no-build 2>&1 | grep -E "^(Passed|Failed)!|Total tests|Passed:|Failed:"; done
+  | echo
+  | echo "== 3. git diff --stat upstream/main (worktree incl. untracked) =="
+  | git add -N src/devices/Button/tests/GpioButtonTests.cs
+  | git diff --stat upstream/main
+  | git status --short
+Date:     2026-10-01 00:36 PDT
+dotnet:   10.0.302
+Branch:   fix/2328-gpiobutton-initial-state
+Commit:   1eb0b2f6  (Make OneWire sysfs paths instance-level and configurable via constructors (#2603))
+Machine:  Darwin arm64
+Worktree:  M src/devices/Button/GpioButton.cs; M src/devices/Button/tests/Button.Tests.csproj;?? src/devices/Button/tests/GpioButtonTests.cs;
+----------------------------------------------------------------
+== 1. Clean rebuild (eng/Compilers.props:14 sets TreatWarningsAsErrors=true, so success means 0 warnings) ==
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:05.21
+
+== 2. Five test runs ==
+-- run 1 --
+Passed!  - Failed:     0, Passed:    15, Skipped:     0, Total:    15, Duration: 8 s - Button.Tests.dll (net8.0)
+-- run 2 --
+Passed!  - Failed:     0, Passed:    15, Skipped:     0, Total:    15, Duration: 8 s - Button.Tests.dll (net8.0)
+-- run 3 --
+Passed!  - Failed:     0, Passed:    15, Skipped:     0, Total:    15, Duration: 8 s - Button.Tests.dll (net8.0)
+-- run 4 --
+Passed!  - Failed:     0, Passed:    15, Skipped:     0, Total:    15, Duration: 8 s - Button.Tests.dll (net8.0)
+-- run 5 --
+Passed!  - Failed:     0, Passed:    15, Skipped:     0, Total:    15, Duration: 8 s - Button.Tests.dll (net8.0)
+
+== 3. git diff --stat upstream/main (worktree incl. untracked) ==
+ src/devices/Button/GpioButton.cs             |  9 +++
+ src/devices/Button/tests/Button.Tests.csproj |  4 ++
+ src/devices/Button/tests/GpioButtonTests.cs  | 85 ++++++++++++++++++++++++++++
+ 3 files changed, 98 insertions(+)
+ M src/devices/Button/GpioButton.cs
+ M src/devices/Button/tests/Button.Tests.csproj
+ A src/devices/Button/tests/GpioButtonTests.cs
+----------------------------------------------------------------
+Exit code: 0

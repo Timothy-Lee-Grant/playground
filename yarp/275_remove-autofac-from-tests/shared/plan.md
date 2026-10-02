@@ -102,6 +102,42 @@ ready; Timothy posts in his own voice after G2)
 and **why**. Change requests are marked **CHANGE REQUEST** and stop work on the affected steps until Timothy
 grants or declines them.)*
 
+**[CLI — 2026_10_02_00_15] Step 0: workspace repaired; clone audited. The plan's premise ("an old clone with
+local changes") doesn't hold on the Mac**
+
+- *Changed:* (1) Workspace: `oss-work/yarp-275/` had a hand-copied desktop `CLAUDE.md` and a `workspace/` folder,
+  but no `shared/` link and no `.claude/settings.json` (so no `git push` deny). Both copies were byte-identical to
+  their sources; I moved `workspace/` to the session scratchpad (not deleted) and ran `workspace/setup.sh`, which
+  created the four symlinks. Layout now matches `iot-2328`. (2) Clone: added remote `upstream` = `dotnet/yarp`
+  and fetched it (no `--prune`). Nothing else in the repo changed.
+- *Findings (verified, `evidence/000-fork-audit.txt`):*
+  - `develop/yarp` is a **fresh clone made 2026-10-02 00:05**, not the old one. No other YARP clone exists on the
+    Mac (Spotlight + `find`).
+  - Clean tree, no stash, one local branch `main` = `origin/main` = `upstream/main` (0 behind, 0 ahead).
+    `origin` is SSH to `Timothy-Lee-Grant/yarp`, correct.
+  - Timothy's earlier work is **on GitHub only**: `origin/tgrant/exploration-phase`, 5 commits from 2026-06-14,
+    22 new files and 7,459 lines, **all study notes under `concepts/`** (architecture, code concepts, open issues,
+    a persona file). No code; unrelated to #275 or #1764. Those notes aren't copied into `exercises/yarp/yarp_concepts/`.
+  - *Unverified:* whether the "old clone" lives on the Linux desktop with unpushed work. Only Timothy can check.
+- *Deviations:* The first `git remote add` + `fetch` was blocked by Claude Code's permission check. I stopped,
+  explained, and ran it after Timothy said "continue Step 0".
+- *Step 1, as it would now run* (fits the existing recipe, so no CHANGE REQUEST; needs G1 + Timothy's "yes"):
+  ```
+  git -C develop/yarp branch archive/pre-275-2026-10 origin/tgrant/exploration-phase   # local copy of the old notes
+  git -C develop/yarp switch -c remove-autofac-275 upstream/main                        # PR branch, no unrelated history
+  ```
+  `main` needs nothing: it already equals `upstream/main`. No uncommitted work, so there's nothing to commit onto the archive.
+- **Why:** The plan's archive branch exists so that nothing is lost when `main` gets reset. Here nothing is at
+  risk locally. The old work is already pushed and has no code, so no reset is needed. I still propose creating
+  `archive/pre-275-2026-10` locally from the fork branch. It costs nothing, it meets acceptance criterion 4 as
+  written, and it keeps a copy if the GitHub branch is ever deleted. The alternative is to skip the archive and
+  treat the fork branch as the archive. That's equally safe today, but criterion 4 would need rewording. Also
+  rejected: rebasing the notes onto `upstream/main`. Nothing needs them current, and they must never reach the
+  PR branch.
+- *Evidence:* `evidence/000-fork-audit.txt`.
+- *Open for Timothy:* (a) G1. (b) Is there an old YARP clone on the Linux desktop? If so, run `git status` and
+  `git log --branches --not --remotes` there before we treat Step 1 as lossless.
+
 # Stage 6 (Understanding)
 
 **[Desktop — 2026_10_01_19_45] Lecture 1 spec: "The change, end to end"** (built from the Stage 5 entries,

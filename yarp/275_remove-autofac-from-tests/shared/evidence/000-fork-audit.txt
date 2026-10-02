@@ -1,0 +1,65 @@
+plan.md Step 0: audit of the existing clone (read-only)
+Date:            2026-10-02 00:15 (Mac)
+dotnet --version: not installed on PATH yet (Step 2's ./restore.sh installs the repo-local SDK)
+Clone:           ~/Desktop/projects/oss-work/yarp-275/develop/yarp
+HEAD:            0cae8cac41dd320a3e2a935c79c7bb131b38c88e (main)
+
+Only write actions in this step: `git remote add upstream https://github.com/dotnet/yarp.git` and
+`git fetch upstream` (no --prune). Both allowed by Step 0. The first attempt was blocked by Claude Code's permission
+check; it ran after Timothy said "continue Step 0".
+
+== Where the clone came from
+$ git reflog --date=iso | tail -1
+0cae8cac HEAD@{2026-10-02 00:05:18 -0700}: clone: from github.com:Timothy-Lee-Grant/yarp.git
+=> A FRESH clone made today, NOT the "old clone with earlier changes" the plan expected.
+
+== Is there another YARP clone on this Mac?
+$ mdfind 'kMDItemFSName == "YARP.slnx" || ... "ReverseProxy.sln" || ... "YARP.sln"'
+  (only this clone)
+$ find ~ (depth 6) and ~/Desktop ~/Documents ~/Projects ~/source ~/repos ~/dev ~/code (depth 9) for .git dirs
+  whose remotes mention yarp|reverse-proxy
+  (only this clone)
+=> No old clone on the Mac. Unverified: the Linux desktop (the old clone may have lived there).
+
+== Remotes (after Step 0)
+origin    git@github.com:Timothy-Lee-Grant/yarp.git (fetch/push)   <- SSH, correct fork
+upstream  https://github.com/dotnet/yarp.git                       <- added in Step 0
+
+== Working tree
+$ git status -sb
+## main...origin/main            (clean: nothing modified, staged or untracked)
+$ git stash list
+  (empty)
+
+== Local branches
+* main  0cae8cac [origin/main] Merge pull request #3050 from dotnet/darc-main-7ae5aed1-...
+
+== Fork branches ($ git ls-remote --heads origin)
+0cae8cac41dd320a3e2a935c79c7bb131b38c88e  refs/heads/main
+5892025e7f671573b2cd039b620fac6843c90487  refs/heads/tgrant/exploration-phase
+
+== main vs upstream/main
+$ git rev-list --left-right --count upstream/main...main
+0  0          => main is identical to upstream/main (0cae8cac, 2026-09-11)
+
+== tgrant/exploration-phase (Timothy's earlier work, on GitHub only)
+$ git rev-list --left-right --count upstream/main...origin/tgrant/exploration-phase
+13  5         => 5 commits of his own; 13 upstream commits behind
+merge-base: dd782cbc 2026-06-08 Use `WatchListXXXForAllNamespacesAsync` ... (#3024)
+$ git log --format='%h %ad %an | %s' --date=short upstream/main..origin/tgrant/exploration-phase
+5892025e 2026-06-14 Timothy-Lee-Grant | Combine individual markdown files from each topic into another seperate text files so that evaluation is easier.
+15cff917 2026-06-14 Timothy-Lee-Grant | Added documentation section on a deep dive of the actual code concepts found in this project.
+575c38b1 2026-06-14 Timothy-Lee-Grant | Added documents outlining open issues for the repo, concepts related to those open issues, and other useful information of the issues.
+7833c556 2026-06-14 Timothy-Lee-Grant | Created Components and Architecture and Features Deep Dive concepts documents.
+0e45f559 2026-06-14 Timothy-Lee-Grant | Created documents to investigate the concepts found in this YARP repo
+$ git diff --stat <merge-base> origin/tgrant/exploration-phase
+22 files changed, 7459 insertions(+), 0 deletions; ALL under concepts/:
+  concepts/CodeEvaluation/       (00..04 *.md + Code_Evaluation_Concepts.txt)
+  concepts/HighLevelConcepts/    (01..03 *.md + High_Level_Concepts.txt)
+  concepts/YarpOpenIssues/       (00..02 *.md + Yarp_Open_Issues.txt)
+  concepts/<components dir>/     (00..05 *.md + Yarp_Project_Components.txt)
+  concepts/persona.md
+$ git diff --name-only <merge-base> origin/tgrant/exploration-phase | grep -v '^concepts/'
+  (nothing)
+=> Study notes only, written 2026-06-14. No product or test code. Not related to #275 or #1764 code.
+   Not duplicated in ~/Desktop/projects/exercises/yarp/yarp_concepts/ (different files there).

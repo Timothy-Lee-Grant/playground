@@ -13,7 +13,7 @@
 | | |
 |---|---|
 | **Stage** | Mode P. **Code done** (Steps 0–7, 2 local commits, 15/15 green). Lecture 1 written. Nothing pushed or posted. |
-| **Last entry** | #6 (2026-10-01) |
+| **Last entry** | #7 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
 | **Next step** | Timothy posts comment v3 (entry #6) when ready (G2). CLI: `/handoff` for the build session; test on top of #2608 (plan Stage 6). |
 
@@ -27,6 +27,7 @@
 | 4 | 2026-10-01 | 🧭 | G1 granted; code first, comment after lecture 1 (plan v2) |
 | 5 | 2026-10-01 | 📍 | Code reviewed; lecture 1 written |
 | 6 | 2026-10-01 | 📍 | Read lecture 1; ready to comment. #2608 moved: impact check; comment v3 |
+| 7 | 2026-10-01 | ❓→💬 | Why not push yet, why the push was blocked, and the explicit next steps |
 
 ---
 
@@ -120,3 +121,24 @@ last paragraph:
 > merge in `Button.Tests.csproj`. Happy to rebase on top of it once it's in. @raffaeler, OK for me to take this?
 
 (The rest is lecture 001 §5.3, unchanged.)
+
+---
+
+## #7 · 2026-10-01 · ❓→💬 Why not push yet; why the push was blocked; explicit next steps
+
+**Timothy:** tried `git push` before reading the "don't push yet" note; git refused ("something about being set up and
+configured with a branch"). Asked why pushing would matter, whether he must base his work on #2608's code, and for
+the explicit next steps.
+
+**Answer (summary):**
+- *Why blocked (most likely):* the CLI created the branch from `upstream/main` and it **tracks `upstream/main`**, so a
+  bare `git push` aimed at dotnet/iot's `main` under a different branch name, and git's default `push.default=simple`
+  refuses that. Fix at PR time: `git branch --unset-upstream`, then `git push -u origin fix/2328-gpiobutton-initial-state`.
+- *Why wait:* commit 2 mentions `#2328`; pushing it anywhere public adds "Timothy-Lee-Grant added a commit that
+  referenced this issue" to the issue timeline. Not harmful, but code showing up before the "may I?" comment reads as
+  skipping the question. After the comment is posted, pushing is fine. (`Fixes` in a fork commit can't close the
+  upstream issue; it only does so when merged into dotnet/iot.)
+- *#2608:* don't build on it. The branch stays on `main` (decision O1); the CLI only *tests a copy* on top of #2608
+  (evidence 007). Rebase for real only if #2608 merges first.
+- *Next steps:* tonight re-check #2328 and post comment v3 (G2); share the link. Then a CLI session: `/handoff`,
+  evidence 007, unset the tracking. Wait for replies; adapt per lecture §5.4. Sunday: teach-back (G3), push, open PR.

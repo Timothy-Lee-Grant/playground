@@ -132,7 +132,7 @@ G2 (posting) stays closed until he's read lecture 1.
 
 **[Timothy — 2026_10_01_18_57, via desktop] G2: comment posted on #2328**
 
-Posted his own edit of comment v3 publicly on dotnet/iot#2328 (link: to be added). Same content as v3: the startup
+Posted his own edit of comment v3 publicly on dotnet/iot#2328: https://github.com/dotnet/iot/issues/2328#issuecomment-5944161026. Same content as v3: the startup
 bug and the swallowed release, the change ready with 4 red → green tests, question 1 (timing: immediate / settle
 delay / lazy), question 2 (ordering: the small read→assign window), and the #2608 compatibility note; @raffaeler.
 Nothing pushed. **Now waiting for a maintainer reply**; adapt per lecture 001 §5.4.

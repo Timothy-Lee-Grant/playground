@@ -148,7 +148,7 @@ the explicit next steps.
 
 ## #8 · 2026-10-01 · 📍 Comment posted on #2328 (G2)
 
-Timothy posted his own edit of comment v3 on dotnet/iot#2328 (link to be added). Desktop reviewed the final text
+Timothy posted his own edit of comment v3 on dotnet/iot#2328 ([comment](https://github.com/dotnet/iot/issues/2328#issuecomment-5944161026)). Desktop reviewed the final text
 first: accurate throughout; suggested only a blank line between the first two paragraphs and "to read lazily".
 His first public comment on a *code* issue, posted after he could explain every sentence (lecture 001 + TB 002).
 Code stays local until the PR. Next: wait for replies; adapt per lecture 001 §5.4.

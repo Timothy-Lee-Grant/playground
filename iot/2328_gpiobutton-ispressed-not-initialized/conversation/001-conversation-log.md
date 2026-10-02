@@ -13,9 +13,9 @@
 | | |
 |---|---|
 | **Stage** | Mode P. Code done (local). **Comment posted on #2328 (G2).** Waiting for maintainers. Nothing pushed. |
-| **Last entry** | #8 (2026-10-01) |
+| **Last entry** | #9 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
-| **Next step** | Wait for replies. CLI (Fri): `/handoff`, evidence 007 on top of #2608, unset upstream tracking. Sat: teach-back (G3). Sun: push + PR if no objection. |
+| **Next step** | Wait for replies. Sat: teach-back (G3). Sun: push + PR if no objection. (CLI chores done except session 003's own report/STATUS.) |
 
 ## Index
 
@@ -29,6 +29,7 @@
 | 6 | 2026-10-01 | 📍 | Read lecture 1; ready to comment. #2608 moved: impact check; comment v3 |
 | 7 | 2026-10-01 | ❓→💬 | Why not push yet, why the push was blocked, and the explicit next steps |
 | 8 | 2026-10-01 | 📍 | **First upstream comment on a code issue posted** (G2) |
+| 9 | 2026-10-01 | 📍 | CLI chores: session 002 report backfilled; **25/25 on top of #2608**; tracking removed |
 
 ---
 
@@ -152,3 +153,13 @@ Timothy posted his own edit of comment v3 on dotnet/iot#2328 ([comment](https://
 first: accurate throughout; suggested only a blank line between the first two paragraphs and "to read lazily".
 His first public comment on a *code* issue, posted after he could explain every sentence (lecture 001 + TB 002).
 Code stays local until the PR. Next: wait for replies; adapt per lecture 001 §5.4.
+
+---
+
+## #9 · 2026-10-01 · 📍 CLI chores done: compatible with #2608 (verified)
+
+CLI session 003: backfilled `sessions/002` from the plan and evidence (honestly marks what wasn't recorded); rebased a
+**copy** of our branch onto #2608's latest (`6a2f8973`): the one csproj conflict resolved by keeping both lines, build
+0 warnings, **25/25 tests pass** (#2608's 18 + our 7) (`evidence/007`). The real branch is untouched at `395b9fbf`;
+its tracking of `upstream/main` was removed. Session 003's own report and `STATUS.md` were not written (STATUS still
+shows session 001).

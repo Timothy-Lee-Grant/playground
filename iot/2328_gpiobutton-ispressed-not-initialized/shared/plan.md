@@ -308,6 +308,24 @@ it now says the change exists, and states the ordering trade-off honestly. Stage
 [`../lectures/audio/001-audio-the-button-that-was-already-pressed.md`](../lectures/audio/001-audio-the-button-that-was-already-pressed.md)
 + its NotebookLM customization prompt (`.prompt.md`, paste into "Customize"; don't upload as a source).
 
+**[Desktop — 2026_10_01_19_30] PR #2608 moved: impact check, and comment v3**
+
+New commit on #2608: `6a2f897` (2026-10-01, by **joperezr**, Jose Perez Rodriguez, Microsoft; Copilot co-authored):
+"Use TimeProvider for button timing and deterministic tests". Still open, no reviews. Touches `ButtonBase.cs` (time
+fields → `TimeProvider`), one line of `GpioButton.cs` (the short ctor's defaults), `Button.Tests.csproj` (adds
+`Microsoft.Extensions.TimeProvider.Testing`), `ButtonTests.cs`, `TestButton.cs`, `README.md`.
+
+Impact on our change (textual rebase simulation of our diff onto `pr-2608`; **not built or tested**):
+- **The bug still exists on #2608:** `IsPressed` still starts `false`; the release guard
+  `if (_debounceTime.Ticks > 0 && !IsPressed) return;` is unchanged; the `GpioButton` ctor still never reads the pin.
+- `GpioButton.cs`: **applies cleanly** (different lines).
+- `Button.Tests.csproj`: **one trivial conflict**: both add a line in the same spot. Resolution: keep both.
+- Our tests don't use time, so `TimeProvider` shouldn't affect them (*unverified* until run on top of #2608).
+
+**Action for the CLI (next session, before Step 9):** rebase a **copy** of our branch onto
+`upstream/pull/2608/head`, resolve the csproj by keeping both lines, run the Button tests, save
+`evidence/007-on-top-of-2608.txt`. Don't move the real branch. Comment v3: `../conversation/` entry #6.
+
 # Stage 7 (Contribution)
 
 *(PR description draft; Timothy's final test run, push, PR link.)*

@@ -13,9 +13,9 @@
 | | |
 |---|---|
 | **Stage** | Mode P. **Code done** (Steps 0–7, 2 local commits, 15/15 green). Lecture 1 written. Nothing pushed or posted. |
-| **Last entry** | #5 (2026-10-01) |
+| **Last entry** | #6 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
-| **Next step** | Timothy reads lecture 1 (start with §0), asks questions; posts the comment (§5.3) when ready (G2). CLI: run `/handoff` for the build session. |
+| **Next step** | Timothy posts comment v3 (entry #6) when ready (G2). CLI: `/handoff` for the build session; test on top of #2608 (plan Stage 6). |
 
 ## Index
 
@@ -26,6 +26,7 @@
 | 3 | 2026-09-30 | 🧭 | Switch to mode P (plan-driven); plan v1 written |
 | 4 | 2026-10-01 | 🧭 | G1 granted; code first, comment after lecture 1 (plan v2) |
 | 5 | 2026-10-01 | 📍 | Code reviewed; lecture 1 written |
+| 6 | 2026-10-01 | 📍 | Read lecture 1; ready to comment. #2608 moved: impact check; comment v3 |
 
 ---
 
@@ -101,3 +102,21 @@ The CLI completed plan Steps 0–7 in one session: branch `fix/2328-gpiobutton-i
 against the evidence (see the plan's Stage 6 entry) and wrote
 [`../lectures/001-the-change-end-to-end.md`](../lectures/001-the-change-end-to-end.md). Its §5.3 holds the revised
 comment. The build session's `/handoff` wasn't run (STATUS.md is stale).
+
+---
+
+## #6 · 2026-10-01 · 📍 Timothy read lecture 1; #2608 moved; comment v3
+
+Timothy read the reading lecture: "much better understanding … ready and confident to post that comment". He
+spotted new activity on #2608 and asked whether it invalidates our change.
+
+**Answer: no.** `6a2f897` (joperezr) swaps the button's clock for `TimeProvider`. It doesn't touch `IsPressed`
+initialization, the release guard, or the ctor lines we changed. Rebase simulation: `GpioButton.cs` clean;
+`Button.Tests.csproj` one trivial keep-both conflict (details in the plan's Stage 6). Comment v3 changes only the
+last paragraph:
+
+> I've looked at #2608 including the new `TimeProvider` commit: it doesn't change the initial-state behavior, and my
+> change only touches `GpioButton.cs` and the test project, so the two should combine with at most a one-line
+> merge in `Button.Tests.csproj`. Happy to rebase on top of it once it's in. @raffaeler, OK for me to take this?
+
+(The rest is lecture 001 §5.3, unchanged.)

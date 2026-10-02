@@ -1,0 +1,35 @@
+plan.md Step 1: clone brought to the O1 target state
+Date: 2026-10-02 00:27 (Mac)   dotnet --version: not installed yet (Step 2)
+HEAD: 0cae8cac41dd320a3e2a935c79c7bb131b38c88e
+
+Commands run (after G1 + Timothy's go-ahead):
+  git branch archive/pre-275-2026-10 origin/tgrant/exploration-phase
+  git switch -c remove-autofac-275 upstream/main
+
+== git remote -v
+origin	git@github.com:Timothy-Lee-Grant/yarp.git (fetch)
+origin	git@github.com:Timothy-Lee-Grant/yarp.git (push)
+upstream	https://github.com/dotnet/yarp.git (fetch)
+upstream	https://github.com/dotnet/yarp.git (push)
+
+== git branch -vv
+  archive/pre-275-2026-10 5892025e [origin/tgrant/exploration-phase] Combine individual markdown files from each topic into another seperate text files so that evaluation is easier.
+  main                    0cae8cac [origin/main] Merge pull request #3050 from dotnet/darc-main-7ae5aed1-fda9-44e2-b09c-ee057d546e89
+* remove-autofac-275      0cae8cac [upstream/main] Merge pull request #3050 from dotnet/darc-main-7ae5aed1-fda9-44e2-b09c-ee057d546e89
+
+== git status -sb
+## remove-autofac-275...upstream/main
+
+== git stash list
+(empty)
+
+== archive holds all 5 old commits (archive..origin branch should be empty, upstream/main..archive = 5)
+missing from archive: 0
+5892025e Combine individual markdown files from each topic into another seperate text files so that evaluation is easier.
+15cff917 Added documentation section on a deep dive of the actual code concepts found in this project.
+575c38b1 Added documents outlining open issues for the repo, concepts related to those open issues, and other useful information of the issues.
+7833c556 Created Components and Architecture and Features Deep Dive concepts documents.
+0e45f559 Created documents to investigate the concepts found in this YARP repo
+
+== PR branch vs upstream/main (behind ahead)
+0	0

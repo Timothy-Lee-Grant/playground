@@ -87,6 +87,8 @@ teach back; push and open the PR. Everything else he may watch or skip.
 
 *(Questions about the plan, and the G1 grant, go here.)*
 
+**[Timothy — 2026_10_02_00_27] G1: plan approved; go ahead with Step 1.** (Said to the CLI in session 1; recorded by CLI.)
+
 # Stage 4 (Upstream Communication)
 
 **[Desktop — 2026_10_01_19_45] Draft comment v1** (from scouting 002; revised after lecture 1 to say the change is
@@ -137,6 +139,22 @@ local changes") doesn't hold on the Mac**
 - *Evidence:* `evidence/000-fork-audit.txt`.
 - *Open for Timothy:* (a) G1. (b) Is there an old YARP clone on the Linux desktop? If so, run `git status` and
   `git log --branches --not --remotes` there before we treat Step 1 as lossless.
+
+**[CLI — 2026_10_02_00_27] Step 1: clone brought to the O1 target state**
+
+- *Changed:* created local branch `archive/pre-275-2026-10` at `5892025e` (= `origin/tgrant/exploration-phase`;
+  all 5 old commits present, 0 missing), and `remove-autofac-275` at `0cae8cac` (= `upstream/main`, 0/0). Now on
+  `remove-autofac-275`, clean tree. `main` untouched (already equal to `upstream/main`). Nothing deleted, reset,
+  stashed or pushed.
+- *Deviations:* (1) Ran with the Linux-desktop question still open. Step 1 only adds local branches here, so it
+  can't lose anything over there; the question still stands for that machine. (2) Implementation detail:
+  `remove-autofac-275` tracks `upstream/main` (git's default for `switch -c <name> upstream/main`). That's
+  useful now, because `git status` shows how far `dotnet/yarp` has moved on. Timothy's first push in Step 14 must
+  be `git push -u origin remove-autofac-275`, which retargets tracking to his fork.
+- *Evidence:* `evidence/001-fork-state-after.txt` (remotes, branches, status, archive completeness check).
+- **Why:** Branching from `upstream/main`, not from the old notes branch, keeps the PR diff to the #275 change
+  only. The archive branch is a local second copy of work that already lives on GitHub. It's cheap insurance and
+  meets acceptance criterion 4 as written.
 
 # Stage 6 (Understanding)
 

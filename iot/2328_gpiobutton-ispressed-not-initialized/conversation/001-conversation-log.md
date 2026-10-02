@@ -12,10 +12,10 @@
 
 | | |
 |---|---|
-| **Stage** | Mode P. **Code done** (Steps 0–7, 2 local commits, 15/15 green). Lecture 1 written. Nothing pushed or posted. |
-| **Last entry** | #7 (2026-10-01) |
+| **Stage** | Mode P. Code done (local). **Comment posted on #2328 (G2).** Waiting for maintainers. Nothing pushed. |
+| **Last entry** | #8 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
-| **Next step** | Timothy posts comment v3 (entry #6) when ready (G2). CLI: `/handoff` for the build session; test on top of #2608 (plan Stage 6). |
+| **Next step** | Wait for replies. CLI (Fri): `/handoff`, evidence 007 on top of #2608, unset upstream tracking. Sat: teach-back (G3). Sun: push + PR if no objection. |
 
 ## Index
 
@@ -28,6 +28,7 @@
 | 5 | 2026-10-01 | 📍 | Code reviewed; lecture 1 written |
 | 6 | 2026-10-01 | 📍 | Read lecture 1; ready to comment. #2608 moved: impact check; comment v3 |
 | 7 | 2026-10-01 | ❓→💬 | Why not push yet, why the push was blocked, and the explicit next steps |
+| 8 | 2026-10-01 | 📍 | **First upstream comment on a code issue posted** (G2) |
 
 ---
 
@@ -142,3 +143,12 @@ the explicit next steps.
   (evidence 007). Rebase for real only if #2608 merges first.
 - *Next steps:* tonight re-check #2328 and post comment v3 (G2); share the link. Then a CLI session: `/handoff`,
   evidence 007, unset the tracking. Wait for replies; adapt per lecture §5.4. Sunday: teach-back (G3), push, open PR.
+
+---
+
+## #8 · 2026-10-01 · 📍 Comment posted on #2328 (G2)
+
+Timothy posted his own edit of comment v3 on dotnet/iot#2328 (link to be added). Desktop reviewed the final text
+first: accurate throughout; suggested only a blank line between the first two paragraphs and "to read lazily".
+His first public comment on a *code* issue, posted after he could explain every sentence (lecture 001 + TB 002).
+Code stays local until the PR. Next: wait for replies; adapt per lecture 001 §5.4.

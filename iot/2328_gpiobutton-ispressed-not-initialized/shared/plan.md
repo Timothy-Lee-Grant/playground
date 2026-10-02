@@ -130,6 +130,13 @@ G2 (posting) stays closed until he's read lecture 1.
 > I see @pgrawehr's #2608 touches the same files; I'll keep my change separate and rebase once it's in.
 > @raffaeler, OK for me to take this?
 
+**[Timothy — 2026_10_01_18_57, via desktop] G2: comment posted on #2328**
+
+Posted his own edit of comment v3 publicly on dotnet/iot#2328 (link: to be added). Same content as v3: the startup
+bug and the swallowed release, the change ready with 4 red → green tests, question 1 (timing: immediate / settle
+delay / lazy), question 2 (ordering: the small read→assign window), and the #2608 compatibility note; @raffaeler.
+Nothing pushed. **Now waiting for a maintainer reply**; adapt per lecture 001 §5.4.
+
 # Stage 5 (Implementation)
 
 *(CLI entries go here, one per step or per meaningful finding, each with: what changed, deviations, evidence,

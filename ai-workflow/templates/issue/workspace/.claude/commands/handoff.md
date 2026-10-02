@@ -12,7 +12,7 @@ Wrap up this session for the planner (desktop Claude), who will read only what y
    existing number (start at 001). Follow `shared/sessions/_TEMPLATE.md` exactly, every section, "none" where empty.
    Include his questions in his words where you can. Mark every discovery verified (with evidence file) or unverified.
 3. **Rewrite `shared/STATUS.md`** (same table format): date, stage, work order and whether its "done when" is met,
-   mode, branch and last commit (`git -C develop/yarp log -1 --oneline`), test status with evidence file, upstream
+   mode, branch and last commit (`git -C develop/{{REPO}} log -1 --oneline`), test status with evidence file, upstream
    state if you know it, blockers, what's needed from Timothy or desktop, link to the new report.
 4. **Append to `shared/02-decisions.md`** any decision Timothy made this session (never edit old rows).
 5. **Mode P:** make sure every step you worked on has its Stage 5 entry in `shared/plan.md` (with the *why*), and

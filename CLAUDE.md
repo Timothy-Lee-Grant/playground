@@ -39,6 +39,7 @@ exercises/  (GitHub: Timothy-Lee-Grant/playground)
 ├── scouting/               issue searches: dated shortlists of candidate issues + a progress tracker
 ├── ai-workflow/            how desktop Claude and the Claude Code CLI share work on an issue (shared/ mailbox,
 │                           CLI workspace, /handoff) + the interaction-modes experiment. Read for any coding issue
+│                           default-workflow.md = THE DEFAULT for every new issue (mode P); templates/ + new-issue.sh
 ├── iot/                    dotnet/iot work ─────────────── NEW LAYOUT (v2), see §2
 │   ├── CLAUDE.md           orientation for the dotnet/iot project itself
 │   ├── iot_concepts/       lecture notes on IoT / dotnet/iot concepts, reusable across issues
@@ -204,13 +205,18 @@ NotebookLM follow a different format (§10.7).
 | Stage | What happens | Output goes to |
 |---|---|---|
 | **1. Scout** | Search upstream repos for candidate issues. | `scouting/NNN-issue_shortlist_<month_year>.md` (one per pass, dated snapshot; carry unfinished items forward). Keep its **progress tracker** current. |
-| **2. Pick** | Move a candidate to "working on it". Re-check the thread (open? claimed? PR up? maintainer comments?) and record the check date. | Create the issue folder (§2.2) from the templates in §8. Create `<repo>/CLAUDE.md` and `<repo>_concepts/` if this is the first issue in that repo. Add a row to the root `README.md` table and update the scouting tracker. |
+| **2. Pick** | Move a candidate to "working on it". Re-check the thread (open? claimed? PR up? maintainer comments?) and record the check date. | **Coding issue:** scaffold it with `bash ai-workflow/new-issue.sh …` (mode P, see below). Otherwise create the issue folder (§2.2) from the templates in §8. Create `<repo>/CLAUDE.md` and `<repo>_concepts/` if this is the first issue in that repo. Add a row to the root `README.md` table and update the scouting tracker. |
 | **3. Explore** | Read the issue, the thread and the source. Timothy asks questions until the problem makes sense. | `conversation/`: entry #1 is always a briefing (what the issue is, the facts, the cast of characters, control flow, findings, fit check, next steps). |
 | **4. Learn** | Turn concepts Timothy is missing into lectures. | `<repo>_concepts/`, linked from the conversation. |
 | **5. Experiment** | Reproduce the issue or prove a fix with the smallest running system. | `sample/` + `sample/evidence/`; 📍 entries in the conversation. |
 | **6. Report** | Write up the results. | `report/`; update the issue `README.md`. |
 | **7. Contribute** | Comment on the issue before substantial work (say what you plan and ask if it's wanted). Implement in a **fork cloned outside this repo**. Open the PR. | Links and outcomes go to the conversation, the issue `CLAUDE.md` status, the root `README.md` table, and the scouting tracker. |
 | **8. Reflect** *(after studying or finishing an issue)* | Close the loop (§9.3). | `open_source_persona.md` §7.2 exposure map, §10.1 record, §10.2 study log; `lectures/000-pattern-catalog.md`; `private/001-observations.md`. |
+
+> **Default for coding issues: mode P** ([`ai-workflow/default-workflow.md`](ai-workflow/default-workflow.md),
+> Timothy, 2026-10-01). The AI plans and builds the change locally; Timothy learns it through lecture 1 and a
+> teach-back; then *he* posts the comment, pushes and opens the PR. That reorders stages 3–7 above: the upstream
+> comment comes **after** he understands the built change, not before the work. Use another mode only when he asks.
 
 **Contribution rules that apply everywhere:**
 
@@ -226,7 +232,10 @@ NotebookLM follow a different format (§10.7).
 
 ## 6. Working with Claude sessions (desktop and CLI)
 
-**For coding issues, the desktop + CLI split in [`ai-workflow/README.md`](ai-workflow/README.md) applies:** the CLI
+**For coding issues, mode P is the default** ([`ai-workflow/default-workflow.md`](ai-workflow/default-workflow.md)):
+desktop follows that sequence without being asked, and when Timothy says "let's start a new issue", it scaffolds
+the folder with `ai-workflow/new-issue.sh` and moves to the briefing and the plan. **The desktop + CLI split in
+[`ai-workflow/README.md`](ai-workflow/README.md) applies:** the CLI
 runs in a workspace outside this repo and sees only the fork and the issue's `shared/` folder (it follows
 `shared/00-start-here.md`, not this file). Desktop sessions read `shared/STATUS.md` and the newest session report
 before anything else, and after each CLI session do the four duties listed in the issue's `CLAUDE.md`.

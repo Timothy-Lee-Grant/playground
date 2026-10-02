@@ -6,6 +6,8 @@
 |---|---|---|---|---|
 | D1 | 2026-09-30 | Queue #275 behind iot#2328; ask maintainers first | One active PR at a time; issue is old | desktop |
 | D2 | 2026-09-30 | Use the desktop + CLI workflow; experiment with interaction modes | Timothy wants to find what works best | desktop |
+| D3 | 2026-10-01 | Switch to mode **P** (the default for every new issue). Build first, comment after lecture 1; replaces D1's "ask first, no edits until they answer" | Worked well on iot#2328; a 'no' costs AI time, not Timothy's | desktop |
+| D4 | 2026-10-01 | Timothy already has an old clone of his YARP fork with earlier changes in it; the CLI audits it first and brings it to a standard state without losing anything (plan Steps 0–1, O1) | He doesn't know what state it's in | desktop |
 
 ## Pending (not decided)
 

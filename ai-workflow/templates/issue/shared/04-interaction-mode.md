@@ -7,7 +7,7 @@
 ## Current mode
 
 **P — Plan-driven (Timothy observes).** The default for every new issue (Timothy, 2026-10-01, after iot#2328).
-Switched from M0 on 2026-10-01, before any CLI session. Work from `shared/plan.md`; rules in `00-start-here.md` §6.
+Work from `shared/plan.md`; rules in `00-start-here.md` §6.
 
 ## The menu (summary)
 

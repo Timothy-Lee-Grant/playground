@@ -6,8 +6,9 @@ v2 layout (root [`../../CLAUDE.md`](../../CLAUDE.md) §2) **plus the AI workflow
 ([`../../ai-workflow/README.md`](../../ai-workflow/README.md)). Note: `yarp/1764_*` next door uses the legacy v1 layout;
 this folder doesn't.
 
-For a new **desktop** session: root `CLAUDE.md` + `persona.md` → [`../CLAUDE.md`](../CLAUDE.md) → this file →
-[`shared/STATUS.md`](shared/STATUS.md) + newest [`shared/sessions/`](shared/sessions/) report →
+**Mode P, the default** ([`../../ai-workflow/default-workflow.md`](../../ai-workflow/default-workflow.md));
+the living plan is [`shared/plan.md`](shared/plan.md). For a new **desktop** session: root `CLAUDE.md` +
+`persona.md` → [`../CLAUDE.md`](../CLAUDE.md) → this file → `shared/plan.md` → [`shared/STATUS.md`](shared/STATUS.md) + newest [`shared/sessions/`](shared/sessions/) report →
 [`conversation/001-conversation-log.md`](conversation/001-conversation-log.md).
 
 ## What this is
@@ -28,9 +29,14 @@ can't run .NET 11).
 
 ## Status
 
-Set up 2026-09-30. Queued behind iot#2328 (one active PR at a time). The "is this still wanted?" comment is not
-posted yet. Until a maintainer answers, only WO-1 (setup + read-only tour) is allowed.
+Set up 2026-09-30. **2026-10-01: switched to mode P** before any CLI session (plan v1 written; waiting for G1).
+Timothy already has an **old clone of his fork with earlier changes**; plan Steps 0–1 audit it and bring it to a
+standard state without losing anything. The PR waits for iot#2328's PR (one active PR at a time); building and
+learning don't.
+
+**If the clone isn't at `develop/yarp`:** `workspace/setup.sh` now refuses to make a second clone and says where
+it found the old one; move it to `develop/yarp` and re-run.
 
 ## Desktop duties after each CLI session
 
-Same four steps as `iot/2328_*/CLAUDE.md`.
+Same four steps as `iot/2328_*/CLAUDE.md`, plus: read the new Stage 5 entries in `shared/plan.md`.

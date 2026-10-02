@@ -6,10 +6,10 @@
 ## 1. Where you are
 
 ```
-~/Desktop/projects/oss-work/yarp-275/     ← you start here (not a git repo)
+~/Desktop/projects/oss-work/{{REPO}}-{{ISSUE}}/     ← you start here (not a git repo)
 ├── CLAUDE.md          our instructions (never copy into the fork)
 ├── shared/            the mailbox between you and desktop Claude (a symlink into Timothy's `exercises` repo)
-└── develop/yarp/       Timothy's fork of dotnet/yarp: the ONLY place code changes
+└── develop/{{REPO}}/       Timothy's fork of {{OWNER}}/{{REPO}}: the ONLY place code changes
 ```
 
 You are the **developer** half of a two-session setup. A separate desktop Claude (the **planner**) talks things
@@ -54,7 +54,7 @@ How to explain things to him:
 **Start:**
 1. Read `shared/STATUS.md`, then `shared/02-decisions.md`. (00, 01, 03, 04 should be auto-loaded by the workspace
    `CLAUDE.md`; if they aren't in your context, read them too and say so in the report.)
-2. Check the fork: `git -C develop/yarp status` and current branch.
+2. Check the fork: `git -C develop/{{REPO}} status` and current branch.
 3. Tell Timothy in 3–6 lines: where things stand, the work order you'll work on, and the mode you'll use. **Wait for
    his go-ahead.**
 

@@ -1,7 +1,7 @@
 {
   "permissions": {
     "additionalDirectories": [
-      "/Users/timothygrant/Desktop/projects/exercises/yarp/275_remove-autofac-from-tests/shared"
+      "/Users/timothygrant/Desktop/projects/exercises/{{REPO}}/{{ISSUE}}_{{SLUG}}/shared"
     ],
     "deny": [
       "Bash(git push:*)",

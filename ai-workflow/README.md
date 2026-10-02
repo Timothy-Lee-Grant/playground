@@ -99,8 +99,10 @@ Two writers on one file eventually overwrite each other, so every file has a sin
 
 ## 5. Setting up a new issue
 
-1. Desktop creates the issue folder with `shared/` and `workspace/` filled in (copy the latest issue's
-   `workspace/` and `00-start-here.md`, then change names and paths).
+1. Desktop runs `bash ai-workflow/new-issue.sh <owner> <repo> <issue#> <slug> "<title>"`. It copies
+   [`templates/issue/`](templates/issue/) (already in **mode P**, with a `plan.md` skeleton) and fills in names and
+   paths. Then it follows [`default-workflow.md`](default-workflow.md): briefing → plan → G1. Improvements found on
+   an issue go into the templates too, so the next issue starts with them.
 2. Timothy forks the upstream repo on GitHub (web UI).
 3. Timothy runs `bash <issue folder>/workspace/setup.sh`. It creates the workspace, the symlinks and the clone.
 4. `cd ~/Desktop/projects/oss-work/<repo>-<issue#> && claude`.
@@ -116,4 +118,5 @@ If Claude Code ever ignores a symlinked `settings.json` or command, copy that on
 | 2026-09-30 | v1: layout, ownership, loop, `/handoff`; first used for iot#2328 and yarp#275 |
 | 2026-09-30 | `@` imports in `workspace/CLAUDE.md` must be **absolute** (`@~/...`): relative ones don't resolve through the symlink (found in iot#2328 session 001). Added fallback "read them yourself"; chunked explanations; optional scores |
 | 2026-10-01 | `/handoff` no longer asks Timothy for scores or feedback; the CLI records them only if volunteered, plus its own observations |
+| 2026-10-01 | **Mode P is the default for every new issue** ([`default-workflow.md`](default-workflow.md)). Issue templates in `templates/issue/` + `new-issue.sh` scaffolder |
 | 2026-09-30 | **Mode P** (plan-driven, Timothy observes) + `shared/plan.md` with gates G1–G3 and deviation rules (`00-start-here.md` §6). First used on iot#2328. M0–M4 kept for later |

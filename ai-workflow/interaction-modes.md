@@ -21,13 +21,18 @@ an upstream PR that Timothy can't explain line by line.**
 | **M2** | Pair | CLI, in small steps | Propose **one** small change at a time with the why; wait for approval; Timothy may ask "explain before applying" | Product-code fixes with design weight |
 | **M3** | Delegate + review | CLI, a whole work order | Implement the order on a branch, then walk Timothy through the diff. Timothy explains the diff back before committing | Mechanical or repetitive work (e.g. rewriting 7 test files) |
 | **M4** | Spike | CLI, freely | Explore fast on a throwaway branch to answer a question. The code is discarded; only findings are kept | "Does this approach even work?" |
-| **P** | Plan-driven (Timothy observes) | CLI, following `shared/plan.md` | Desktop writes the plan; the CLI checks it against the code, then drives it between Timothy's gates (G1 plan approved · G2 before anything public · G3 after his teach-back), recording the *why* of every step. Timothy learns the finished change through lectures + teach-back **before** the PR; the public actions (post, test, push, open PR) stay his | When Timothy can't yet make the design calls but wants a working example to learn from. **Current default** (since 2026-09-30) |
+| **P** | Plan-driven (Timothy observes) | CLI, following `shared/plan.md` | Desktop writes the plan; the CLI checks it against the code, then drives it between Timothy's gates (G1 plan approved · G2 before anything public · G3 after his teach-back), recording the *why* of every step. Timothy learns the finished change through lectures + teach-back **before** the PR; the public actions (post, test, push, open PR) stay his | When Timothy can't yet make the design calls but wants a working example to learn from. **The default for every new issue** (Timothy, 2026-10-01); sequence in [`default-workflow.md`](default-workflow.md) |
 
 **Why P exists** (Timothy, 2026-09-30): steering modes M0–M4 assume he can judge each step, and he isn't confident
 enough yet. They're saved for when he is. P is modeled on the staged implementation plans he used on his own
 projects (direction → discussion → versioned plan → per-step implementation with proofs), adapted for open source:
 some decisions belong to maintainers, communication is part of the plan, understanding comes *before* the PR, and
 review reopens the plan. The measure of P is the G3 teach-back, not the code.
+
+**2026-10-01, after iot#2328:** Timothy liked P enough to make it the default for every new issue: the backseat
+role, lectures that show what was done and why, and understanding everything before committing to anything
+publicly. M0–M4 stay on the menu for when he feels ready; desktop may suggest a small step toward them (e.g.
+M1 for the tests) when teach-backs show he's ready, but never switches without him.
 
 **Mixing is allowed** and expected: e.g. "tests in M1, fix in M2". The current mode can change mid-session when
 Timothy says so; the CLI logs the switch in its session report.

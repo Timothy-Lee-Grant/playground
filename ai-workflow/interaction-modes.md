@@ -50,8 +50,9 @@ Timothy says so; the CLI logs the switch in its session report.
 
 ## 3. How a session is scored
 
-The CLI's `/handoff` asks Timothy four quick questions (1–5 each, one word is fine) and records them, plus its own
-observations:
+**Timothy isn't asked at `/handoff`** (his decision, 2026-10-01). The CLI records these scores only if he
+volunteers them during a session, and otherwise writes its own observations. He can give scores to desktop any time
+("that session was a 4 on understanding"). The four measures:
 
 | Measure | Question | Why |
 |---|---|---|

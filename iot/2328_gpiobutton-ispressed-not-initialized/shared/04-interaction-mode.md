@@ -23,6 +23,6 @@
 M0–M4 are kept for later, once Timothy is ready to steer more. All modes: never push/PR/comment; present options instead of making design decisions. Mixing is fine
 ("tests M1, fix M2"); Timothy can switch any time by saying so.
 
-## Scoring (asked during /handoff)
+## Scoring (never asked; record only if Timothy volunteers it)
 
 1–5 each: **Understanding** (could you explain today's diff without notes?), **Speed**, **Quality**, **Energy**.

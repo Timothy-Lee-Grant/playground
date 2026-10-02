@@ -4,10 +4,10 @@ description: End the session - write the session report and update STATUS.md for
 
 Wrap up this session for the planner (desktop Claude), who will read only what you write in `shared/`.
 
-1. **Ask Timothy four quick scores (1–5), in one message:** Understanding (could you explain today's diff to a
-   reviewer without notes?), Speed, Quality, Energy. Also ask: "Anything about working this way you'd change?"
-   Wait for his answers (a single line is fine). Scores are optional: if he skips, record "not given" and move on
-   without asking again.
+1. **Don't ask Timothy anything.** Record the mode scores (Understanding, Speed, Quality, Energy, 1–5) and his
+   view of how the session went **only if he volunteered them during the session**; otherwise write "not given".
+   Instead, write your own observations: what he asked, where he engaged, what seemed to land. (Timothy, 2026-10-01:
+   he doesn't want to be asked at handoff.)
 2. **Write the session report** at `shared/sessions/NNN-YYYY-MM-DD.md`, where NNN is one more than the highest
    existing number (start at 001). Follow `shared/sessions/_TEMPLATE.md` exactly, every section, "none" where empty.
    Include his questions in his words where you can. Mark every discovery verified (with evidence file) or unverified.

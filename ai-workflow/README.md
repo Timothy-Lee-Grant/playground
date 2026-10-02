@@ -115,4 +115,5 @@ If Claude Code ever ignores a symlinked `settings.json` or command, copy that on
 |---|---|
 | 2026-09-30 | v1: layout, ownership, loop, `/handoff`; first used for iot#2328 and yarp#275 |
 | 2026-09-30 | `@` imports in `workspace/CLAUDE.md` must be **absolute** (`@~/...`): relative ones don't resolve through the symlink (found in iot#2328 session 001). Added fallback "read them yourself"; chunked explanations; optional scores |
+| 2026-10-01 | `/handoff` no longer asks Timothy for scores or feedback; the CLI records them only if volunteered, plus its own observations |
 | 2026-09-30 | **Mode P** (plan-driven, Timothy observes) + `shared/plan.md` with gates G1–G3 and deviation rules (`00-start-here.md` §6). First used on iot#2328. M0–M4 kept for later |

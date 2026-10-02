@@ -230,6 +230,7 @@ Analogies:
 
 * The type of analogies that I like are the ones that personify the concepts which I am struggling with.
 * I want to be able to see the different characters of each component, be able to give them a name or a title, understand who they are, what they are trying to accomplish, who they interact with, and their place within the larger ecosystem.
+* Don't force everything into a firmware/embedded frame. Software engineering needs its own mindset, and I want to learn it on its own terms. Teach general software topics (CI, testing, architecture, cloud) the way you'd teach any junior software engineer; use a firmware or C comparison only when it genuinely clarifies something, and say where it stops applying.
 
 ---
 

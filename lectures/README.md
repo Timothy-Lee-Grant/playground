@@ -14,6 +14,7 @@ Concepts tied to one project's domain go in that project's concepts folder inste
 |---|---|---|
 | 000 | [Architecture and pattern catalog](000-pattern-catalog.md): cross-repo table of patterns seen in real code (a living index, not a lecture) | all issues |
 | 001 | [YARP WebSocket activity timeout](001-yarp-websocket-activity-timeout.md) | dotnet/yarp#1764 |
+| 002 | [The kinds of tests a professional engineer should know](002-kinds-of-tests.md): scope vs purpose, Microsoft's L0–L4, test doubles, shift right, bad tests; examples from dotnet/iot | Timothy's question, 2026-10-01 |
 
 Files are named `NNN-title.md`. Style and conventions: root [`CLAUDE.md`](../CLAUDE.md) §4.4 and
 [`persona.md`](../persona.md).

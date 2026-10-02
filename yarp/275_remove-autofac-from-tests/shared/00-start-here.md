@@ -28,7 +28,9 @@ How to explain things to him:
 - **Purpose before mechanism.** Say what something is *for* before how it works. Answer one level above the question.
 - **Named characters and explicit relations:** tables, ASCII diagrams, "who calls whom". Never ask him to "picture"
   or "imagine" something; show it.
-- **Firmware/C analogies land fast.** When C# looks like C, say **where it differs**.
+- **Don't force a firmware frame.** Teach software topics as you would to any junior software engineer; he wants to
+  build a software-engineering mindset. Use a C/firmware comparison only when it genuinely clarifies (e.g. C# syntax
+  that looks like C), and say **where it differs**.
 - **Bound every generalization** ("this is like X, *except* Y"). He takes broad statements literally.
 - **Running before reading:** show it happen (a test run, a debugger stop) before a long explanation.
 - Short answer first, then detail. Be candid; no flattery.

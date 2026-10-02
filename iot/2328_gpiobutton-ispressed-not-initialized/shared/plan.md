@@ -277,6 +277,32 @@ later refactor (e.g. #1715's lazy subscription) could turn into real events.
 4. Held-at-startup + holding enabled: say it in the PR, or leave it. Timothy/desktop.
 5. Test naming copies `ButtonTests.cs` (`If_…_…`); the repo's newer tests use other styles. Kept local consistency.
 
+**[CLI — 2026_10_01_19_06] Stage 6 action: our change on top of #2608 (`6a2f8973`). Verdict: works; one trivial conflict**
+
+*Changed:* no commits on the real branch. Local refs only: `pr-2608-latest` (= `upstream` `pull/2608/head` @
+`6a2f8973`) and a throwaway copy `try/2328-on-2608` (`ec05984d`, `fc9862c0`). The old local `pr-2608` @ `a1563be0`
+is now stale. The real branch `fix/2328-gpiobutton-initial-state` is still at `395b9fbf`, and at Timothy's request
+**its upstream tracking was removed** (`git branch --unset-upstream`; it used to track `upstream/main`). *Evidence:*
+`007-on-top-of-2608.txt`.
+
+1. **Rebase:** commit 1 (tests) conflicted only in `Button.Tests.csproj`, as desktop predicted. Commit 2 (fix)
+   applied to `GpioButton.cs` without conflict. Our diff on top of #2608 is the same 3 files / +98 as on `main`.
+2. **Resolution (implementation detail):** keep both. Our `<Compile … Link="MockableGpioDriver.cs">` goes in its
+   own `<ItemGroup>` (as on `main`); #2608's `PackageReference` stays in the group with the `ProjectReference`.
+   *Why:* our side of the diff stays exactly what it was on `main` (one added group), so a reviewer sees the
+   same 4-line csproj hunk either way. *Rejected:* putting all three in one group (that would edit #2608's group;
+   no functional difference).
+3. **Build and tests (*verified*):** clean build, 0 warnings / 0 errors. **25/25 pass**: #2608's 18 `ButtonTests`
+   (it rewrote them to use `FakeTimeProvider`) plus our 7 `GpioButtonTests`, unchanged. The held-at-startup +
+   debounce test still passes on #2608's `TimeProvider`-based `ButtonBase`. This confirms desktop's reading
+   that #2608 does not fix the bug and does not break our tests.
+4. **Caveat about the evidence file:** its last line, `Exit code: 0`, is the exit status of a separator `echo`,
+   not of `dotnet test` (a scripting slip). The real signal is the `Test Run Successful` / `Passed: 25` lines
+   above it. The file was not edited (`evidence/README.md`).
+5. **For later (not done):** when #2608 merges, rebase the real branch the same way. The conflict and its
+   resolution will be the same if #2608 doesn't change again. **Rebasing changes the commit hashes; whether to
+   push only after the rebase (no force-push during review) is Timothy's call.**
+
 # Stage 6 (Understanding)
 
 *(Desktop: lecture list and links; Timothy: reading confirmations and teach-back; G3.)*

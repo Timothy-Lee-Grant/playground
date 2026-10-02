@@ -1,0 +1,118 @@
+Command:  (from develop/iot)
+  git fetch upstream pull/2608/head:pr-2608-latest          # #2608 head = 6a2f8973 (Use TimeProvider for button timing and deterministic tests)
+  git branch try/2328-on-2608 fix/2328-gpiobutton-initial-state && git switch try/2328-on-2608
+  git rebase pr-2608-latest   # conflict in Button.Tests.csproj only; resolved by keeping both lines (see section 1)
+  dotnet build src/devices/Button/tests/ --no-incremental
+  dotnet test src/devices/Button/tests/ --no-build --logger 'console;verbosity=normal'
+Date:     2026-10-01 19:06 PDT
+dotnet:   10.0.302
+Branch:   try/2328-on-2608  (a COPY; the real branch fix/2328-gpiobutton-initial-state is untouched at 395b9fbf)
+Commit:   fc9862c0  (Initialize GpioButton.IsPressed from the pin level)
+Machine:  Darwin arm64
+Worktree: (clean if empty)
+----------------------------------------------------------------
+== 1. Rebased stack and our diff on top of #2608 ==
+fc9862c0 Initialize GpioButton.IsPressed from the pin level
+ec05984d Add GpioButton tests for the initial pressed state
+6a2f8973 Use TimeProvider for button timing and deterministic tests
+a1563be0 Fix remaining tests
+
+ src/devices/Button/GpioButton.cs             |  9 +++
+ src/devices/Button/tests/Button.Tests.csproj |  4 ++
+ src/devices/Button/tests/GpioButtonTests.cs  | 85 ++++++++++++++++++++++++++++
+ 3 files changed, 98 insertions(+)
+
+-- csproj as resolved (diff vs #2608) --
+diff --git a/src/devices/Button/tests/Button.Tests.csproj b/src/devices/Button/tests/Button.Tests.csproj
+index c98c5044..18c62701 100644
+--- a/src/devices/Button/tests/Button.Tests.csproj
++++ b/src/devices/Button/tests/Button.Tests.csproj
+@@ -7,6 +7,10 @@
+     <RootNamespace>Iot.Device.Button.Tests</RootNamespace>
+   </PropertyGroup>
+ 
++  <ItemGroup>
++    <Compile Include="..\..\..\System.Device.Gpio.Tests\MockableGpioDriver.cs" Link="MockableGpioDriver.cs" />
++  </ItemGroup>
++
+   <ItemGroup>
+     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.0.0" />
+     <ProjectReference Include="..\Button.csproj" />
+
+-- GpioButton.cs (applied without conflict; diff vs #2608) --
+diff --git a/src/devices/Button/GpioButton.cs b/src/devices/Button/GpioButton.cs
+index 7156b91c..0cbeb199 100644
+--- a/src/devices/Button/GpioButton.cs
++++ b/src/devices/Button/GpioButton.cs
+@@ -10,6 +10,10 @@ namespace Iot.Device.Button
+     /// GPIO implementation of Button.
+     /// Inherits from ButtonBase.
+     /// </summary>
++    /// <remarks>
++    /// <see cref="ButtonBase.IsPressed"/> is initialized from the pin level when the button is created,
++    /// so a button that is already held down is reported as pressed. No events are raised for this initial state.
++    /// </remarks>
+     public class GpioButton : ButtonBase
+     {
+         private GpioController _gpioController;
+@@ -89,6 +93,11 @@ namespace Iot.Device.Button
+                     _buttonPin,
+                     PinEventTypes.Falling | PinEventTypes.Rising,
+                     PinStateChanged);
++
++                // A button already held down at startup produces no edge, so take the initial state from the pin level.
++                // This only sets the state; no events are raised.
++                PinValue initialValue = _gpioController.Read(_buttonPin);
++                IsPressed = _eventPinMode == PinMode.InputPullUp ? initialValue == PinValue.Low : initialValue == PinValue.High;
+             }
+             catch (Exception)
+             {
+
+== 2. Clean build (TreatWarningsAsErrors=true, so success means 0 warnings) ==
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.01
+
+== 3. Tests ==
+Test run for /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button.Tests/Debug/net8.0/Button.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 8.0.13)
+[xUnit.net 00:00:00.09]   Discovering: Button.Tests
+[xUnit.net 00:00:00.13]   Discovered:  Button.Tests
+[xUnit.net 00:00:00.15]   Starting:    Button.Tests
+  Passed Iot.Device.Button.Tests.ButtonTests.DoublePress_Uses_Elapsed_Time_From_First_Release(elapsedMilliseconds: 1501, expectedDoublePresses: 0) [6 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.DoublePress_Uses_Elapsed_Time_From_First_Release(elapsedMilliseconds: 1499, expectedDoublePresses: 1) [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.DoublePress_Uses_Elapsed_Time_From_First_Release(elapsedMilliseconds: 1500, expectedDoublePresses: 1) [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.Releasing_Before_Holding_Threshold_Cancels_Timer [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Double_Pressed_And_DoublePress_Is_Disabled_DoublePress_Event_Does_Not_Fire [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.Debouncing_Uses_Elapsed_Time_From_First_Release(elapsedMilliseconds: 999, expectedPresses: 1) [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.Debouncing_Uses_Elapsed_Time_From_First_Release(elapsedMilliseconds: 1000, expectedPresses: 2) [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Held_Holding_Event_Fires [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Double_Pressed_DoublePress_Event_Fires [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Pressed_Too_Fast_Debouncing_Removes_Events [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.Three_Presses_Only_Fire_One_DoublePress [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.Disposing_Button_Cancels_Holding_Timer [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.Null_TimeProvider_Is_Rejected [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Once_Pressed_Press_Event_Fires [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.Repeated_Holds_Fire_Started_And_Completed_Once_Per_Hold [5 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Held_And_Holding_Is_Disabled_Holding_Event_Does_Not_Fire [< 1 ms]
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Pressed_Twice_DoublePress_Event_Does_Not_Fire [< 1 ms]
+[xUnit.net 00:00:00.22]   Finished:    Button.Tests
+  Passed Iot.Device.Button.Tests.ButtonTests.If_Button_Is_Held_Down_Longer_Than_Debouncing [< 1 ms]
+  Passed Iot.Device.Button.Tests.GpioButtonTests.If_Button_Is_Held_At_Startup_With_Debouncing_Release_Raises_ButtonUp_And_Press [50 ms]
+  Passed Iot.Device.Button.Tests.GpioButtonTests.If_Button_Is_Created_IsPressed_Reflects_Pin_Level(isPullUp: True, levelAtStartup: 1, expectedIsPressed: False) [1 ms]
+  Passed Iot.Device.Button.Tests.GpioButtonTests.If_Button_Is_Created_IsPressed_Reflects_Pin_Level(isPullUp: False, levelAtStartup: 0, expectedIsPressed: False) [< 1 ms]
+  Passed Iot.Device.Button.Tests.GpioButtonTests.If_Button_Is_Created_IsPressed_Reflects_Pin_Level(isPullUp: False, levelAtStartup: 1, expectedIsPressed: True) [< 1 ms]
+  Passed Iot.Device.Button.Tests.GpioButtonTests.If_Button_Is_Created_IsPressed_Reflects_Pin_Level(isPullUp: True, levelAtStartup: 0, expectedIsPressed: True) [3 ms]
+  Passed Iot.Device.Button.Tests.GpioButtonTests.If_Button_Has_External_PullUp_And_Pin_Is_Low_At_Startup_Button_Is_Pressed [2 ms]
+  Passed Iot.Device.Button.Tests.GpioButtonTests.If_Button_Is_Created_And_Disposed_Pin_Is_Opened_And_Closed [1 ms]
+
+Test Run Successful.
+Total tests: 25
+     Passed: 25
+ Total time: 0.9394 Seconds
+----------------------------------------------------------------
+Exit code: 0

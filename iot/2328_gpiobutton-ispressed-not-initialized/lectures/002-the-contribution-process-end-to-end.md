@@ -4,7 +4,7 @@
 > [#2328](https://github.com/dotnet/iot/issues/2328) · **Date:** 2026-10-03 · **Builds on:** lecture 001 (the code
 > change itself). This one is about everything *around* the code: the repositories, the commits, the conversation,
 > the hunt for the bug, the evidence, and working next to someone else's PR.
-> **Reading time:** ~60–75 minutes. It's in seven parts; each stands on its own, so it's fine to read one per sitting.
+> **Reading time:** ~90 minutes. It's in nine parts; each stands on its own, so it's fine to read one per sitting.
 
 **Why this lecture exists.** This week went fast, and some steps you did on trust ("the tests pass", "it combines
 with #2608", "the commit references the issue"). Now there's time to open each box. The goal is that next time, you
@@ -19,6 +19,8 @@ could do every one of these steps yourself, and know why.
 | 5 | How do you get from an issue's text to the bug's location (the hunt), and a practice issue to try it |
 | 6 | How do you *know* the change works, and how do you package the proof for others? |
 | 7 | How did we check we weren't colliding with #2608, and what happens when it merges? |
+| 8 | How do you review your own change before anyone else sees it? |
+| 9 | How do the two Claudes, the config files, the symlinks and `/handoff` fit together? |
 
 ---
 
@@ -481,6 +483,240 @@ test; save evidence; tell them what you found, with the right level of certainty
 
 ---
 
+## Part 8. Reviewing your own change *before* anyone else does
+
+### 8.1 The rule
+
+**Read your own diff, line by line, before it becomes public.** The reviewer's first look shouldn't also be yours.
+This week you read the change in lecture 001, but you hadn't looked at the actual diff on screen before pushing.
+It turned out fine, but on a different week it's how a stray debug line or a wrong file reaches a maintainer.
+
+### 8.2 A correction: using a PR page to see your diff isn't wrong
+
+What you did on personal projects (open a PR to see what changed) is a real, common technique. GitHub's "Files
+changed" view is a good diff viewer, and teams review that way every day. What was missing this time is only the
+**timing**: on someone else's repository, a PR is public the moment you open it. So the review has to happen
+**before** the PR, with tools that don't publish anything:
+
+| Tool | What it shows | Public? |
+|---|---|---|
+| `git diff --stat upstream/main...HEAD` | Which files changed, and how many lines | No |
+| `git diff upstream/main...HEAD` | Every changed line: exactly what the PR will contain | No |
+| `git log -p upstream/main..HEAD` | Each commit with its message and its own diff (what reviewers see commit by commit) | No |
+| `git show 4c8682ce` | One commit | No |
+| VS Code / Rider "Source Control" or "Compare with branch" | The same diff, side by side, with syntax colors | No |
+| Your fork's compare page: `github.com/Timothy-Lee-Grant/iot/compare/main...fix/2328-gpiobutton-initial-state` | The GitHub diff view on **your fork only**, after pushing, before opening the PR | Your fork is public, but this creates no PR and notifies nobody |
+| A **draft PR against your own fork's `main`** | Your old habit, exactly, but aimed at your fork | Same as above |
+
+The three dots in `upstream/main...HEAD` mean "changes on my branch since it split from `upstream/main`", which is
+exactly what a PR shows. (Two dots in `git log A..B` means "commits in B that aren't in A".)
+
+### 8.3 What to check, in this order
+
+1. **Scope:** `--stat` lists only the files you meant to change (here: `GpioButton.cs`, `Button.Tests.csproj`,
+   `GpioButtonTests.cs`). No stray files, no build output, no changes to unrelated lines (whitespace, reformatting).
+2. **Every product line:** can you say what it does and why it's there? (Lecture 001 §2 is this step for #2328.)
+3. **Every test:** what does it prove, and did you see it fail first? (Part 6.)
+4. **Commit messages:** a clear subject line; the body says why; `Fixes #NNNN` where it belongs.
+5. **Identity:** `git log --format='%an <%ae> | %cn'` shows **your** name and email as author and committer.
+6. **The PR description matches the diff:** every claim points at a line or at evidence.
+7. **The repo's own checklist:** the PR template, `CONTRIBUTING.md`, coding guidelines (for dotnet/iot: warnings
+   are errors, `Fixes #` as the first line, no force-push).
+
+### 8.4 Do it now, on the live PR
+
+The PR is open, so the review costs nothing now and it's good practice:
+
+```bash
+cd ~/Desktop/projects/oss-work/iot-2328/develop/iot
+git diff --stat upstream/main...HEAD
+git log -p upstream/main..HEAD          # space = next page, q = quit
+```
+
+Then open #2611 → **Files changed** and walk the checklist in 8.3. If you spot something you'd change, don't fix it
+silently: tell me, and we'll decide whether it's worth a follow-up commit (no force-push, Part 2.4). GitHub also
+lets you comment on your own PR's lines, a polite way to point reviewers at something ("this is the read discussed
+in #2328").
+
+### 8.5 Make it a gate
+
+From the next issue on, the plan gets a **self-review step before the push**: you walk 8.3 on the diff in your own
+terminal or editor and say "reviewed". In mode P, that's the step that makes "I understand every line" literally
+true about the lines being submitted, not only about a lecture describing them.
+
+### 8.6 Recap of Part 8
+
+Review the diff before it's public: `git diff --stat`, `git diff`, `git log -p` against `upstream/main`, or your
+fork's compare page. Check scope, lines, tests, messages, identity, description, the repo's rules. A PR page is a
+fine viewer, as long as it isn't the first look.
+
+---
+
+## Part 9. The machine we built: how the two Claudes, the files and the folders fit together
+
+### 9.1 The rule
+
+**Neither Claude remembers anything between sessions. Everything that carries over lives in files, and each Claude
+only knows what it has been set up to read.** The whole setup is a set of files arranged so each Claude reads the
+right ones at the right time.
+
+### 9.2 The cast
+
+| Character | Runs where | What it can see | What configures it |
+|---|---|---|---|
+| **Desktop Claude** (the planner; this chat) | Claude desktop app (Cowork), attached to the claude.ai Project "open source" | The connected folder `exercises`, the Project's docs, your memory files | The Project's doc `learning-protocol.md`; your memory (e.g. preferences on how to teach you); the conventions in `exercises/CLAUDE.md`, which it reads with its tools because the protocol points there |
+| **CLI Claude** (the developer; Claude Code in Terminal) | Your Mac, started in `~/Desktop/projects/oss-work/iot-2328/` | That folder: the fork in `develop/iot`, plus `shared/` | The workspace `CLAUDE.md` (auto-loaded), `.claude/settings.json` (permissions), `.claude/commands/` (slash commands) |
+| **`shared/`** (the mailbox) | A real folder inside the issue folder in `exercises` | Both | Its own `00-start-here.md` says who writes what |
+| **You** | Everywhere | Everything | You decide, post and push |
+
+Analogy, bounded: two engineers on different shifts who never meet, sharing one logbook. The planner writes the work
+order in it; the developer reads it, works, writes a shift report; the planner reads the report next shift. Where it
+stops: these "engineers" also forget everything when they go home, so even their *own* past work reaches them only
+through the logbook.
+
+### 9.3 Where everything lives
+
+```
+~/Desktop/projects/exercises/                         ← git repo #1 (your workbench); desktop Claude sees it
+├── CLAUDE.md                     conventions for every session (desktop reads it by convention)
+├── ai-workflow/                  how the two-Claude setup works + the interaction-modes experiment
+├── private/                      git-ignored: learner model, teach-backs (desktop writes; the CLI never sees it)
+└── iot/2328_gpiobutton-ispressed-not-initialized/
+    ├── CLAUDE.md                 orientation for DESKTOP sessions on this issue
+    ├── conversation/             desktop ↔ you, the linear log
+    ├── lectures/                 lectures 001, 002, audio
+    ├── shared/                   ◄── THE MAILBOX (real files)
+    │   ├── 00-start-here.md          how the CLI must operate             (desktop writes)
+    │   ├── 01-brief.md               the issue, facts, constraints       (desktop writes)
+    │   ├── 02-decisions.md           D1, D2, …; append-only              (anyone appends)
+    │   ├── 03-next.md                old work orders (superseded by plan.md in mode P)
+    │   ├── 04-interaction-mode.md    current mode: P                      (you own)
+    │   ├── plan.md                   the living plan, stages 1–8          (desktop body + everyone's entries)
+    │   ├── STATUS.md                 one-screen state                     (CLI rewrites)
+    │   ├── sessions/NNN-date.md      one report per CLI session           (CLI writes)
+    │   └── evidence/NNN-*.txt        saved runs                           (CLI writes)
+    └── workspace/                ◄── THE CLI'S CONFIG (real files, versioned here)
+        ├── CLAUDE.md                 the CLI's root instructions (with @ imports)
+        ├── .claude/settings.json     permissions
+        ├── .claude/commands/handoff.md   the /handoff command
+        └── setup.sh                  built the workspace below, once
+
+~/Desktop/projects/oss-work/iot-2328/                  ← the CLI workspace (NOT a git repo)
+├── CLAUDE.md       → symlink to …/workspace/CLAUDE.md
+├── .claude/
+│   ├── settings.json         → symlink to …/workspace/.claude/settings.json
+│   ├── settings.local.json     (a real file Claude Code creates when you approve things; stays local)
+│   └── commands/handoff.md   → symlink to …/workspace/.claude/commands/handoff.md
+├── shared          → symlink to …/2328_…/shared
+└── develop/iot/      git repo #2: your fork's clone (the only place code changes)
+```
+
+### 9.4 What a symlink is, and why we used them
+
+**A symlink is a file-system entry that stores a path to another file or folder.** Opening
+`oss-work/iot-2328/shared/STATUS.md` actually opens `exercises/iot/2328_…/shared/STATUS.md`. One real copy, two
+paths to it.
+
+C analogy, bounded: like a pointer, reading through it reads the target. Where it stops: deleting the symlink deletes
+only the link, never the target; and because it stores a *path*, moving or renaming the target breaks the link.
+See them with `ls -la ~/Desktop/projects/oss-work/iot-2328`: symlinks print as `name -> target`.
+
+Why: if `shared/` were a *copy*, the CLI's reports would land in the copy, you'd paste them back by hand, and the two
+copies would drift. With a symlink, the CLI writes straight into `exercises`, desktop Claude reads them there, and
+committing `exercises` versions everything. The CLI's config files are symlinked for the same reason: when desktop
+Claude changed `/handoff` to stop asking you questions, the CLI picked it up without you copying anything.
+
+`setup.sh` created all this once: made the folders, created the links (`ln -sfn target linkname`), cloned your fork
+with `--filter=blob:none`, and added the `upstream` remote.
+
+### 9.5 What happens when you type `claude` in the workspace, step by step
+
+1. **Claude Code reads `CLAUDE.md` in the folder it starts in** (and parent folders). That's built into Claude
+   Code: it's the CLI's standing instructions. Ours says "you're the developer in a two-session setup…".
+2. **It follows the `@` imports** inside that file. `@~/Desktop/projects/exercises/iot/2328_…/shared/00-start-here.md`
+   means "load that file's text into your instructions too". Ours imports 00 (rules), 01 (brief), 03, 04 (mode)
+   and `plan.md`. So before you type anything, the CLI already knows the issue, you, the rules, the mode and the
+   plan. (Session 001 found that **relative** imports like `@shared/…` didn't resolve through the symlink, which is
+   why they're absolute now.)
+3. **It reads `.claude/settings.json`**: the permission rules (9.6).
+4. **It registers every file in `.claude/commands/` as a slash command.** `handoff.md` becomes `/handoff`. The file
+   is just a prompt: typing `/handoff` sends its text to the CLI as if you'd typed it. (Skills, which you've seen in
+   the desktop app, are a related but separate mechanism; project commands are the simple version.)
+5. **Following `00` §4, it reads `STATUS.md` and `02-decisions.md`**, checks `git status` in `develop/iot`, tells you
+   where things stand, then waits, or starts if your first message was a complete instruction.
+
+Check step 2 any time by typing `/memory` in the CLI: it lists the instruction files that are loaded.
+
+### 9.6 The permissions file
+
+```json
+{
+  "permissions": {
+    "additionalDirectories": [ ".../exercises/iot/2328_gpiobutton-ispressed-not-initialized/shared" ],
+    "deny": [ "Bash(git push:*)", "Bash(gh:*)" ],
+    "ask":  [ "Bash(git commit:*)", "Bash(git rebase:*)", "Bash(git reset:*)", "Bash(git clean:*)" ]
+  }
+}
+```
+
+| Key | Meaning | Why we set it |
+|---|---|---|
+| `additionalDirectories` | Folders outside the start folder that the CLI may read and write | The real `shared/` lives in `exercises`, outside the workspace; this allows writing through the symlink |
+| `deny` | Commands blocked outright | Pushing and GitHub actions are **yours** (your rule: an agent never posts or opens PRs for you) |
+| `ask` | Commands that need your yes each time | Commits and history rewrites change your branch; you approve them |
+
+`settings.local.json` is where Claude Code remembers approvals you grant during sessions. It's a real file in the
+workspace, not symlinked, so it stays local on purpose.
+
+### 9.7 How desktop Claude knows what to do
+
+Desktop Claude doesn't auto-load a `CLAUDE.md` the way the CLI does. It knows the setup because the claude.ai
+Project attaches `learning-protocol.md` and your memory files (e.g. "never assume I've read a document"), and those
+tell it to read `exercises/CLAUDE.md`, the issue's `CLAUDE.md`, `shared/STATUS.md` and the newest session report
+before acting. You can see those reads as tool calls in this chat.
+
+### 9.8 One full cycle: who reads and writes what
+
+```
+DESKTOP (you + planner)                    shared/ (one real copy)                CLI (you + developer)
+───────────────────────                    ───────────────────────                ─────────────────────
+writes a plan step / runbook   ────────►   plan.md
+                                           00 01 04 plan.md  ──── auto-loaded ──►  starts already briefed
+                                           STATUS, decisions ──── read at start ►  "here's where we are"
+                                                                                   works in develop/iot
+                                           evidence/NNN.txt  ◄──── saves runs ────
+                                           plan.md Stage 5   ◄──── entries ───────
+                                           sessions/NNN, STATUS ◄── /handoff ─────
+reads STATUS + newest session  ◄────────
+files learning notes in private/ (the CLI never sees private/)
+writes the next step  ──────────►  …
+```
+
+### 9.9 Changing or improving it
+
+| You want to… | Edit | Takes effect |
+|---|---|---|
+| Change how the CLI behaves in general | `shared/00-start-here.md` (or ask desktop) | Next CLI session (or now, if you tell the CLI to re-read it) |
+| Change the work | `plan.md` (desktop adds steps and runbooks) | Next session |
+| Change the mode | `04-interaction-mode.md`, or just tell either Claude | Immediately if you say it |
+| Add a slash command | a new `workspace/.claude/commands/<name>.md` + a symlink in the workspace's `.claude/commands/` | Next CLI session |
+| Change permissions | `workspace/.claude/settings.json` | Next CLI session (restart the CLI) |
+| Set up the next issue | Copy the issue's `workspace/` and `00`, change names and paths, run its `setup.sh` | Once |
+
+Improvement ideas this week surfaced (candidates, not done): a self-review gate before the push (Part 8.5); a
+closing "then `/handoff`" line in every plan runbook (the build session forgot it); a `/status` command that prints
+STATUS and the plan's newest entry; and a template folder in `ai-workflow/` so a new issue's `workspace/` is
+generated instead of copied.
+
+### 9.10 Recap of Part 9
+
+No memory between sessions; files carry everything. `shared/` is the mailbox; `workspace/` is the CLI's config; both
+live in `exercises` and are symlinked into the CLI workspace. The CLI auto-loads `CLAUDE.md` and its `@` imports,
+applies `settings.json`, and turns `.claude/commands/*.md` into slash commands. Desktop Claude reads the same files
+deliberately. One writer per file keeps them from overwriting each other.
+
+---
+
 ## Cheat sheet
 
 | Want to… | Command |
@@ -494,6 +730,9 @@ test; save evidence; tell them what you found, with the right level of certainty
 | Later pushes (while the PR is under review) | `git push` (never `--force`) |
 | Bring in upstream's new `main` during review | `git fetch upstream && git merge upstream/main` |
 | Look at an old commit, then come back | `git switch --detach <hash>` … `git switch <branch>` |
+| Review exactly what the PR contains | `git diff upstream/main...HEAD` / `git log -p upstream/main..HEAD` |
+| See where symlinks point | `ls -la ~/Desktop/projects/oss-work/iot-2328` |
+| See which instruction files the CLI loaded | `/memory` (inside the CLI) |
 | Who wrote this line | `git blame <file>` |
 
 ---
@@ -510,3 +749,6 @@ test; save evidence; tell them what you found, with the right level of certainty
 8. The evidence chain: why red-before-green matters, and what 002, 005 and 007 each rule out.
 9. How the #2608 check was done (fetch, compare files then lines, throwaway rebase, resolve, test) and what you'd do
    if #2608 merges first.
+10. How you'd review your own diff before pushing, and what's on the checklist.
+11. What happens, file by file, when you type `claude` in the workspace and when you type `/handoff`; what the
+    symlinks are for; what `deny` and `ask` do.

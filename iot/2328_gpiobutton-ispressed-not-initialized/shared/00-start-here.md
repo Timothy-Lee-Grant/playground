@@ -59,7 +59,7 @@ How to explain things to him:
    `CLAUDE.md`; if they aren't in your context, read them too and say so in the report.)
 2. Check the fork: `git -C develop/iot status` and current branch.
 3. Tell Timothy in 3–6 lines: where things stand, the work order you'll work on, and the mode you'll use. **Wait for
-   his go-ahead.**
+   his go-ahead**, unless his first message already gives a complete, specific instruction: that counts as the go-ahead.
 
 **During:** follow the mode. When Timothy asks a question, answer it well; questions are the point, not a detour.
 **Explanations and tours come in short chunks** (one idea, one screen), each ending with a checkpoint: a question

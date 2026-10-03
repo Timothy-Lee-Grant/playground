@@ -13,7 +13,7 @@
 | | |
 |---|---|
 | **Stage** | Mode P. Code done (local). **Comment posted on #2328 (G2).** Waiting for maintainers. Nothing pushed. |
-| **Last entry** | #9 (2026-10-01) |
+| **Last entry** | #10 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
 | **Next step** | Wait for replies. Sat: teach-back (G3). Sun: push + PR if no objection. (CLI chores done except session 003's own report/STATUS.) |
 
@@ -30,6 +30,7 @@
 | 7 | 2026-10-01 | ❓→💬 | Why not push yet, why the push was blocked, and the explicit next steps |
 | 8 | 2026-10-01 | 📍 | **First upstream comment on a code issue posted** (G2) |
 | 9 | 2026-10-01 | 📍 | CLI chores: session 002 report backfilled; **25/25 on top of #2608**; tracking removed |
+| 10 | 2026-10-02 | 📍 | **Maintainer replied: go ahead**; defaults confirmed; PR runbook + description drafted |
 
 ---
 
@@ -163,3 +164,19 @@ CLI session 003: backfilled `sessions/002` from the plan and evidence (honestly 
 0 warnings, **25/25 tests pass** (#2608's 18 + our 7) (`evidence/007`). The real branch is untouched at `395b9fbf`;
 its tracking of `upstream/main` was removed. Session 003's own report and `STATUS.md` were not written (STATUS still
 shows session 001).
+
+---
+
+## #10 · 2026-10-02 · 📍 Maintainer replied: go ahead; PR runbook
+
+> Hi @Timothy-Lee-Grant great points.
+> About point 1, I am afraid it can also depends on the board. We should definitely avoid send bogus notifications but delays usually cause a lot of issues (very often when running tests as you have seen in the recent PR).
+>
+> On point 2, it is very use-case depent. Not entirely sure how to solve this but would be nice
+>
+> You are more than welcome to submit a PR, just be aware that @pgrawehr is working on the other PR and avoid collisions.
+>
+> What do you think @pgrawehr ?
+
+Defaults confirmed, no code change. PR runbook and description draft: plan Stage 7. Optional short reply drafted in
+chat.

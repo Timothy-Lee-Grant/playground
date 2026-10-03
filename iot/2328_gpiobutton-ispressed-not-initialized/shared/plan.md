@@ -137,6 +137,22 @@ bug and the swallowed release, the change ready with 4 red → green tests, ques
 delay / lazy), question 2 (ordering: the small read→assign window), and the #2608 compatibility note; @raffaeler.
 Nothing pushed. **Now waiting for a maintainer reply**; adapt per lecture 001 §5.4.
 
+**[Desktop — 2026_10_02_16_48] Maintainer reply on #2328 (pasted by Timothy)**
+
+> Hi @Timothy-Lee-Grant great points.
+> About point 1, I am afraid it can also depends on the board. We should definitely avoid send bogus notifications but delays usually cause a lot of issues (very often when running tests as you have seen in the recent PR).
+>
+> On point 2, it is very use-case depent. Not entirely sure how to solve this but would be nice
+>
+> You are more than welcome to submit a PR, just be aware that @pgrawehr is working on the other PR and avoid collisions.
+>
+> What do you think @pgrawehr ?
+
+Read against lecture 001 §5.4: **U1 → (a) immediate read** (delays rejected; "no bogus notifications" = our no-events
+design). **U2 → keep register-then-read, no lock**; document the window in the PR. **Go-ahead for a PR**, avoiding
+collisions with #2608 (already true: no `ButtonBase.cs` changes; 25/25 on top of #2608, `evidence/007`). He asked
+pgrawehr's view. **No code changes needed.**
+
 # Stage 5 (Implementation)
 
 *(CLI entries go here, one per step or per meaningful finding, each with: what changed, deviations, evidence,
@@ -303,6 +319,28 @@ is now stale. The real branch `fix/2328-gpiobutton-initial-state` is still at `3
    resolution will be the same if #2608 doesn't change again. **Rebasing changes the commit hashes; whether to
    push only after the rebase (no force-push during review) is Timothy's call.**
 
+**[CLI — 2026_10_02_17_06] Stage 7 runbook step 2: rebased onto current `upstream/main`. Verified: 15/15, 0 warnings**
+
+*Changed:* the real branch `fix/2328-gpiobutton-initial-state` was rebased from base `1eb0b2f6` onto `upstream/main` @
+`95384e77` (the one new upstream commit, #2605, libgpiod `time_t`, touches nothing in `src/devices/Button`
+or the mock). No conflicts. New hashes: `bd01e163 → 4c8682ce` (tests), `395b9fbf → 5f676802` (fix). Both are still
+authored and committed by Timothy-Lee-Grant; there's no co-author trailer, and commit 2's body still ends with
+`Fixes #2328` (open question 3, unchanged). Nothing pushed; no upstream tracking (D6). *Evidence:* `008-final-on-main.txt`.
+
+1. **Same change, new base (*verified*):** `git diff upstream/main...HEAD` = the same 3 files / +98 / −0. With the
+   `index` lines filtered out, the patch is byte-identical to the pre-rebase diff (`1eb0b2f6..395b9fbf`).
+2. **Build and tests (*verified*):** `dotnet build src/devices/Button/tests/ --no-incremental` gave 0 warnings and
+   0 errors. `dotnet test … --no-build` passed 15/15 (8 `ButtonTests` + 7 `GpioButtonTests`). Exit codes in the
+   file are the real ones (`${pipestatus[1]}`), which fixes the 007 slip.
+3. **For the PR's environment line:** macOS 26.3 arm64, .NET SDK 10.0.302 (global.json 9.0.306, `rollForward:
+   major`); Button tests 15/15, no new warnings.
+
+*Deviations:* none. *Why rebase now:* nothing is public yet, so new hashes cost nothing. Rebasing after the push
+would need a force-push, which the repo's guidance asks us to avoid during review. *Rejected:* opening the PR on the
+old base. GitHub would show it as one commit behind; harmless, but the final test run would then not match what
+gets merged. **Not re-checked:** on top of #2608 after the rebase. #2608 is unchanged (`6a2f8973`) and `95384e77`
+doesn't touch Button, so `007` should still hold (*unverified*).
+
 # Stage 6 (Understanding)
 
 *(Desktop: lecture list and links; Timothy: reading confirmations and teach-back; G3.)*
@@ -362,6 +400,52 @@ Impact on our change (textual rebase simulation of our diff onto `pr-2608`; **no
 # Stage 7 (Contribution)
 
 *(PR description draft; Timothy's final test run, push, PR link.)*
+
+**[Desktop — 2026_10_02_16_48] Step 9 runbook + PR description draft**
+
+`upstream/main` moved one unrelated commit since our base (`95384e7`, libgpiod V1 `time_t`, #2605). #2608 unchanged
+(`6a2f897`), not merged.
+
+1. **G3 check:** Timothy answers TB 002's three retrieval questions (desktop chat).
+2. **CLI (no push):** rebase `fix/2328-gpiobutton-initial-state` onto current `upstream/main` (safe: nothing is
+   public yet), rebuild, run Button tests → `evidence/008-final-on-main.txt` (record the new commit hashes). Confirm
+   the diff is still 3 files / +98.
+3. **Timothy, in his own terminal:** `git push -u origin fix/2328-gpiobutton-initial-state`.
+4. **Timothy, on GitHub:** open the PR (base `dotnet/iot` `main` ← head `Timothy-Lee-Grant/iot`
+   `fix/2328-gpiobutton-initial-state`), paste the description below, fill the environment line from evidence 008.
+5. Paste the PR link to desktop. From then on: reply to review within 48 h; **no force-push during review**.
+
+```markdown
+Fixes #2328
+
+### Problem
+`GpioButton` only learns its state from pin edges, so a button that is already held down when it's created reports
+`IsPressed == false` until the first edge. With debounce enabled it's worse: `HandleButtonReleased` returns early
+when `!IsPressed`, so the first release of a button held at startup is swallowed (no `ButtonUp`/`Press`).
+
+### Change
+After registering the edge callback, the `GpioButton` constructor reads the pin once and sets `IsPressed` from the
+active level (Low for pull-up, High for pull-down, using the wiring even with an external resistor). It only sets
+state; no events are raised. The read is inside the existing `try`, so a failed read gets the same cleanup as a
+failed `OpenPin`. A `<remarks>` on `GpioButton` documents the behavior.
+
+### Tests
+New `GpioButtonTests` run the real `GpioButton` over `MockableGpioDriver` (linked from `System.Device.Gpio.Tests`,
+as Tca955x/Gpio/Board do): initial state for pull-up/pull-down × Low/High, the external-resistor case, and a
+held-at-startup button with debounce whose release now raises `ButtonUp` and `Press`. Four of the new tests fail on
+`main` and pass with the change; the first commit adds the tests alone so this can be checked.
+
+### Notes (from the discussion in #2328)
+- No settle delay: the pin is read immediately, per the discussion.
+- Ordering: the pin is read *after* registering the callback, so an edge between the two can't be lost. A small
+  window remains where a callback running between the read and the assignment could be overwritten; closing it
+  fully would need locking in `ButtonBase`, which I've left alone to avoid colliding with #2608.
+- #2608: this doesn't touch `ButtonBase.cs`. I checked it on top of #2608's latest commit (6a2f897): the only
+  overlap is one line in `Button.Tests.csproj` (keep both), and all Button tests pass together.
+
+Verified on macOS arm64, .NET SDK <version from evidence 008>: Button tests <N>/<N> pass, no new warnings.
+This change was developed with help from an AI assistant; I've reviewed and understand every line.
+```
 
 # Stage 8 (Review)
 

@@ -11,6 +11,7 @@
 | D4 | 2026-10-01 | **G1 granted.** Build the whole change tonight on the Stage 2 defaults; post the upstream comment only after lecture 1, once he understands it | Won't commit publicly to what he can't explain; code isn't the bottleneck, and re-implementing is cheap if maintainers differ | desktop |
 | D5 | 2026-10-01 | **G2 opened: comment posted** on #2328 (his own wording of v3). Keep code local until the PR (push after G3) | He understood every sentence after lecture 001 and TB 002; posting before pushing keeps the order right | desktop |
 | D6 | 2026-10-01 | Remove the upstream tracking of `fix/2328-gpiobutton-initial-state` (was `upstream/main`) | Timothy asked (session 003); reason not stated. Consequence: push at Step 9 needs `-u origin` | CLI |
+| D7 | 2026-10-02 | Maintainer reply: keep immediate read (no delay, no events) and register-then-read (document the window, no lock). PR welcome, avoiding collisions with #2608 | Matches our defaults | desktop |
 
 ## Pending (not decided)
 

@@ -1,0 +1,38 @@
+# 008 — Final run on current upstream/main (plan Stage 7, runbook step 2)
+Date: 2026-10-02 17:05 PDT
+dotnet --version: 10.0.302
+OS: Darwin arm64 / macOS 26.3
+Fork commit (HEAD): 5f676802
+Base upstream/main: 95384e77
+Branch: fix/2328-gpiobutton-initial-state
+Rebase: 1eb0b2f6..395b9fbf  ->  upstream/main 95384e77, no conflicts
+Old -> new hashes: bd01e163 -> 4c8682ce (tests), 395b9fbf -> 5f676802 (fix)
+
+## git log --oneline -3
+5f676802 Initialize GpioButton.IsPressed from the pin level
+4c8682ce Add GpioButton tests for the initial pressed state
+95384e77 Fix libgpiod V1 edge events on 32-bit platforms with 64-bit time_t (#2605)
+
+## git diff --stat upstream/main...HEAD
+ src/devices/Button/GpioButton.cs             |  9 +++
+ src/devices/Button/tests/Button.Tests.csproj |  4 ++
+ src/devices/Button/tests/GpioButtonTests.cs  | 85 ++++++++++++++++++++++++++++
+ 3 files changed, 98 insertions(+)
+
+## Command 1: dotnet build src/devices/Button/tests/ --no-incremental
+  Button -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button/Debug/net8.0/Button.dll
+  Button.Tests -> /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button.Tests/Debug/net8.0/Button.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:09.69
+dotnet build exit code: 0
+
+## Command 2: dotnet test src/devices/Button/tests/ --no-build
+Test run for /Users/timothygrant/Desktop/projects/oss-work/iot-2328/develop/iot/artifacts/bin/Button.Tests/Debug/net8.0/Button.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    15, Skipped:     0, Total:    15, Duration: 8 s - Button.Tests.dll (net8.0)
+dotnet test exit code: 0

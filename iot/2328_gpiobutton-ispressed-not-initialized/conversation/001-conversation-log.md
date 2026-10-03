@@ -12,10 +12,10 @@
 
 | | |
 |---|---|
-| **Stage** | Mode P. Code done (local). **Comment posted on #2328 (G2).** Waiting for maintainers. Nothing pushed. |
-| **Last entry** | #10 (2026-10-01) |
+| **Stage** | **PR open: [#2611](https://github.com/dotnet/iot/pull/2611)**. CI awaiting maintainer approval; review pending. |
+| **Last entry** | #11 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
-| **Next step** | Wait for replies. Sat: teach-back (G3). Sun: push + PR if no objection. (CLI chores done except session 003's own report/STATUS.) |
+| **Next step** | Wait for review; reply within 48 h; no force-push. Teach-back questions still open (optional). |
 
 ## Index
 
@@ -31,6 +31,7 @@
 | 8 | 2026-10-01 | 📍 | **First upstream comment on a code issue posted** (G2) |
 | 9 | 2026-10-01 | 📍 | CLI chores: session 002 report backfilled; **25/25 on top of #2608**; tracking removed |
 | 10 | 2026-10-02 | 📍 | **Maintainer replied: go ahead**; defaults confirmed; PR runbook + description drafted |
+| 11 | 2026-10-02 | 📍 | **First code PR opened: dotnet/iot#2611** |
 
 ---
 
@@ -180,3 +181,10 @@ shows session 001).
 
 Defaults confirmed, no code change. PR runbook and description draft: plan Stage 7. Optional short reply drafted in
 chat.
+
+---
+
+## #11 · 2026-10-02 · 📍 First code PR opened: [dotnet/iot#2611](https://github.com/dotnet/iot/pull/2611)
+
+"This is so cool!!" Title and description per Stage 7 (plus his edits). CLA signed; CI workflow awaiting a maintainer's
+approval (first-time contributor); one approving review required. Nothing for Timothy to do until review.

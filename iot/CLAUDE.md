@@ -26,7 +26,7 @@ read that first.
 |---|---|---|---|
 | [#2403](https://github.com/dotnet/iot/issues/2403) `GpioPin` handlers get the wrong `sender` | `2403_gpiopin-event-handler-assing-wrong-sender-value/` | G | Exploring since 2026-09-27 |
 | [#2600](https://github.com/dotnet/iot/issues/2600) LibGpiodV2 abort on 32-bit ARM | `2600_libgpiodv2-edge-event-abort-on-arm32/` | C | Exploring since 2026-09-29. Safety net already in PR #2601 (others); open slice is the `nuint` root-cause fix |
-| [#2328](https://github.com/dotnet/iot/issues/2328) `GpioButton.IsPressed` not initialized | `2328_gpiobutton-ispressed-not-initialized/` | scouting 002 #1 | **Active: first code PR, target 2026-10-04.** Fix done locally; commented 2026-10-01; awaiting reply |
+| [#2328](https://github.com/dotnet/iot/issues/2328) `GpioButton.IsPressed` not initialized | `2328_gpiobutton-ispressed-not-initialized/` | scouting 002 #1 | **Active: first code PR, target 2026-10-04.** **PR #2611 open** (2026-10-02); commented 2026-10-01; awaiting reply |
 
 Other dotnet/iot candidates in [`../scouting/001-issue_shortlist_sept_2026.md`](../scouting/001-issue_shortlist_sept_2026.md):
 B (#2297, Pi samples and `config.txt`), D (#2602, `GpiodException`

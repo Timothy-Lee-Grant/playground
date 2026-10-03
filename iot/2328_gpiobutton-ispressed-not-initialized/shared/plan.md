@@ -447,6 +447,17 @@ Verified on macOS arm64, .NET SDK <version from evidence 008>: Button tests <N>/
 This change was developed with help from an AI assistant; I've reviewed and understand every line.
 ```
 
+**[Timothy — 2026_10_02_17_34, via desktop] PR opened: https://github.com/dotnet/iot/pull/2611**
+
+Title "Initialize GpioButton.IsPressed from the pin level at startup" (per desktop's suggestion), description from the
+draft above. Signed the .NET Foundation CLA (`@dotnet-policy-service agree`) → `license/cla` ✓. State on opening:
+the `dotnet.iot` CI workflow is **awaiting maintainer approval** (normal for a first-time contributor), review
+required (1 approval from someone with write access). G3: the three retrieval questions were not answered before
+opening; Timothy chose to proceed (recorded as-is).
+
 # Stage 8 (Review)
 
 *(One entry per review comment and its resolution.)*
+
+Rules: reply within 48 h; **no force-push**: add commits; if #2608 merges and the PR shows a conflict, ask desktop
+before resolving (merging `main` into the branch avoids a force-push).

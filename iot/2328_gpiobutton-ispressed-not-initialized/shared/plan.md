@@ -397,6 +397,11 @@ Impact on our change (textual rebase simulation of our diff onto `pr-2608`; **no
 `upstream/pull/2608/head`, resolve the csproj by keeping both lines, run the Button tests, save
 `evidence/007-on-top-of-2608.txt`. Don't move the real branch. Comment v3: `../conversation/` entry #6.
 
+**[Desktop — 2026_10_02_21_03] Lecture 002 written** (Timothy asked, while waiting for review):
+[`../lectures/002-the-contribution-process-end-to-end.md`](../lectures/002-the-contribution-process-end-to-end.md):
+repositories/remotes/branches/PRs, commits and issue references, the week's timeline, reading comments (Friday's
+reply decoded), the hunt method with a practice issue (#1663), verification and evidence, coordinating with #2608.
+
 # Stage 7 (Contribution)
 
 *(PR description draft; Timothy's final test run, push, PR link.)*

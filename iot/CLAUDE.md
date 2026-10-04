@@ -19,6 +19,7 @@ read that first.
 | [`2403_gpiopin-event-handler-assing-wrong-sender-value/`](2403_gpiopin-event-handler-assing-wrong-sender-value/) | [#2403](https://github.com/dotnet/iot/issues/2403): `GpioPin` event handlers receive the wrong `sender`. |
 | [`2600_libgpiodv2-edge-event-abort-on-arm32/`](2600_libgpiodv2-edge-event-abort-on-arm32/) | [#2600](https://github.com/dotnet/iot/issues/2600): `LibGpiodV2Driver` aborts the process on 32-bit ARM (`ulong` vs C `unsigned long`). |
 | [`2328_gpiobutton-ispressed-not-initialized/`](2328_gpiobutton-ispressed-not-initialized/) | [#2328](https://github.com/dotnet/iot/issues/2328): `GpioButton.IsPressed` wrong when held at startup. First issue on the desktop + CLI workflow ([`../ai-workflow/`](../ai-workflow/)). |
+| [`new-device-binding/`](new-device-binding/) | Proposal-stage investigation (2026-10-04): contributing a **new sensor binding** with no existing issue. Welcome evidence, learning/career fit, device choice (BMP390/BMP388 recommended), build plan. Becomes an issue folder once a proposal issue is posted. |
 
 ### Issues in this project
 

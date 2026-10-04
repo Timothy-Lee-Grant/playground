@@ -23,6 +23,7 @@ Concept notes that are only about one issue belong in that issue's conversation 
 | 003 | [Bindings, OOP architecture, interfaces, `IDisposable` and ownership, UnitsNet, testing without hardware](003-bindings-oop-architecture-disposal-and-testing.md) | Questions after 001 | Written 2026-09-28; includes the failing-test sketch for #2403 |
 | 004 | [CI pipelines: what the YAML file controls, what the service controls, and how dotnet/iot does it](004-ci-pipelines-how-they-are-set-up.md) | Questions 2026-10-01 (how pipelines are wired; could someone edit the YAML; agents, triggers, artifacts) | Written 2026-10-01 from dotnet/iot `95384e7`; Azure DevOps settings unverified. Taught as general software engineering, not through firmware |
 | 005 | [A tour of dotnet/iot issues: fourteen bugs, what they teach, and which to take next](005-a-tour-of-dotnet-iot-issues.md) | Timothy's request 2026-10-03 (while #2611 awaits review) | Written 2026-10-03 from `95384e7`; hypotheses labeled; ⭐ candidates: #1887 (top), #1328, #2356, #1715 (later), #1469 |
+| 006 | [How dotnet/iot fits together: from `new Bme280(...)` down to Linux and back](006-how-dotnet-iot-fits-together.md) | Timothy, 2026-10-04: how `GpioController`, drivers, I2C classes, bindings and `Board` connect | Written 2026-10-04 from `95384e7`; code read, not run. Three traced journeys (GPIO, I2C sensor, button) + `Board` + bindings that are drivers (Mcp23017, FT232H) |
 
 ## Candidates (from #2403, entry #1 §12; 002 and 003 cover the first two and most of the fourth)
 

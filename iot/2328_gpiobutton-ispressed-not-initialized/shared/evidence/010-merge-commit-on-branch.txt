@@ -1,0 +1,24 @@
+# 010 — real branch: merge of upstream/main (after #2608) resolved, before commit
+Date: 2026-10-06 00:41 PDT
+dotnet --version: 10.0.302
+Branch HEAD: 5f676802 + MERGE_HEAD 336e4696 (upstream/main)
+Conflict markers left: 0 files
+
+$ git diff --stat MERGE_HEAD  (PR diff vs main after this merge)
+ src/devices/Button/GpioButton.cs             |  9 +++
+ src/devices/Button/tests/Button.Tests.csproj |  4 ++
+ src/devices/Button/tests/GpioButtonTests.cs  | 85 ++++++++++++++++++++++++++++
+ 3 files changed, 98 insertions(+)
+
+$ dotnet build src/devices/Button/tests/ --no-incremental
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:15.30
+build exit: 0
+
+$ dotnet test src/devices/Button/tests/ --no-build
+Passed!  - Failed:     0, Passed:    25, Skipped:     0, Total:    25, Duration: 280 ms - Button.Tests.dll (net8.0)
+test exit: 0
+2026-10-06 00:42 commit: 5adc9b9c Merge remote-tracking branch 'upstream/main' into fix/2328-gpiobutton-initial-state

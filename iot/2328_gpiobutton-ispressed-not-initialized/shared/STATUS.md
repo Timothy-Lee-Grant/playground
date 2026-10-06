@@ -4,13 +4,13 @@
 
 | | |
 |---|---|
-| **Updated** | 2026-10-02 17:10 (session 004, CLI) |
-| **Stage** | Mode P, Stage 7 (Contribution). G1 and G2 open. G3 **not recorded** in `plan.md` yet. Maintainer reply received (D7): PR welcome, our defaults stand |
-| **Work order** | Stage 7 runbook step 2 (rebase + final run): **done**, `evidence/008`. Next: step 1 (G3 record), steps 3–5 (Timothy pushes and opens the PR) |
+| **Updated** | 2026-10-06 00:55 (session 005, CLI) |
+| **Stage** | Mode P, Stage 8 (Review). PR [#2611](https://github.com/dotnet/iot/pull/2611) open (D8). G3 still not formally recorded (opened without the retrieval questions, per D8 note) |
+| **Work order** | Resolve #2611's merge conflict after #2608 merged: **done** (D9). Pushed by Timothy. Plan entry at the end of Stage 5 (`CLI — 2026_10_06_00_50`) |
 | **Mode** | P |
-| **Branch / last commit** | `fix/2328-gpiobutton-initial-state` @ `5f676802 Initialize GpioButton.IsPressed from the pin level` (on `4c8682ce`, base `upstream/main` @ `95384e77`). Clean. No upstream tracking (D6). **Not pushed.** Old hashes `bd01e163`/`395b9fbf` are superseded. Local extras: `try/2328-on-2608`, `pr-2608-latest` @ `6a2f8973`, stale `pr-2608` |
-| **Tests** | On `upstream/main` @ `95384e77`: 15/15, 0 warnings, real exit codes (`evidence/008`). On top of #2608 `6a2f8973`: 25/25 (`evidence/007`, pre-rebase; still expected to hold, unverified) |
-| **Upstream** | #2328: maintainer (raffaeler) replied 2026-10-02: go ahead, avoid #2608 collisions; asked pgrawehr's view. PR #2608 open @ `6a2f8973` (per desktop 16:48; not re-fetched). PR environment line: macOS 26.3 arm64, .NET SDK 10.0.302, 15/15 |
+| **Branch / last commit** | `fix/2328-gpiobutton-initial-state` @ `5adc9b9c Merge remote-tracking branch 'upstream/main' into fix/2328-gpiobutton-initial-state` (on `5f676802` + `upstream/main` @ `336e4696`). Clean, **pushed** = `origin` (00:48, plain push, no force). Our commits `4c8682ce`, `5f676802` unchanged. Local extras: `try/2328-on-2608`, `pr-2608`, `pr-2608-latest`, `pr-2608-now` |
+| **Tests** | On merged `main` (`336e4696`, includes #2608): build 0 warnings / 0 errors, **25/25** (`evidence/010`; trial `009`). PR diff vs `main`: 3 files / +98 / −0 |
+| **Upstream** | #2608 **merged** 2026-10-05 (`bc9baa95`); merged version differs from `6a2f8973` by 7 lines in `ButtonBase.cs` (covered by 010). #2611: CI was awaiting maintainer approval; no review yet as far as known. Conflict should now be gone (not checked on GitHub: no `gh`) |
 | **Blockers** | None |
-| **Needs Timothy / desktop** | (1) Record G3 in `plan.md`. (2) Keep or amend out `Fixes #2328` in `5f676802`'s body **before** pushing. (3) Push with `git push -u origin fix/2328-gpiobutton-initial-state`. (4) Optional: delete the local extras. No open CHANGE REQUESTs |
-| **Last session report** | [`sessions/004-2026-10-02.md`](sessions/004-2026-10-02.md) |
+| **Needs Timothy / desktop** | (1) Desktop: check #2611 on GitHub (conflict cleared? CI approved/passing? any review comments → Stage 8 steps). (2) Note: Stage 8 said "ask desktop before resolving"; Timothy proceeded with the plan's own default (merge, no force-push). (3) Possible short explainer: merge conflicts, merge vs rebase, using this case. (4) Optional local cleanup of the extra refs. No open CHANGE REQUESTs |
+| **Last session report** | [`sessions/005-2026-10-06.md`](sessions/005-2026-10-06.md) |

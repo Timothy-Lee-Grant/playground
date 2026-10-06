@@ -341,6 +341,27 @@ old base. GitHub would show it as one commit behind; harmless, but the final tes
 gets merged. **Not re-checked:** on top of #2608 after the rebase. #2608 is unchanged (`6a2f8973`) and `95384e77`
 doesn't touch Button, so `007` should still hold (*unverified*).
 
+**[CLI — 2026_10_06_00_50] Stage 8: PR #2611 conflict after #2608 merged. Resolved by merging `main`; pushed by Timothy**
+
+*Changed:* merge commit `5adc9b9c` on `fix/2328-gpiobutton-initial-state` (parents `5f676802` + `upstream/main` @
+`336e4696`), authored by Timothy, no trailer. Timothy pushed it (plain push, 00:48). Our two commits are unchanged.
+*Evidence:* `009-merge-main-after-2608.txt` (trial in a throwaway worktree), `010-merge-commit-on-branch.txt` (real branch).
+
+1. **What happened:** #2608 merged on 2026-10-05 (`bc9baa95`, squashed). It added `TimeProvider.Testing` into the same
+   `<ItemGroup>` of `Button.Tests.csproj` where our branch changes the group, so GitHub flagged #2611 as conflicting.
+   `GpioButton.cs` auto-merged. This is the conflict predicted in the Stage 6 / `007` check.
+2. **Resolution (implementation detail):** keep both, as in `007`: our `<Compile … Link>` in its own group, then
+   #2608's `PackageReference` with the `ProjectReference`. The PR diff vs `main` stays 3 files / +98 / −0, the same
+   4-line csproj hunk as before.
+3. **Verified:** 0 warnings / 0 errors, **25/25** (#2608's 18 + our 7) on the merged `main`. Note: the merged #2608
+   differs from the `6a2f8973` we tested in `007` by 7 lines in `ButtonBase.cs`; 009/010 cover the real one.
+
+*Deviations:* the Stage 8 rule says "ask desktop before resolving"; Timothy chose to proceed (he began the merge
+himself). *Why merge, not rebase:* the PR is under review; a rebase rewrites the hashes and needs a force-push, which
+the repo's guidance asks to avoid. A merge commit only adds on top, so `git push` is a fast-forward.
+*Rejected:* rebase + force-push (B); GitHub's "Resolve conflicts" button (C: same result, but nothing is tested
+before it lands). Squash-merge upstream would likely drop the merge commit from `main`'s history (*unverified*).
+
 # Stage 6 (Understanding)
 
 *(Desktop: lecture list and links; Timothy: reading confirmations and teach-back; G3.)*

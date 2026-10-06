@@ -13,7 +13,7 @@
 | | |
 |---|---|
 | **Stage** | **PR open: [#2611](https://github.com/dotnet/iot/pull/2611)**. CI awaiting maintainer approval; review pending. |
-| **Last entry** | #12 (2026-10-01) |
+| **Last entry** | #13 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
 | **Next step** | Wait for review; reply within 48 h; no force-push. Teach-back questions still open (optional). |
 
@@ -33,6 +33,7 @@
 | 10 | 2026-10-02 | 📍 | **Maintainer replied: go ahead**; defaults confirmed; PR runbook + description drafted |
 | 11 | 2026-10-02 | 📍 | **First code PR opened: dotnet/iot#2611** |
 | 12 | 2026-10-02 | 📍 | Lecture 002: the contribution process (git/GitHub, comments, hunt, verification, coordination) |
+| 13 | 2026-10-06 | 📍 | #2608 merged; conflict resolved by **merge** (not rebase); desktop checked before push |
 
 ---
 
@@ -199,3 +200,14 @@ something would change and invalidate the work, and some steps were taken on tru
 #2608, commit references). Lecture 002 covers forks/remotes/branches/PRs, commits and issue references, reading
 comments (Friday's reply decoded sentence by sentence), the hunt method with a practice issue (#1663), verification
 (with self-run red/green and a deliberate-break check), and the #2608 merge simulation.
+
+---
+
+## #13 · 2026-10-06 · 📍 #2608 merged; conflict resolved by merging `main`
+
+#2608 merged on 2026-10-05 (`bc9baa9`, then an arcade bump `336e469`), so #2611 showed a conflict. Timothy and the CLI
+ran `git merge upstream/main` (Scenario B, not a rebase): merge commit `5adc9b9c` (parents `5f676802` + `336e4696`);
+`Button.Tests.csproj` resolved by keeping both lines; no conflict markers; the PR diff is still 3 files / +98; build
+0 warnings; **25/25** (evidence 009, 010). Desktop checked the clone read-only before the push: branch tracks
+`origin/fix/2328-gpiobutton-initial-state`, 3 ahead, so a plain `git push` (no force) publishes it. No session
+report/plan entry yet for this CLI session.

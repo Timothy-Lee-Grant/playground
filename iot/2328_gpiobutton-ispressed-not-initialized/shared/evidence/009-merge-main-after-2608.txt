@@ -1,0 +1,27 @@
+# 009 — PR #2611 branch merged with upstream/main after #2608 merged (throwaway worktree, real branch untouched)
+Date: 2026-10-06 00:35 PDT
+dotnet --version: 10.0.302
+Branch HEAD: 5f676802 (fix/2328-gpiobutton-initial-state); merged with upstream/main @ 336e4696
+Conflict: src/devices/Button/tests/Button.Tests.csproj, resolved keep-both (our Compile Link in its own ItemGroup, as in evidence 007)
+
+$ git diff --stat upstream/main  (what the PR would show vs main)
+ src/devices/Button/GpioButton.cs             |  9 +++
+ src/devices/Button/tests/Button.Tests.csproj |  4 ++
+ src/devices/Button/tests/GpioButtonTests.cs  | 85 ++++++++++++++++++++++++++++
+ 3 files changed, 98 insertions(+)
+
+$ dotnet build src/devices/Button/tests/ --no-incremental
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:09.15
+build exit: 0
+
+$ dotnet test src/devices/Button/tests/ --no-build
+Test run for /private/tmp/claude-501/-Users-timothygrant-Desktop-projects-oss-work-iot-2328/a8147dca-40cc-41b4-a89d-c0c053b7afb1/scratchpad/wt/artifacts/bin/Button.Tests/Debug/net8.0/Button.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    25, Skipped:     0, Total:    25, Duration: 97 ms - Button.Tests.dll (net8.0)
+test exit: 0

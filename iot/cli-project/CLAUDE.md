@@ -46,7 +46,12 @@ for everything except #2328 this file's layout is current.)
    to `upstream`** (denied by settings; the push URL is disabled too). Pushing to his fork notifies nobody upstream,
    but the branch is visible on his public fork.
 4. **Never** open, edit or comment on PRs or issues; `gh` is denied. All public actions are Timothy's.
-5. **Build output is shared** across branches (`iot/artifacts/`). After switching branches, build with
+5. **Commit messages must not be able to notify anyone on GitHub:** no issue/PR numbers (`#123`,
+   `dotnet/iot#123`, `GH-123`), no GitHub URLs, no `@mentions`. Once pushed, a reference like that can show up on
+   the upstream issue's timeline ("mentioned this in a commit"). Issue links belong in the PR description, which
+   Timothy writes when he's ready. The clone's `commit-msg` and `pre-push` hooks enforce this; never bypass them
+   (`--no-verify` is denied).
+6. **Build output is shared** across branches (`iot/artifacts/`). After switching branches, build with
    `--no-incremental` before trusting a result.
-6. Everything else (design decisions, evidence, the *why* of every step, commits only with his OK) is in the
+7. Everything else (design decisions, evidence, the *why* of every step, commits only with his OK) is in the
    issue's `00-start-here.md`.

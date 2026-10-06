@@ -26,6 +26,12 @@ git -C "$CLONE" fetch upstream --quiet
 git -C "$CLONE" fetch origin --quiet
 git -C "$CLONE" remote -v
 
+# 1b. Git hooks in the clone (commit-msg + pre-push): no GitHub references in commit messages; push only to origin
+echo "== hooks"
+for h in commit-msg pre-push; do ln -sfn "$CFG/hooks/$h" "$CLONE/.git/hooks/$h"; done
+chmod +x "$CFG/hooks/"*
+ls -l "$CLONE/.git/hooks/commit-msg" "$CLONE/.git/hooks/pre-push"
+
 # 2. Project-level files (symlinks: the real copies live in exercises, versioned there)
 echo "== links"
 mkdir -p "$PROJECT/.claude/commands" "$PROJECT/scratch"

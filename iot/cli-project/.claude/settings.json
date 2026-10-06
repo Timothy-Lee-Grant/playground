@@ -25,7 +25,14 @@
       "Bash(git switch *fix/2328*)",
       "Bash(git -C * switch *fix/2328*)",
       "Bash(git remote set-url*)",
-      "Bash(git -C * remote set-url*)"
+      "Bash(git -C * remote set-url*)",
+      "Bash(git *--no-verify*)",
+      "Bash(git commit -n*)",
+      "Bash(git -C * commit -n*)",
+      "Bash(git -c *)",
+      "Bash(git -C * -c *)",
+      "Bash(git config core.hooksPath*)",
+      "Bash(git -C * config core.hooksPath*)"
     ],
     "ask": [
       "Bash(git push*)",

@@ -1,0 +1,33 @@
+Step 1 baseline: build + test Ina236 (toolchain check before any Bmp3xx code)
+Date: 2026-10-05 21:46:43 PDT
+dotnet --version: 10.0.302
+Fork commit: 336e4696 on feature/bmp3xx-binding (= upstream/main)
+Commands (from iot/):
+  dotnet build src/devices/Ina236/tests/ --no-incremental
+  dotnet test  src/devices/Ina236/tests/ --no-build
+
+=================== BUILD
+  Determining projects to restore...
+  Restored /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/System.Device.Model/System.Device.Model.csproj (in 134 ms).
+  Restored /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Ina236/Ina236.csproj (in 134 ms).
+  Restored /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Ina236/tests/Ina236.Tests.csproj (in 146 ms).
+  Restored /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Common/Common.csproj (in 134 ms).
+  Restored /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/System.Device.Gpio/System.Device.Gpio.csproj (in 1.42 sec).
+  System.Device.Gpio -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Gpio/Debug/net8.0/System.Device.Gpio.dll
+  System.Device.Model -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Model/Debug/net8.0/System.Device.Model.dll
+  Common -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Common/Debug/net8.0/Common.dll
+  Ina236 -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Ina236/Debug/net8.0/Ina236.dll
+  Ina236.Tests -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Ina236.Tests/Debug/net8.0/Ina236.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.77
+BUILD EXIT CODE: 0  (8 s)
+=================== TEST
+Test run for /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Ina236.Tests/Debug/net8.0/Ina236.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     3, Skipped:     0, Total:     3, Duration: 28 ms - Ina236.Tests.dll (net8.0)
+TEST EXIT CODE: 0  (1 s)

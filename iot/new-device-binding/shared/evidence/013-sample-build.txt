@@ -1,0 +1,33 @@
+Step 11: sample, README, category
+Date: 2026-10-05 22:51:52 PDT
+dotnet --version: 10.0.302
+Fork commit: 0c17f5b3 on feature/bmp3xx-binding (+ uncommitted README.md, samples/Program.cs)
+Commands (from iot/): dotnet build src/devices/Bmp3xx/samples/ --no-incremental ; dotnet build src/devices/Bmp3xx/tests/ --no-incremental ; dotnet test src/devices/Bmp3xx/tests/ --no-build
+=================== BUILD samples/
+  Bmp3xx.Samples -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Samples/Debug/net8.0/Bmp3xx.Samples.dll
+    0 Warning(s)
+    0 Error(s)
+exit 0
+=================== BUILD tests/
+    0 Warning(s)
+    0 Error(s)
+=================== TEST
+Passed!  - Failed:     0, Passed:    65, Skipped:     0, Total:    65, Duration: 171 ms - Bmp3xx.Tests.dll (net8.0)
+=================== README relative links (grep -o '](...)' minus http) and their targets
+](samples/Program.cs)
+samples/Program.cs exists
+=================== category.txt
+barometer
+altimeter
+thermometer
+known to tools/device-listing/Program.cs:
+21:    "barometer",
+22:    "altimeter",
+23:    "thermometer",
+69:    { "barometer", "Barometers" },
+70:    { "altimeter", "Altimeters" },
+71:    { "thermometer", "Thermometers" },
+=================== git status
+ M src/devices/Bmp3xx/README.md
+ M src/devices/Bmp3xx/samples/Program.cs
+NOT RUN: the sample itself (needs /dev/i2c-1 and a sensor; Step 13).

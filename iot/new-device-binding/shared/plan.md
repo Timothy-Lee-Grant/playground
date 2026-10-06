@@ -641,7 +641,8 @@ Per O8, on `feature/bmp3xx-binding`:
 3. `Add Bmp390/Bmp388 device classes with simulated-device tests`
 4. `Add Bmp3xx sample, README and category`
 
-No AI trailers (rule 7 in `00-start-here.md`). Show Timothy `git diff --stat` for each before asking.
+No AI trailers (rule 7 in `00-start-here.md`). **No issue/PR numbers, GitHub URLs or `@mentions` in any commit
+message** (they can notify upstream once pushed; the clone's hooks reject them). Show Timothy `git diff --stat` for each before asking.
 
 **Push to the fork (new in v2):** when Timothy says so, `git -C iot push -u origin feature/bmp3xx-binding`
 (first time; afterwards `git -C iot push origin feature/bmp3xx-binding`). Settings ask every time. This is a
@@ -686,6 +687,8 @@ One Stage 5 entry, written for a reader who wasn't watching:
 (O2), out-of-range behavior (U4: return false vs. clamp), defaults (O5), and whether Steps 3/13 wait for hardware
 or the CLI builds everything first. Also: **when to start**. Steps 0–15 are local and can start now; Step 17 (the
 first public action) waits for #2611 to settle unless Timothy decides otherwise.
+
+[Timothy — 2026_10_05_21_40] (recorded by CLI) **G1 approved**, plan v2 as written, no changes to Stage 2. Implementation may start (Step 0 onward).
 
 ---
 
@@ -770,3 +773,193 @@ AI-assisted; I've reviewed all of it and can explain every part.
 # Stage 8 (Review)
 
 *(One entry per review comment and its resolution.)*
+
+[CLI — 2026_10_05_21_46] **Step 0: plan review against code and datasheets. Verdict: plan holds; no CHANGE REQUEST.**
+
+*Changed:* nothing in the fork. Datasheets + a Python venv (pypdf, for text extraction) in `scratch/new-device-binding/tools/` (outside the fork). Recorded G1 in §3.4 and D5 in `02-decisions.md`.
+
+*Evidence:* `evidence/001-step0-audit.txt` (upstream/main @ `336e4696`; datasheets BST-BMP390-DS002-07 rev 1.7 and BST-BMP388-DS001-07 rev 1.7 with sha256).
+
+*Results:*
+- No competing work: no BMP3 folder upstream; PR heads #2601–#2616 add no BMP3 file.
+- Every convention Steps 5–11 assume is as described (quotes in the audit file).
+- Brief §3: every row ✔ except **measurement time ✘** (the brief has Bosch's driver constants; the BMP390 datasheet §3.9.2 says `234 + (392 + 2^osr_p·2020) + (163 + 2^osr_t·2020)` µs, revised in datasheet rev 1.1 "Changed the T_conv equation"; the **BMP388** datasheet still has `…·2000 … 313 …`). CMD row: soft-reset duration isn't stated; completion is signalled by EVENT `0x10` bit0 `por_detected`.
+- Confirmed: forced mode returns to sleep by itself (§3.3.2); burst read needed for consistent data (§3.10.1); reads auto-increment (§5.2.2); calibration table and all 14 scale factors and both formulas match Step 7; BMP388 = BMP390 except chip ID, timing constants, REV_ID, `itf_act_pt`.
+
+*Findings that shape later steps (decided at implementation level per §6; Timothy may veto):*
+1. **Timing (Step 9):** each chip uses its own datasheet's formula, selected inside `Bmp3xxBase` from the chip ID. **Why:** the plan says implement from the datasheet, and the two datasheets disagree; picking one would make one chip's XML citation wrong. Rejected: one conservative max-of-both formula (cites neither datasheet exactly); BMP390 formula for both (≤ 0.11 ms off for ×1/×1 on BMP388, harmless because the read path polls, but uncitable). Both round up to 5 ms for ×1/×1.
+2. **U5 reset-value check (Step 10):** the data registers reset to `0x800000` for both quantities (Table 25), so the check is datasheet-backed. But a real raw *temperature* near room temperature is also ≈ 8.3–8.4 M, so it can, rarely, be exactly `0x800000`. The check requires **both** raw values to equal `0x800000`. **Why:** that keeps U5 as written while making a false "no data" vanishingly rare, and its effect is a single `false` (next read works). Rejected now: tracking "measured since reset" in the class (the Step 10 fallback). It needs extra state and can't see measurements started by another process, and isn't needed unless E1's raw values show the collision is likely. Unverified until E1.
+3. **Mode transitions (Step 9):** §3.3.4 says illegal mode changes are *ignored*; Figure 4's arrows are vector art I couldn't read. `SetPowerMode` will pass through Sleep when moving between Forced and Normal (safe whatever the diagram says). E1 (Step 3) gets one extra check: write normal, then forced directly, and read back `PWR_CTRL`. **Why:** a silently ignored write is the worst failure mode for a driver; the detour costs one register write.
+4. **Fake chip writes (Step 8):** I²C multi-byte write is "pairs of register addresses and register data" (§5, §5.2.1), not auto-increment as the Step 8 card says. The fake models pairs. **Why:** "the double models the datasheet".
+5. **Reset (Steps 6, 9):** wait `t_startup` 2 ms (Table 2, the only documented figure), then poll EVENT `por_detected` (bounded), then check `ERR.cmd_err`. Adds `Event = 0x10` to `Bmp3xxRegister`. **Why:** uses the chip's own completion signal instead of a guessed delay.
+6. **Model attributes (Step 9):** `SetPowerMode` gets `[Property("PowerMode")]` and `GetMeasurementDuration` gets `[Property("MeasurementDuration")]`, as in `Bmx280Base`, not `[Command]` as the card says. **Why:** the card also says "attributes as in `Bmx280Base`"; the sibling is the tie-breaker.
+7. **U8 message:** the sibling prints IDs in decimal; I'll keep the plan's hex (`0x60`), which matches how the datasheet writes them. Same exception type.
+8. **O5 note (no action):** ×1/×1 at 200 Hz is within the *typical* time (4.82 ms) but not the *maximum* (5.70 ms, Table 23). Defaults are written in sleep, so no conf_err there; whether Normal at 200 Hz/×1/×1 raises conf_err on a real chip is unverified (check in Step 13).
+9. **Tests project:** `Ina236.Tests` sets `LangVersion 10`; I won't copy it (collection expressions need C# 12).
+
+*Toolchain:* SDK 10.0.302 inside the repo (global.json roll-forward), .NET 8.0.13 runtime present, Apple clang 17 (Step 4's oracle can be built), Python 3.14.
+
+[CLI — 2026_10_05_21_47] **Step 1: branch + toolchain baseline. Done.**
+
+*Changed:* created `feature/bmp3xx-binding` from `upstream/main` @ `336e4696` (clone was clean; was on `main`). No files changed.
+
+*Deviations:* `git switch -c … upstream/main` made the branch track `upstream/main`; I ran `git branch --unset-upstream`. **Why:** a branch tracking upstream invites a bare `git push`/`git pull` to talk to dotnet/iot. The push URL is disabled anyway, so this is belt and braces. The first `git push -u origin feature/bmp3xx-binding` (Step 14, with Timothy's OK) sets the right tracking.
+
+*Evidence:* `evidence/002-baseline.txt`: `dotnet build src/devices/Ina236/tests/ --no-incremental` → 0 warnings, 0 errors, exit 0 (8 s, packages already cached); `dotnet test … --no-build` → 3/3 passed on net8.0, exit 0.
+
+**Why this step:** it separates "the Mac can't build a binding" from "our binding is broken". From here on, a red build is ours.
+
+[CLI — 2026_10_05_21_51] **Step 4: reference oracle → test vectors. Done (without hardware: V1–V5 wait for E1).**
+
+*Changed:* nothing in the fork. In `$SCRATCH/tools/bmp3-oracle/`: Bosch `BMP3_SensorAPI` @ `db4cf8e` (as expected), `oracle.c` (fake-bus harness), `formulas.py` (our float64 datasheet implementation + vector generator).
+
+*Evidence:* `evidence/005-oracle-vectors.txt` (calibration sets as 21-byte hex + scaled coefficients, the vector table, provenance).
+
+*Result:* vectors **V6–V15** (plan asked for V6–V12; V13–V15 added, see below). The two oracles agree on every in-range vector to **max |ΔT| = 5×10⁻¹⁰ °C, max |ΔP| = 8×10⁻⁵ Pa**, far inside the stop threshold (0.01 °C / 1 Pa). So the datasheet formulas as I read them and Bosch's code compute the same thing.
+
+*Deviations:*
+1. **Calibration sets.** No published raw-byte example in Bosch's repo. Sets A and B are NVM coefficients a web-search summary attributes to two real BMP388s on Bosch's forum. **The pages now 404, so provenance is unverified**, and I say so in the evidence. Set C is set A with the signed fields sign-flipped (synthetic). **Why:** a calibration set only has to be realistic in size and sign for an oracle; both oracles get identical bytes, so a wrong source can't make them agree falsely. Rejected: inventing coefficients from scratch (risk of non-physical combinations that hide scale-factor bugs). Real bytes come with E1 (V1–V5).
+2. **Extra vectors:** V13–V14 (set C, so negative P3/P4/P9/P10 and nonzero P4 are exercised; set A/B have P4 = 0, which would hide a P4 bug) and **V15** = the reset value `0x800000`/`0x800000`. **Why:** cheap, and V15 feeds the U5 test.
+3. **Harness fix:** `bmp3_init` returns `BMP3_E_NULL_PTR` when `intf_ptr` is NULL even though the bus ignores it; the harness passes a dummy pointer.
+
+*Findings:*
+- **U5, quantified (unverified on real hardware):** with set A, raw temperature `0x800000` = **23.68 °C**, a normal room value. So "raw temperature equals the reset value" alone would misfire. Raw pressure `0x800000` = 799 hPa (≈ 2 km altitude), so the "both equal" rule from my Step 0 entry needs both conditions at once. That supports the Step 0 decision.
+- **Bosch's out-of-range behavior** (for the U4 discussion with maintainers): too cold → T clamped to −40 °C **and P reported as 0** (warning 3); too high → P clamped to 125000 Pa (warning 6). Our U4 returns `null`/`false` instead. Unclamped float64 values are recorded for our range tests.
+- **O4 confirmed:** Bosch's float path uses a float-returning power helper; that's the ~10⁻⁴ Pa gap. Implication for Step 7's tolerance: our C# `double` should match **oracle 2** to ~1e-9 and **Bosch** to ~1e-4 Pa. I'll set the tolerance in Step 7 from the measured C# numbers, as the plan says.
+
+**Why two oracles:** Bosch's code is the reference people trust, but it's float, has clamps, and could share a misreading with us only if we copied it (we don't). The Python script is our own reading of the datasheet. Their agreement means the *datasheet reading* is right, so Step 7's C# can be tested against numbers that didn't come from C#.
+
+[CLI — 2026_10_05_22_07] **Step 5: scaffold `src/devices/Bmp3xx/`. Done.**
+
+*Changed (uncommitted, branch `feature/bmp3xx-binding`):* 19 new files, all under `src/devices/Bmp3xx/`: `Bmp3xx.csproj`, `Bmp3xx.sln`, `Bmp3xxBase.cs` (protected ctor and `Dispose(bool)` throw `NotImplementedException`; `Dispose()` done), `Bmp390.cs`/`Bmp388.cs` (sealed; `private const byte DeviceId` = `0x60`/`0x50`, as `Bmp280` does), `Bmp3xxReadResult.cs` (complete: same shape as `Bmp280ReadResult`), `Bmp3xxCalibrationData.cs` (internal, empty), `Bmp3xxRegister.cs` + six public enums (empty bodies, Step 6 fills), `README.md` (title line), `category.txt`, `samples/Bmp3xx.Samples.csproj` + `Program.cs` ("Hello Bmp3xx!"), `tests/Bmp3xx.Tests.csproj`.
+
+*Evidence:* `evidence/006-scaffold-build.txt`: tests build and samples build `--no-incremental`: **0 warnings, 0 errors**, exit 0 each; `dotnet test` finds the assembly ("No test is available": expected, none written yet); xunit/Moq/Shouldly present in the test output (auto-referenced by `eng/Versions.external.props`); `git status` = only new files under `src/devices/Bmp3xx/`.
+
+*Deviations / implementation choices:*
+1. **Block-scoped namespaces** (`namespace X { }`). **Why:** 1,638 `.cs` files in `src/devices` use them against 18 file-scoped (Ina236 mixes both); the sibling `Bmxx80` uses block. Rejected: file-scoped (shorter, but the minority style; a reviewer might ask to change it).
+2. **UTF-8 with BOM** for `.cs`, csproj, sln, README (as Ina236's files are). **Why:** `.editorconfig` `[*.cs] charset = utf-8-bom` (StyleCop SA1412). `category.txt` is plain ASCII, as in Ina236.
+3. **`.sln`:** created with `dotnet new sln --format sln` (SDK 10 would make `.slnx`). `dotnet sln add` auto-added `System.Device.Gpio` and `System.Device.Model`; I removed them. **Why:** only 7 of 129 binding solutions list Gpio and 1 lists Model; Ina236 lists binding + samples + tests + `Common`, as plan Step 5 says.
+4. **Test csproj** uses `$(DefaultTestTfms)` (Ina236 uses `$(DefaultSampleTfms)`; both are net8.0) and **no `LangVersion 10`**. **Why:** the property meant for tests exists in `src/devices/Directory.Build.props`; LangVersion 10 would forbid C# 12 collection expressions that `I2cSimulatedDeviceBase` itself uses.
+5. **Samples csproj** has no Arduino reference (Ina236's sample targets an Arduino; ours targets the Pi's I2C bus directly).
+6. `Bmp3xxReadResult` written in full now (it's a 2-property data holder identical in shape to `Bmp280ReadResult`; nothing to defer).
+
+**Why this step on its own:** it proves the build wiring (project discovery, analyzers, XML-doc enforcement, test packages) before any logic exists, so the first red build in Step 7 can only be about the code.
+
+[CLI — 2026_10_05_22_19] **Step 6: register map + enums. Done.**
+
+*Changed (uncommitted):* `Bmp3xxRegister.cs` (11 registers, incl. `Event = 0x10` per Step 0 finding 5), `Bmp3xxPowerMode.cs`, `Bmp3xxOversampling.cs` (docs give the typical pressure **and** temperature resolution per step, DS390 tables 6/7), `Bmp3xxFilterCoefficient.cs`, `Bmp3xxOutputDataRate.cs` (18 values), `Bmp3xxStatus.cs`, `Bmp3xxErrors.cs`, and 15 `private const` bit fields in `Bmp3xxBase.cs` (PWR_CTRL, OSR, ODR, CONFIG, EVENT `por_detected`, CMD soft reset), each group with a datasheet section/table comment.
+
+*Evidence:* `evidence/007-calibration-red.txt` part 1: tests + samples build `--no-incremental`, 0 warnings, 0 errors; `git status` only `src/devices/Bmp3xx/`.
+
+*Decision (Timothy, D6):* output data rate values are named by period in milliseconds, `Period5Milliseconds` … `Period655360Milliseconds`, replacing O7's proposed `Hz200 … Hz12_5`. Asked with four options (period ms / sibling `Ms…` / O7 frequency / ms-then-seconds). Values generated by a script from `5 ms × 2^n` and checked against DS390 table 45.
+
+*Deviations / implementation choices:*
+1. **Every public enum value has an XML doc with its meaning**, not just a name. **Why:** CS1591 requires docs; the README asks for units and ranges; the docs are where the datasheet tables live for users.
+2. **Bit constants include the shifts the plan named plus masks** (`PowerModeMask`, `PressureOversamplingMask`, …) and `PressureOversamplingShift = 0`. **Why:** a read-modify-write needs mask + shift; an explicit zero shift keeps the pressure and temperature code symmetric. Unused `private const`s give no warning in this repo's build (checked).
+3. **`Bmp3xxErrors.Configuration` doc says "only detected in Normal mode".** **Why:** DS390 table 28 says so (DS388 doesn't; noted in Step 0). Users need this to understand O6's check.
+
+*Process note:* my file-writing tool drops the UTF-8 BOM, and StyleCop SA1412 failed the build with **6 errors** on the first try. I re-added BOMs with a script. **Why it matters:** the repo treats encoding as a build error, so it can't slip into a PR; the check works as intended.
+
+[CLI — 2026_10_05_22_19] **Finding: Timothy committed and pushed the Step 5 scaffold himself.** `dd1c7694 Creating Bmp3xx scaffold` (2026-10-05 22:11, 19 files = exactly the Step 5 state), on `origin/feature/bmp3xx-binding`. Step 6's changes are uncommitted on top of it.
+
+*Effect on O8 (commit structure):* O8 planned commit 1 = "skeleton + registers/enums". With the skeleton already pushed, that can't be one commit without rewriting pushed history (force-push is denied; rewrites are Timothy's). Step 6 needs its own commit, giving **5 commits instead of 4**, or Timothy rewrites later. Upstream will probably squash anyway, so this only affects review readability. Also: the pushed subject "Creating Bmp3xx scaffold" isn't imperative (00 §3 rule 7 asks for imperative); harmless on a squash-merge. Not changed by me.
+
+[CLI — 2026_10_05_22_26] **Step 6 committed; Step 7: calibration + compensation (tests first). Done.**
+
+*Changed:* commit `93af1acb Add Bmp3xx register map and settings enums` (Timothy's OK; local only, not pushed). Uncommitted: `Bmp3xxCalibrationData.cs` (implementation), `tests/Bmp3xxCalibrationDataTests.cs` (new, 22 test cases).
+
+*Evidence:* `evidence/007-calibration-red.txt` part 2: build 0 warnings; **22/22 fail**, all by `NotImplementedException` (the 3 `Parse_RejectsWrongLength` cases fail because they got `NotImplementedException` instead of `ArgumentException`; also the right reason). `evidence/008-calibration-green.txt`: build 0 warnings; **22/22 pass**; tolerance measurement table.
+
+*Tests (what each proves / doesn't):*
+- `Parse_ScalesEachCoefficient`: every field's offset, width, signedness and scale factor, using raw values chosen to break the usual mistakes (`T1 = 0x8001` and `P5 = 0xFFFF` go negative if read signed; `P1 = −32768`; mixed signs). Hex built by hand and cross-checked against `formulas.py`'s encoder. Expected values are written as `raw / Math.Pow(2, n)` in the test, so the test doesn't share the implementation's `ScaleB` expression. Doesn't prove: the formulas.
+- `Parse_RejectsWrongLength` (0, 20, 22 bytes).
+- `CompensateTemperature_MatchesReference` / `CompensatePressure_MatchesReference`: 8 in-range vectors each (V6–V8, V11–V15) across the three calibration sets, against **Bosch's** values (the external reference). Pressure is fed Bosch's temperature, so the pressure test doesn't depend on our temperature code. Doesn't prove: real-chip calibration (V1–V5 wait for E1).
+- `*_DoesNotClamp` (V9, V10): the formulas return the unclamped value (Bosch clamps), because the range check is the caller's job (U4, Step 10). Expected from `formulas.py`.
+
+*Tolerance (Step 7.3):* measured with a throwaway reflection app in `$SCRATCH/tools/measure-tolerance` (outside the fork). |C# − Bosch| max **5×10⁻¹⁰ °C, 8.03×10⁻⁵ Pa** (Bosch's float arithmetic); |C# − python| ≤ 5×10⁻¹⁰ (that's the 9 printed decimals). Chosen: **10⁻⁶ °C** (~2000× above measured, 150× below the 0.00015 °C finest resolution) and **10⁻³ Pa** (~12× above measured, 16× below the 0.016 Pa resolution, 20× below 0.02 Pa RMS noise). **Why these:** any real formula bug (sign, scale, term order) misses by ≥ whole Pa; rounding never trips them. Rejected: 0.01 Pa (the plan's example; fine too, but 10⁻³ Pa still has 12× headroom and is stricter); exact equality (Bosch's float makes it impossible).
+
+*Implementation choices:*
+1. **`Math.ScaleB(raw, n)`** for all 14 scale factors. **Why:** documented as an exact power-of-two scaling (it only changes the exponent); `Math.Pow(2, n)` is exact in practice but not specified to be; and the tests use `Math.Pow`, so the two sides don't share an expression. Rejected: literal constants like `1073741824.0` (unreadable; easy to mistype).
+2. **Private constructor + static `Parse`**, get-only properties. **Why:** `Parse` validates the length before anything is read; an instance can't exist half-filled.
+3. **Own names** in the formulas (`difference`, `offset`, `sensitivity`, `nonLinearity`), matching the plan's description, not the appendix's temporaries (clean room). Clean-room grep over `src/devices/Bmp3xx` (incl. `partial_data`, `t_lin`, `uncomp_`) → no hits, after I reworded one test comment that named "Bosch Sensortec" as the source of the expected numbers ("the manufacturer's open-source reference driver"). The README will name Bosch, as the plan allows.
+4. Namespace `Iot.Device.Bmp3xx.Tests` (112 test files follow `Iot.Device.<X>.Tests`).
+
+[CLI — 2026_10_05_22_33] **Step 7 committed; Step 8: simulated chip. Done.**
+
+*Changed:* commit `9e1ab226 Add BMP3xx calibration parsing and compensation with tests` (Timothy's OK; local only). Uncommitted: `tests/SimulatedBmp3xx.cs` (new), `tests/SimulatedBmp3xxTests.cs` (new, 5 tests). Per O8 these belong in commit 3 together with the device class (Steps 9–10), so I'm not proposing a commit yet.
+
+*Evidence:* `evidence/009-device-config-red.txt` part 1: 27/27 pass (22 calibration + 5 simulation), 0 warnings; **mutation check**: three deliberate breaks of the fake (forced mode doesn't return to sleep; ERR not cleared on read; writes as auto-increment instead of pairs), each turning exactly its matching test red (1 failed / 26 passed), file restored (`cmp` identical) → 27/27 again.
+
+*What the fake models (each with its datasheet citation in a code comment):* reset values (table 25); burst read with auto-increment (§5.2.2); writes as (register, value) pairs, throwing on an odd-length write so a binding bug can't hide (§5, §5.2.1); soft reset `0xB6` restores reset values, keeps calibration (NVM), sets `por_detected` (table 48, §3.2); forced mode measures once and returns to sleep (§3.3.2); normal mode measures, and again whenever a test changes the scripted raw values; disabled sensor → its data unchanged; ERR cmd_err/conf_err and EVENT por_detected clear on read (tables 28, 33); reading a pressure/temperature data register clears its data-ready bit (table 29); read-only registers ignore writes.
+Test hooks: `RawPressure`, `RawTemperature`, `NeverBecomesReady`, `ConfigurationErrorOnNormalMode`, `SoftResetFails`, `ResetCount`, `WriteLog` (every write, including ignored ones), `IsDisposed`, `GetRegister` (peek without read side effects).
+
+*Unverified assumptions (also marked in code comments; E1 can check the first two):*
+1. **`cmd_rdy` reads 1 when idle**, although table 25 lists STATUS reset = `0x00`. **Why:** table 29 defines it as "ready to accept a new command", and Bosch's driver refuses to send a command unless it's set, yet works on real chips. If the real chip reads 0 at idle, our Reset's "wait for cmd_rdy" (Step 9) must not depend on it.
+2. **Every mode transition is accepted** (Figure 4 unreadable). The binding's detour through Sleep (Step 0 finding 3) will be asserted from the write log, not from the fake rejecting anything.
+3. A disabled sensor leaves its data registers unchanged (not needed in v1: both sensors always enabled, O5).
+
+*Deviations:*
+1. **5 self-tests instead of "2–3".** **Why:** each covers one modelled behavior a binding test will lean on (burst read, pairs, reset, forced mode, clear-on-read); cheap and fast (< 10 ms).
+2. **Mutation check** (not in the plan). **Why:** the self-tests passed on the first run, so they had never been seen failing; a test that can't fail proves nothing. Three targeted breaks show each test catches the thing it names.
+3. **The fake's I2C address is the literal `0x77`** for now; Step 9 adds `Bmp3xxBase.DefaultI2cAddress` and the fake will use it.
+4. Removed one no-op line (`chip.ReadByte()`) from a self-test before capturing evidence.
+
+[CLI — 2026_10_05_22_41] **Step 9: device class part 1 (construction + configuration), tests first. Done.**
+
+*Changed (uncommitted; for O8 commit 3 with Steps 8 and 10):* `Bmp3xxBase.cs` (implementation), `tests/Bmp3xxBaseTests.cs` (new: 20 test methods, 23 cases), `tests/SimulatedBmp3xx.cs` (now uses `Bmp3xxBase.DefaultI2cAddress`).
+
+*Evidence:* `evidence/009-device-config-red.txt` part 2: build 0 warnings; **23 new cases fail**, every one by `NotImplementedException` (the 3 expecting `ArgumentNullException`/`IOException` got it instead); the 27 earlier tests still pass. `evidence/010-device-config-green.txt`: **50/50 pass**, 0 warnings, every test name listed; plus a numeric-literal scan.
+
+*What was built, with the why:*
+- **Constructor** (plan sequence): null check (`ArgumentNullException`) → chip ID (`IOException`, U8, message in hex, e.g. "…id 0x60. Found one with id 0x58.") → `Reset()` (which writes the O5 defaults) → one 21-byte burst read → `Bmp3xxCalibrationData.Parse`. Calibration is exposed as an `internal` property for Step 10 and tests.
+- **Settings** (`PressureSampling`, `TemperatureSampling`, `FilterCoefficient`, `OutputDataRate`): the setter validates the enum (`ArgumentOutOfRangeException`), does a read-modify-write of only its own bits, then updates a **cached** field; the getter returns the cache (no bus read). **Why cache:** `Reset()` must re-apply the settings so the properties don't lie after a reset (plan Step 9), and the sibling `Bmxx80Base` caches too. Rejected: reading the register in every getter (a bus transaction per property read, and after a reset it would show chip defaults that disagree with what the user set).
+- **`SetPowerMode`**: read PWR_CTRL once; if switching between two different non-sleep modes, write Sleep first (Step 0 finding 3); write the mode keeping press_en/temp_en; after Normal, read ERR and on conf_err write Sleep and throw `InvalidOperationException` naming the minimum period (O6).
+- **`Reset()`**: wait (≤ 10 ms) for `cmd_rdy` → read EVENT to clear a stale `por_detected` → write `0xB6` → sleep 2 ms (t_startup, table 2) → `cmd_err` → `IOException` → wait (≤ 10 ms) for `por_detected` (§3.2) → re-apply settings. **Why clear EVENT first:** `por_detected` is already 1 after power-on (never read), so without clearing it, the "reset finished" check would pass before the reset even started.
+- **`GetMeasurementDuration()`**: each chip's own datasheet formula (Step 0 finding 1), `Math.Ceiling` to whole ms. BMP390 ×1/×1 = 4829 µs → 5; ×32/×2 = 69469 µs → 70 (table 23 says 69.46 typ); BMP388 ×32/×2 = 68939 µs → 69.
+- **Bus seam** (U3): `ReadRegister`, `ReadRegisters`, `WriteRegister`, all through one `Device` property that does the disposed check. Reads are one `WriteRead` transaction.
+- **Dispose**: disposes the `I2cDevice` (U7); later calls throw `ObjectDisposedException`; a second `Dispose()` is harmless.
+
+*Deviations / implementation choices:*
+1. **Four tests beyond the plan's 16:** `SetPowerMode_FromNormalToForced_GoesThroughSleep` (Step 0 finding 3, asserted on the write log), `Reset_CommandError_ThrowsIOException`, `Settings_InvalidValue_ThrowsArgumentOutOfRange`, `ReadStatus_ReportsFlags`; `Constructor_WrongChipId` also covers BMP280's `0x58` (common wrong part). `Constructor_ResetsOnce_AndWritesDefaults` asserts "first write is the reset command" + final register values, **not** the exact write order. **Why:** behavior, not my implementation's order, is what matters.
+2. **Model attributes:** `[Interface]` only on `Bmp3xxBase` (the README of System.Device.Model: derived classes that add nothing get no extra `[Interface]`); `[Property]` on the four settings; `[Property("PowerMode")]` on read+set (merged into one model property); `[Property("MeasurementDuration")]`; `[Telemetry("Status")]`; `[Command]` on `Reset`. **`ReadErrors()` has no attribute.** **Why:** reading clears the flags (side effect), and model properties/telemetry should be safe to read.
+3. **`ObjectDisposedException.ThrowIf(_i2cDevice is null, this)`** instead of Ina236's `typeof(I2cDevice)`. **Why:** the disposed object is the sensor, so the exception names the right type.
+4. **Magic numbers:** my first green version had the four timing constants inline; the scan in `010` caught them, and they're now named consts next to the formula. Remaining literals: `0b00`/`0b11` (PWR_CTRL mode field values, under the table-42 citation) and `1000.0` (µs per ms).
+5. **Refactor:** `SetPowerMode` decodes the mode from the PWR_CTRL value it already read (one bus read fewer); `ReadPowerMode` uses the same decoder.
+
+*Unverified (hardware):* (a) Reset depends on `cmd_rdy` reading 1 when idle (Step 8 assumption 1); if a real chip reads 0, the constructor throws "not ready to accept a command", which E1/Step 13 would show immediately. (b) O6 reads ERR right after writing Normal; whether a real chip has already evaluated the configuration by then isn't stated in the datasheet. (c) On a wrong chip ID the constructor throws without disposing the `I2cDevice`, same as `Bmxx80Base`; the caller still owns it in that case.
+
+[CLI — 2026_10_05_22_47] **Step 10: device class part 2 (reading path), tests first. Done. One open question on U4 (below).**
+
+*Changed (uncommitted):* `Bmp3xxBase.cs` (+ `Read`, `ReadAsync`, `TryReadTemperature`, `TryReadPressure`, 2× `TryReadAltitude`, private helpers), `tests/Bmp3xxReadTests.cs` (new, 15 tests).
+
+*Evidence:* `evidence/011-device-read-red.txt`: build 0 warnings; **15 new tests fail, all by `NotImplementedException`**; the 50 earlier ones pass. `evidence/012-device-read-green.txt`: **65/65 pass**, 0 warnings; whole suite 0.8 s; the two timeout tests take ~25 ms each (no multi-second sleeps); numeric-literal scan (remaining literals explained there).
+
+*What was built, with the why:*
+- **`Read()` / `ReadAsync()`**: if not in Normal mode, `SetPowerMode(Forced)`, sleep `GetMeasurementDuration()`, then poll both data-ready flags every 1 ms until `duration + 10 ms` more have passed, so the **total U6 timeout is 2 × duration + 10 ms**. On timeout → both values `null`, no exception (U6). In Normal mode: no write at all, just read the latest data. Sync and async share `StartForcedMeasurementIfNeeded`, `IsDataReady` and `ReadResult`; only the waiting differs (plan: "so the two can't drift apart"). `ConfigureAwait(false)` in the async version. **Why:** library code shouldn't capture a UI synchronization context.
+- **`ReadResult`**: one 6-byte burst (DS390 §3.10.1, data shadowing) → compensate temperature, then pressure with that temperature → **each value range-checked on its own** (U4): −40…85 °C, 30 000…125 000 Pa (table 2) → `null` when outside.
+- **U5 reset-value check**: both raw fields == `0x800000` → no data. Applied in `TryRead*`, `TryReadAltitude` and a Normal-mode `Read()`; **not** after our own forced measurement (the data is known fresh there, so a genuine `0x800000`/`0x800000` reading isn't thrown away). Test `TryReadTemperature_OnlyTemperatureAtResetValue_ReturnsTrue` pins the "both" rule (raw T `0x800000` = 23.68 °C with set A is a real reading).
+- **`TryReadAltitude`**: pressure and temperature from **one** burst read, then `WeatherHelper.CalculateAltitude(pressure, seaLevel, temperature)`; the no-argument overload uses `WeatherHelper.MeanSeaLevelPressure`, as `Bmx280Base` does. **Why one read:** the sibling reads pressure and temperature in two transactions, which in Normal mode can mix two measurements. Same result otherwise.
+- **Attributes:** `[Telemetry("Temperature")]`, `[Telemetry("Pressure")]` as in the sibling; `TryReadAltitude` has none, as in the sibling.
+
+*Tests (15):* forced trigger + reference values (V7, full stack: fake chip → I2C → calibration → compensation), Normal mode writes nothing, timeout (sync and async; returns nulls, elapsed asserted 5–1000 ms), out-of-range temperature (V9) and pressure (V10), `ReadAsync` = `Read`, `TryRead*` after reset → false, single field at reset value → true, `TryReadTemperature` writes nothing, `TryReadPressure` after a measurement / out of range, altitude at mean sea-level pressure ≈ 0 m (±1 cm), altitude uses the given sea-level pressure (equals `WeatherHelper`'s result and > 600 m), altitude after reset → false.
+
+**Open question for Timothy (U4, behavior: not decided by me):** U4 says out-of-range → `null` "for that quantity". The **pressure formula uses the temperature**. When only the temperature is out of range (V9: −45 °C), should the pressure still be reported?
+- **(a) As built (literal U4):** temperature `null`; pressure range-checked on its own (V9 gives 999.99998 hPa → reported). For: the pressure is a valid number in range; the sensor may be just below −40 °C. Against: it was computed with a temperature we just called untrustworthy.
+- **(b)** Pressure `null` too whenever the temperature is out of range. For: consistent with the "outside the range = bad data" reasoning; Bosch's driver also gives up on pressure then (reports 0). Against: throws away possibly-good data.
+- Switching is a one-line change in `ReadResult` plus one test expectation (`Read_OutOfRangeTemperature_ReturnsNullTemperature`). This could also go to maintainers with question 3 of the proposal issue (Stage 4).
+
+[CLI — 2026_10_05_22_52] **Commit 3 done; Step 11: sample, README, category. Done.**
+
+*Changed:* commit `0c17f5b3 Add Bmp390/Bmp388 device classes with simulated-device tests` (Steps 8–10; Timothy's OK; local only). Uncommitted: `samples/Program.cs` (real sample), `README.md` (full). `category.txt` unchanged from Step 5 (barometer / altimeter / thermometer).
+
+*Evidence:* `evidence/013-sample-build.txt`: samples build `--no-incremental` 0 warnings / 0 errors; tests still 65/65; README's only relative link (`samples/Program.cs`) exists; the three categories are listed in `tools/device-listing/Program.cs` (no new category description needed); only the two files changed. **Not run:** the sample itself (needs `/dev/i2c-1` and a sensor → Step 13).
+
+*Sample (plan outline):* bus 1 at `DefaultI2cAddress` (comment for 0x76 and for `Bmp388`) → ×8 / ×1 / filter 3 → prints `GetMeasurementDuration()` → **10** forced `Read()`s 1 s apart (°C, hPa, standard-atmosphere altitude) → normal mode at 25 Hz (`Period40Milliseconds`; ×8/×1 takes ~19 ms) → 5 × `TryReadPressure` → back to sleep. Nulls print "not available".
+
+*README:* title; two-line description (BMP390 vs BMP388; Adafruit BMP390 **product 4816**, verified via a Digi-Key listing; Adafruit BMP388 named without a number because I couldn't verify it); `## Documentation` with both datasheets first; `## Usage` (shortened sample); `## Wiring` (pin table from Step 2, plus the DS390 §5.1 warning that pulling CS low once locks the chip into SPI until power-off); `## Binding Notes` (implemented / not implemented / four behaviors a user can trip over: TryRead* never trigger, out-of-range → null/false (U4), timeout → nulls (U6), Normal-mode configuration error (O6)).
+
+*Deviations:*
+1. **The sample ends by itself** (10 forced + 5 normal readings), instead of the sibling's endless loop. **Why:** Step 13 runs it on the Pi for a recorded comparison; a finite run gives a complete, pasteable output. Rejected: endless loop (needs Ctrl+C; output cut at a random point).
+2. **No fritzing diagram.** `src/devices/README.md` asks for one; I can't draw it, and Ina236 (newest binding) has none. Options for Timothy: (a) leave the pin table only; (b) add a photo of his own wiring after Step 13; (c) draw one in Fritzing. Not blocking.
+3. `samples/Program.cs` keeps the Ina236-style file name (the sibling uses `Bmp280.sample.cs`). **Why:** the csproj already includes it by default; both styles exist in the repo.
+4. The README's usage snippet uses `Bmp3xxBase.DefaultI2cAddress` (the constant lives on the base class; `Bmp390.DefaultI2cAddress` also compiles via inheritance, but StyleCop/IDE may flag access through a derived type).

@@ -1,0 +1,57 @@
+Step 4: reference oracle -> test vectors (all of this ran OUTSIDE the fork)
+Date: 2026-10-05 21:50:43 PDT
+dotnet --version: 10.0.302 (not used in this step)
+Fork commit: 336e4696 on feature/bmp3xx-binding (unchanged)
+Where: ~/Desktop/projects/open_source/iot_project/scratch/new-device-binding/tools/bmp3-oracle/
+
+Oracle 1 (Bosch): BMP3_SensorAPI @ db4cf8e 2022-07-12 (git clone --depth 1 https://github.com/boschsensortec/BMP3_SensorAPI)
+  harness oracle.c: fake I2C bus over a 128-byte register image (chip id 0x60, STATUS 0x70, ERR 0, calibration at 0x31, data at 0x04); writes/delays ignored
+  build: cc -O0 -DBMP3_FLOAT_COMPENSATION -I BMP3_SensorAPI oracle.c BMP3_SensorAPI/bmp3.c -lm -o oracle   (Apple clang version 17.0.0 (clang-1700.0.13.5))
+  calls bmp3_init (reads chip id, soft reset, calibration) then bmp3_get_sensor_data(BMP3_PRESS_TEMP)
+  NOTE: bmp3_init returns -1 (BMP3_E_NULL_PTR) if intf_ptr is NULL; harness passes a dummy pointer
+  NOTE: Bosch's float path uses a float-returning power helper -> differences ~1e-4 Pa vs float64 (O4)
+Oracle 2 (ours): formulas.py, float64, written from datasheet BST-BMP390-DS002-07 Appendix 8.4-8.6 + Table 24 (python3 3.14.0)
+Command: python3 formulas.py
+
+Coefficient-set provenance:
+  set A, set B: NVM integer coefficients attributed by a web-search summary (2026-10-05) to two real BMP388s
+    posted on the Bosch Sensortec community forum. The original pages now return HTTP 404 (forum migrated):
+    https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/Need-for-BMP388-sensor-data-confirmation/m-p/49147
+    https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/How-to-derive-correct-calibration-coefficients-for-BMP388/m-p/12617
+    -> PROVENANCE UNVERIFIED. Used only as realistic magnitudes/signs; both oracles see the same bytes.
+  set C: set A with signed fields sign-flipped (synthetic, not a real chip) so every signed field is exercised
+    with the other sign (negative P3/P4/P9/P10; positive T3/P7/P8/P11; P4 nonzero).
+  V1-V5 (real E1 bytes): NOT YET, no hardware (Step 3 pending).
+  Raw values: chosen by inverting oracle 2 to land on the target T/P (integer raw, so targets are approximate).
+
+Calibration sets (21 bytes from 0x31, hex) and scaled coefficients (float64, datasheet App. 8.4):
+  set A: 3f6b3849f6ca0092f623007e62e575f3f6c54213c4   NVM {'T1': 27455, 'T2': 18744, 'T3': -10, 'P1': 202, 'P2': -2414, 'P3': 35, 'P4': 0, 'P5': 25214, 'P6': 30181, 'P7': -13, 'P8': -10, 'P9': 17093, 'P10': 19, 'P11': -60}
+          scaled: T1=7028480, T2=1.7456710338592529e-05, T3=-3.5527136788005009e-14, P1=-0.015432357788085938, P2=-3.501400351524353e-05, P3=8.149072527885437e-09, P4=0, P5=201712, P6=471.578125, P7=-0.05078125, P8=-0.00030517578125, P9=6.0726534911736962e-11, P10=6.7501559897209518e-14, P11=-1.6263032587282567e-18
+  set B: 0a6bb449f60cff4af323001765f57af3f6d63f1dc4   NVM {'T1': 27402, 'T2': 18868, 'T3': -10, 'P1': -244, 'P2': -3254, 'P3': 35, 'P4': 0, 'P5': 25879, 'P6': 31477, 'P7': -13, 'P8': -10, 'P9': 16342, 'P10': 29, 'P11': -60}
+          scaled: T1=7014912, T2=1.7572194337844849e-05, T3=-3.5527136788005009e-14, P1=-0.015857696533203125, P2=-3.6578625440597534e-05, P3=8.149072527885437e-09, P4=0, P5=207032, P6=491.828125, P7=-0.05078125, P8=-0.00030517578125, P9=5.8058446938957786e-11, P10=1.0302869668521453e-13, P11=-1.6263032587282567e-18
+  set C: 3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c   NVM {'T1': 27455, 'T2': 18744, 'T3': 10, 'P1': -202, 'P2': 2414, 'P3': -35, 'P4': -5, 'P5': 25214, 'P6': 30181, 'P7': 13, 'P8': 10, 'P9': -17093, 'P10': -19, 'P11': 60}
+          scaled: T1=7028480, T2=1.7456710338592529e-05, T3=3.5527136788005009e-14, P1=-0.015817642211914062, P2=-2.602115273475647e-05, P3=-8.149072527885437e-09, P4=-3.637978807091713e-11, P5=201712, P6=471.578125, P7=0.05078125, P8=0.00030517578125, P9=-6.0726534911736962e-11, P10=-6.7501559897209518e-14, P11=1.6263032587282567e-18
+
+vec  set      rawP      rawT        T(Bosch)          P(Bosch) rslt           T(py)             P(py)         dT         dP  note
+---------------------------------------------------------------------------------------------------------------------------------
+V6   A     6737211   7028480     0.000000000  100000.000532955    0     0.000000000  100000.000572984          0      4e-05  in range, ~0 °C
+V7   A     7033326   8464793    25.000007690  101324.996390588    0    25.000007690  101324.996310287   -2.1e-10  -8.03e-05  in range, ~25 °C, sea level
+V8   A     8181227  10489938    59.999994463   90000.006120835    0    59.999994463   90000.006056564  -1.63e-10  -6.43e-05  in range, ~60 °C
+V9   A     5932470   4464058   -40.000000000       0.000000000    3   -45.000007735   99999.998837815         -5      1e+05  OUT: temperature below -40 °C
+V10  A     5463084   8464793    25.000007690  125000.000000000    6    25.000007690  125999.996645801   -2.1e-10      1e+03  OUT: pressure above 125000 Pa
+V11  B     7321232   8155705    20.000000971   97999.995818342    0    20.000000971   97999.995856257   4.58e-10   3.79e-05  in range, set B (negative P1)
+V12  B    11823592  11610253    79.999992908   30999.993900953    0    79.999992908   30999.993844487  -3.71e-10  -5.65e-05  in range near both edges, set B
+V13  C     8205337   7314736     4.999999257   69999.993475021    0     4.999999257   69999.993471948   2.86e-12  -3.07e-06  in range, set C (sign-flipped signed fields)
+V14  C     6429257   9309276    40.000008359  109999.996364267    0    40.000008359  109999.996286582   -2.1e-10  -7.77e-05  in range, set C
+V15  A     8388608   8388608    23.677637157   79898.812328695    0    23.677637157   79898.812328742   4.96e-10   4.71e-08  raw = reset value 0x800000 / 0x800000
+
+In-range vectors (rslt == 0): max |dT| = 4.96e-10 °C, max |dP| = 8.03e-05 Pa
+
+Reading the table:
+  rslt: Bosch driver return code. 0 = OK; 3 = BMP3_W_MIN_TEMP (clamped to -40 °C); 6 = BMP3_W_MAX_PRES (clamped to 125000 Pa).
+  V9: Bosch clamps T to -40 and reports P = 0 (pressure not computed after the temperature warning).
+      Our U4 design returns null/false instead; oracle 2's unclamped values are recorded for the range tests.
+  V10: Bosch clamps P to 125000; unclamped value ~125997 Pa (> 125000 -> our U4 gives null/false).
+  V15: raw 0x800000/0x800000 (datasheet reset value) decodes to 23.68 °C / 79899 Pa with set A:
+       the temperature alone is a normal room value (U5 collision risk); the PAIR needs ~23.7 °C at ~799 hPa.
+  Agreement on in-range vectors is far inside the Step 4 stop threshold (0.01 °C / 1 Pa).

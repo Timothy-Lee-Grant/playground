@@ -1,0 +1,79 @@
+Step 5: scaffold src/devices/Bmp3xx/ builds clean
+Date: 2026-10-05 22:06:48 PDT
+dotnet --version: 10.0.302
+Fork commit: 336e4696 on feature/bmp3xx-binding (+ uncommitted scaffold below)
+Commands (from iot/):
+  dotnet build src/devices/Bmp3xx/tests/ --no-incremental
+  dotnet build src/devices/Bmp3xx/samples/ --no-incremental
+  dotnet test  src/devices/Bmp3xx/tests/ --no-build      (expect: no tests yet)
+  git status --porcelain --untracked-files=all
+
+=================== BUILD tests/
+  Determining projects to restore...
+  Restored /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xx.csproj (in 166 ms).
+  Restored /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xx.Tests.csproj (in 166 ms).
+  3 of 5 projects are up-to-date for restore.
+  System.Device.Gpio -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Gpio/Debug/net8.0/System.Device.Gpio.dll
+  System.Device.Model -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Model/Debug/net8.0/System.Device.Model.dll
+  Common -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Common/Debug/net8.0/Common.dll
+  Bmp3xx -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx/Debug/net8.0/Bmp3xx.dll
+  Bmp3xx.Tests -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.42
+BUILD tests EXIT CODE: 0
+=================== BUILD samples/
+  Determining projects to restore...
+  Restored /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/samples/Bmp3xx.Samples.csproj (in 205 ms).
+  4 of 5 projects are up-to-date for restore.
+  System.Device.Gpio -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Gpio/Debug/net8.0/System.Device.Gpio.dll
+  System.Device.Model -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Model/Debug/net8.0/System.Device.Model.dll
+  Common -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Common/Debug/net8.0/Common.dll
+  Bmp3xx -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx/Debug/net8.0/Bmp3xx.dll
+  Bmp3xx.Samples -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Samples/Debug/net8.0/Bmp3xx.Samples.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.73
+BUILD samples EXIT CODE: 0
+=================== TEST (discovery)
+Test run for /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+No test is available in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll. Make sure that test discoverer & executors are registered and platform & framework version settings are appropriate and try again.
+
+Additionally, path to test adapters can be specified using /TestAdapterPath command. Example  /TestAdapterPath:<pathToCustomAdapters>.
+TEST EXIT CODE: 0
+=================== git status
+?? src/devices/Bmp3xx/Bmp388.cs
+?? src/devices/Bmp3xx/Bmp390.cs
+?? src/devices/Bmp3xx/Bmp3xx.csproj
+?? src/devices/Bmp3xx/Bmp3xx.sln
+?? src/devices/Bmp3xx/Bmp3xxBase.cs
+?? src/devices/Bmp3xx/Bmp3xxCalibrationData.cs
+?? src/devices/Bmp3xx/Bmp3xxErrors.cs
+?? src/devices/Bmp3xx/Bmp3xxFilterCoefficient.cs
+?? src/devices/Bmp3xx/Bmp3xxOutputDataRate.cs
+?? src/devices/Bmp3xx/Bmp3xxOversampling.cs
+?? src/devices/Bmp3xx/Bmp3xxPowerMode.cs
+?? src/devices/Bmp3xx/Bmp3xxReadResult.cs
+?? src/devices/Bmp3xx/Bmp3xxRegister.cs
+?? src/devices/Bmp3xx/Bmp3xxStatus.cs
+?? src/devices/Bmp3xx/README.md
+?? src/devices/Bmp3xx/category.txt
+?? src/devices/Bmp3xx/samples/Bmp3xx.Samples.csproj
+?? src/devices/Bmp3xx/samples/Program.cs
+?? src/devices/Bmp3xx/tests/Bmp3xx.Tests.csproj
+=================== auto-referenced test packages in output (ls artifacts/bin/Bmp3xx.Tests/Debug/net8.0 | grep -i xunit|moq|shouldly)
+Moq.dll
+Shouldly.dll
+xunit.abstractions.dll
+xunit.assert.dll
+xunit.core.dll
+xunit.execution.dotnet.dll
+xunit.runner.utility.netcoreapp10.dll
+xunit.runner.visualstudio.testadapter.dll

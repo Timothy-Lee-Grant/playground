@@ -14,6 +14,7 @@
 │   ├── issues.md               registry: issue folder ↔ branch; protected branches
 │   ├── .claude/settings.json   permissions (push only to origin with OK; never upstream, never force, no gh)
 │   ├── .claude/commands/       /issue <folder> (load context + switch branch) and /handoff
+│   ├── hooks/                  commit-msg + pre-push, linked into iot/.git/hooks by setup.sh
 │   └── setup.sh                creates/refreshes the links below; configures remotes
 └── <issue folder>/shared/  each issue's mailbox (brief, plan, decisions, STATUS, sessions, evidence)
 
@@ -43,6 +44,7 @@ cd ~/Desktop/projects/open_source/iot_project && claude
 | Opening a PR or posting by accident | `gh` denied; the CLI never uses the GitHub web UI |
 | Losing work when switching issues | CLI never switches with uncommitted changes; stash/reset/clean ask first |
 | Rewriting pushed history | force-push denied (Timothy does it himself if ever needed) |
+| A commit message that pings dotnet/iot (`Fixes #123`, `dotnet/iot#123`, a GitHub link, `@someone`) | `hooks/commit-msg` rejects it; `hooks/pre-push` re-checks every outgoing commit and refuses any remote but `origin` and the protected branches; `--no-verify` denied for the CLI |
 
 Pushing a branch to the fork (`origin`) notifies nobody at dotnet/iot and creates no PR. The branch is visible to
 anyone who browses the fork, and GitHub offers *you* a "Compare & pull request" button: just don't click it.

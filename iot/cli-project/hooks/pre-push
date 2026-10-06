@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Installed into iot/.git/hooks by cli-project/setup.sh.
+# 1. Only the fork (origin) may receive pushes; never dotnet/iot.
+# 2. Protected branches are never pushed from this clone.
+# 3. Every commit being pushed must pass check-message.sh.
+remote="$1"; url="$2"
+here="$(dirname "$(readlink -f "$0")")"
+case "$url" in
+  *dotnet/iot*|*PUSH_DISABLED*) echo "Blocked: pushes go to your fork (origin) only, never to dotnet/iot." >&2; exit 1;;
+esac
+[ "$remote" = "origin" ] || { echo "Blocked: push only to 'origin' (your fork), not '$remote'." >&2; exit 1; }
+zero=0000000000000000000000000000000000000000
+tmp=$(mktemp)
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main|refs/heads/fix/2328*) echo "Blocked: $remote_ref is protected (see ISSUES.md)." >&2; rm -f "$tmp"; exit 1;;
+  esac
+  [ "$local_sha" = "$zero" ] && continue          # deleting a remote branch: nothing to scan
+  if [ "$remote_sha" = "$zero" ]; then range="$local_sha --not --remotes=origin --remotes=upstream"
+  else range="$remote_sha..$local_sha"; fi
+  for c in $(git rev-list $range); do
+    git log -1 --format=%B "$c" > "$tmp"
+    if ! "$here/check-message.sh" "$tmp"; then
+      echo "  in commit $(git log -1 --format='%h %s' "$c")" >&2; rm -f "$tmp"; exit 1
+    fi
+  done
+done
+rm -f "$tmp"
+exit 0

@@ -1,0 +1,269 @@
+Part 1 (Step 6): register map + enums build clean.  Part 2 (Step 7, red tests) is appended below when it runs.
+Date: 2026-10-05 22:19:01 PDT
+dotnet --version: 10.0.302
+Fork commit: dd1c7694 on feature/bmp3xx-binding (+ uncommitted src/devices/Bmp3xx/)
+Commands (from iot/): dotnet build src/devices/Bmp3xx/tests/ --no-incremental ; dotnet build src/devices/Bmp3xx/samples/ --no-incremental
+
+=================== PART 1: BUILD tests/
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  System.Device.Gpio -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Gpio/Debug/net8.0/System.Device.Gpio.dll
+  System.Device.Model -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Model/Debug/net8.0/System.Device.Model.dll
+  Common -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Common/Debug/net8.0/Common.dll
+  Bmp3xx -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx/Debug/net8.0/Bmp3xx.dll
+  Bmp3xx.Tests -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:03.07
+BUILD tests EXIT CODE: 0
+=================== PART 1: BUILD samples/
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  System.Device.Gpio -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Gpio/Debug/net8.0/System.Device.Gpio.dll
+  System.Device.Model -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Model/Debug/net8.0/System.Device.Model.dll
+  Common -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Common/Debug/net8.0/Common.dll
+  Bmp3xx -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx/Debug/net8.0/Bmp3xx.dll
+  Bmp3xx.Samples -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Samples/Debug/net8.0/Bmp3xx.Samples.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.13
+BUILD samples EXIT CODE: 0
+=================== PART 1: git status
+ M src/devices/Bmp3xx/Bmp3xxBase.cs
+ M src/devices/Bmp3xx/Bmp3xxErrors.cs
+ M src/devices/Bmp3xx/Bmp3xxFilterCoefficient.cs
+ M src/devices/Bmp3xx/Bmp3xxOutputDataRate.cs
+ M src/devices/Bmp3xx/Bmp3xxOversampling.cs
+ M src/devices/Bmp3xx/Bmp3xxPowerMode.cs
+ M src/devices/Bmp3xx/Bmp3xxRegister.cs
+ M src/devices/Bmp3xx/Bmp3xxStatus.cs
+
+=================== PART 2 (Step 7 RED): 2026-10-05 22:24:08 PDT, fork commit 93af1acb + uncommitted stub/tests
+Commands: dotnet build src/devices/Bmp3xx/tests/ --no-incremental ; dotnet test src/devices/Bmp3xx/tests/ --no-build
+    0 Error(s)
+    0 Warning(s)
+BUILD EXIT CODE: 0
+Test run for /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 8155705, expectedCelsius: 20.000000970999999) [FAIL]
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 7314736, expectedCelsius: 4.9999992569999998) [FAIL]
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8388608, expectedCelsius: 23.677637156999999) [FAIL]
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 7028480, expectedCelsius: 0) [FAIL]
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 11610253, expectedCelsius: 79.999992907999996) [FAIL]
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 10489938, expectedCelsius: 59.999994463) [FAIL]
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8464793, expectedCelsius: 25.00000769) [FAIL]
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 9309276, expectedCelsius: 40.000008358999999) [FAIL]
+[xUnit.net 00:00:00.12]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8388608, temperatureCelsius: 23.677637156999999, expectedPascals: 79898.812328694999) [FAIL]
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 8155705, expectedCelsius: 20.000000970999999) [2 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(String vector, String calibrationHex, UInt32 rawTemperature, Double expectedCelsius) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 69
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 7314736, expectedCelsius: 4.9999992569999998) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(String vector, String calibrationHex, UInt32 rawTemperature, Double expectedCelsius) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 69
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8388608, expectedCelsius: 23.677637156999999) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(String vector, String calibrationHex, UInt32 rawTemperature, Double expectedCelsius) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 69
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 7028480, expectedCelsius: 0) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(String vector, String calibrationHex, UInt32 rawTemperature, Double expectedCelsius) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 69
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 11610253, expectedCelsius: 79.999992907999996) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(String vector, String calibrationHex, UInt32 rawTemperature, Double expectedCelsius) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 69
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 10489938, expectedCelsius: 59.999994463) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(String vector, String calibrationHex, UInt32 rawTemperature, Double expectedCelsius) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 69
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8464793, expectedCelsius: 25.00000769) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(String vector, String calibrationHex, UInt32 rawTemperature, Double expectedCelsius) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 69
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 9309276, expectedCelsius: 40.000008358999999) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(String vector, String calibrationHex, UInt32 rawTemperature, Double expectedCelsius) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 69
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8388608, temperatureCelsius: 23.677637156999999, expectedPascals: 79898.812328694999) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(String vector, String calibrationHex, UInt32 rawPressure, Double temperatureCelsius, Double expectedPascals) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 87
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 7321232, temperatureCelsius: 20.000000970999999, expectedPascals: 97999.995818341995) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8181227, temperatureCelsius: 59.999994463, expectedPascals: 90000.006120834994) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 8205337, temperatureCelsius: 4.9999992569999998, expectedPascals: 69999.993475020994) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 7033326, temperatureCelsius: 25.00000769, expectedPascals: 101324.996390588) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 11823592, temperatureCelsius: 79.999992907999996, expectedPascals: 30999.993900952999) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 6429257, temperatureCelsius: 40.000008358999999, expectedPascals: 109999.996364267) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 6737211, temperatureCelsius: 0, expectedPascals: 100000.000532955) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 20) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 0) [FAIL]
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 7321232, temperatureCelsius: 20.000000970999999, expectedPascals: 97999.995818341995) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(String vector, String calibrationHex, UInt32 rawPressure, Double temperatureCelsius, Double expectedPascals) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 87
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8181227, temperatureCelsius: 59.999994463, expectedPascals: 90000.006120834994) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(String vector, String calibrationHex, UInt32 rawPressure, Double temperatureCelsius, Double expectedPascals) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 87
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 8205337, temperatureCelsius: 4.9999992569999998, expectedPascals: 69999.993475020994) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(String vector, String calibrationHex, UInt32 rawPressure, Double temperatureCelsius, Double expectedPascals) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 87
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 7033326, temperatureCelsius: 25.00000769, expectedPascals: 101324.996390588) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(String vector, String calibrationHex, UInt32 rawPressure, Double temperatureCelsius, Double expectedPascals) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 87
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 11823592, temperatureCelsius: 79.999992907999996, expectedPascals: 30999.993900952999) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(String vector, String calibrationHex, UInt32 rawPressure, Double temperatureCelsius, Double expectedPascals) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 87
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 6429257, temperatureCelsius: 40.000008358999999, expectedPascals: 109999.996364267) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(String vector, String calibrationHex, UInt32 rawPressure, Double temperatureCelsius, Double expectedPascals) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 87
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 6737211, temperatureCelsius: 0, expectedPascals: 100000.000532955) [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(String vector, String calibrationHex, UInt32 rawPressure, Double temperatureCelsius, Double expectedPascals) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 87
+   at InvokeStub_Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 20) [1 ms]
+  Error Message:
+   Assert.Throws() Failure: Exception type was not an exact match
+Expected: typeof(System.ArgumentException)
+Actual:   typeof(System.NotImplementedException)
+---- System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(Int32 length) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 55
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+----- Inner Stack Trace -----
+   at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.<>c__DisplayClass6_0.<Parse_RejectsWrongLength>b__0() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 55
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 0) [< 1 ms]
+  Error Message:
+   Assert.Throws() Failure: Exception type was not an exact match
+Expected: typeof(System.ArgumentException)
+Actual:   typeof(System.NotImplementedException)
+---- System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(Int32 length) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 55
+   at InvokeStub_Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+----- Inner Stack Trace -----
+   at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.<>c__DisplayClass6_0.<Parse_RejectsWrongLength>b__0() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 55
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 22) [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_DoesNotClamp [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_DoesNotClamp [FAIL]
+[xUnit.net 00:00:00.14]     Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_ScalesEachCoefficient [FAIL]
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 22) [< 1 ms]
+  Error Message:
+   Assert.Throws() Failure: Exception type was not an exact match
+Expected: typeof(System.ArgumentException)
+Actual:   typeof(System.NotImplementedException)
+---- System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(Int32 length) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 55
+   at InvokeStub_Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+----- Inner Stack Trace -----
+   at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.<>c__DisplayClass6_0.<Parse_RejectsWrongLength>b__0() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 55
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_DoesNotClamp [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_DoesNotClamp() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 110
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_DoesNotClamp [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_DoesNotClamp() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 99
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_ScalesEachCoefficient [< 1 ms]
+  Error Message:
+   System.NotImplementedException : The method or operation is not implemented.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxCalibrationData.Parse(ReadOnlySpan`1 bytes) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxCalibrationData.cs:line 33
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_ScalesEachCoefficient() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxCalibrationDataTests.cs:line 30
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:    22, Passed:     0, Skipped:     0, Total:    22, Duration: 34 ms - Bmp3xx.Tests.dll (net8.0)
+TEST EXIT CODE: 1

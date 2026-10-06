@@ -128,4 +128,7 @@ verified/unverified; save evidence; ask before commits.
 - **The Raspberry Pi.** Hardware steps need Timothy's hands. `ssh`, `scp` and `rsync` always ask first (settings);
   use them only if Timothy has set up access (plan Step 2.5). Never change anything on the Pi beyond running our
   published programs in a folder he names.
+- **Commit messages:** plain descriptions only. No `#123`, `dotnet/iot#123`, GitHub URLs or `@mentions` (they can
+  show up on upstream issues once pushed). The proposal issue gets linked in the PR description later, by Timothy.
+  The clone's hooks reject them; never use `--no-verify`.
 - **Fork scope.** Only `src/devices/Bmp3xx/**` may change on `feature/bmp3xx-binding`. Anything else is a **CHANGE REQUEST**.

@@ -1,0 +1,60 @@
+Step 7 GREEN: calibration parsing + compensation
+Date: 2026-10-05 22:25:35 PDT
+dotnet --version: 10.0.302
+Fork commit: 93af1acb on feature/bmp3xx-binding (+ uncommitted Bmp3xxCalibrationData.cs, tests/Bmp3xxCalibrationDataTests.cs)
+Commands (from iot/): dotnet build src/devices/Bmp3xx/tests/ --no-incremental ; dotnet test src/devices/Bmp3xx/tests/ --no-build -v n
+
+=================== BUILD
+    0 Error(s)
+    0 Warning(s)
+  Bmp3xx -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx/Debug/net8.0/Bmp3xx.dll
+  Bmp3xx.Tests -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll
+BUILD EXIT CODE: 0
+=================== TEST
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 8155705, expectedCelsius: 20.000000970999999) [3 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 7314736, expectedCelsius: 4.9999992569999998) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8388608, expectedCelsius: 23.677637156999999) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 7028480, expectedCelsius: 0) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 11610253, expectedCelsius: 79.999992907999996) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 10489938, expectedCelsius: 59.999994463) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8464793, expectedCelsius: 25.00000769) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 9309276, expectedCelsius: 40.000008358999999) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8388608, temperatureCelsius: 23.677637156999999, expectedPascals: 79898.812328694999) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 7321232, temperatureCelsius: 20.000000970999999, expectedPascals: 97999.995818341995) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8181227, temperatureCelsius: 59.999994463, expectedPascals: 90000.006120834994) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 8205337, temperatureCelsius: 4.9999992569999998, expectedPascals: 69999.993475020994) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 7033326, temperatureCelsius: 25.00000769, expectedPascals: 101324.996390588) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 11823592, temperatureCelsius: 79.999992907999996, expectedPascals: 30999.993900952999) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 6429257, temperatureCelsius: 40.000008358999999, expectedPascals: 109999.996364267) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 6737211, temperatureCelsius: 0, expectedPascals: 100000.000532955) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 20) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 0) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 22) [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensatePressure_DoesNotClamp [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.CompensateTemperature_DoesNotClamp [< 1 ms]
+  Passed Iot.Device.Bmp3xx.Tests.Bmp3xxCalibrationDataTests.Parse_ScalesEachCoefficient [2 ms]
+Total tests: 22
+ Total time: 0.5688 Seconds
+TEST EXIT CODE: 0
+
+=================== TOLERANCE MEASUREMENT (scratch/new-device-binding/tools/measure-tolerance, outside the fork)
+Command: dotnet run -- iot/artifacts/bin/Bmp3xx/Debug/net8.0/Bmp3xx.dll shared/evidence/005-oracle-vectors.txt
+(loads the built binding by reflection; feeds each vector's calibration + raw values through Parse/CompensateTemperature/CompensatePressure,
+ pressure using OUR temperature; compares with Bosch and python values as printed in evidence/005, 9 decimals)
+vec  T(C#)              dT_bosch   dT_py      P(C#)                dP_bosch   dP_py
+V6                    0          0          0   100000.00057298414      4E-05   1.31E-10 
+V7    25.00000768979006   -2.1E-10   -2.1E-10   101324.99631028685  -8.03E-05  -1.46E-10 
+V8    59.99999446283741  -1.63E-10  -1.63E-10    90000.00605656402  -6.43E-05   1.46E-11 
+V9   -45.000007735382866         -5  -3.83E-10    99999.99883781491      1E+05  -8.73E-11 (Bosch clamped; excluded)
+V10   25.00000768979006   -2.1E-10   -2.1E-10   125999.99664580144      1E+03   4.37E-10 (Bosch clamped; excluded)
+V11  20.000000971457744   4.58E-10   4.58E-10     97999.9958562572   3.79E-05   2.04E-10 
+V12   79.99999290762881  -3.71E-10  -3.71E-10   30999.993844486926  -5.65E-05  -7.28E-11 
+V13   4.999999257002855   2.86E-12   2.86E-12    69999.99347194778  -3.07E-06  -2.18E-10 
+V14   40.00000835878984   -2.1E-10   -2.1E-10   109999.99628658188  -7.77E-05  -1.16E-10 
+V15  23.677637157496065   4.96E-10   4.96E-10    79898.81232874215   4.71E-08   1.46E-10 
+max |C# - Bosch| (in range): T 4.96E-10 °C, P 8.03E-05 Pa;  max |C# - python| (all): T 4.96E-10 °C, P 4.37E-10 Pa
+
+Reading: dT/dP vs python <= 5e-10 is the 9-decimal printing precision of evidence/005, i.e. C# == datasheet formulas in float64.
+         dP vs Bosch up to 8.03e-5 Pa is Bosch's single-precision arithmetic.
+Chosen test tolerances: temperature 1e-6 °C (~2000x above measured; 150x below the 0.00015 °C finest resolution, DS390 table 7)
+                        pressure    1e-3 Pa  (~12x above measured; 16x below 0.016 Pa resolution and 20x below 0.02 Pa RMS noise, DS390 table 2)

@@ -1,0 +1,130 @@
+Step 9 GREEN: device class part 1 (construction, configuration, power mode, reset, status/errors, disposal)
+Date: 2026-10-05 22:40:48 PDT
+dotnet --version: 10.0.302
+Fork commit: 9e1ab226 on feature/bmp3xx-binding (+ uncommitted Bmp3xxBase.cs, tests/Bmp3xxBaseTests.cs, tests/SimulatedBmp3xx*.cs)
+Commands (from iot/): dotnet build src/devices/Bmp3xx/tests/ --no-incremental ; dotnet test src/devices/Bmp3xx/tests/ --no-build (normal verbosity)
+
+=================== BUILD
+    0 Warning(s)
+    0 Error(s)
+=================== TEST
+  Passed Bmp3xxBaseTests.Constructor_Bmp388_AcceptsChipId50 [2 ms]
+  Passed Bmp3xxBaseTests.Constructor_Bmp390_AcceptsChipId60 [8 ms]
+  Passed Bmp3xxBaseTests.Constructor_NullDevice_Throws [< 1 ms]
+  Passed Bmp3xxBaseTests.Constructor_ResetsOnce_AndWritesDefaults [4 ms]
+  Passed Bmp3xxBaseTests.Constructor_WrongChipId_ThrowsIOException(chipId: 80) [< 1 ms]
+  Passed Bmp3xxBaseTests.Constructor_WrongChipId_ThrowsIOException(chipId: 88) [< 1 ms]
+  Passed Bmp3xxBaseTests.Dispose_DisposesI2cDevice_AndBlocksFurtherUse [2 ms]
+  Passed Bmp3xxBaseTests.FilterCoefficient_RoundTrips [3 ms]
+  Passed Bmp3xxBaseTests.GetMeasurementDuration_X1X1_Is5ms [2 ms]
+  Passed Bmp3xxBaseTests.GetMeasurementDuration_X32X2_MatchesFormula(chipId: 80, expectedMilliseconds: 69) [2 ms]
+  Passed Bmp3xxBaseTests.GetMeasurementDuration_X32X2_MatchesFormula(chipId: 96, expectedMilliseconds: 70) [2 ms]
+  Passed Bmp3xxBaseTests.OutputDataRate_RoundTrips [3 ms]
+  Passed Bmp3xxBaseTests.PressureSampling_SetX8_WritesOsrBitsAndKeepsTemperatureBits [2 ms]
+  Passed Bmp3xxBaseTests.ReadErrors_ReportsFlags_AndReadingClearsThem [3 ms]
+  Passed Bmp3xxBaseTests.ReadStatus_ReportsFlags [3 ms]
+  Passed Bmp3xxBaseTests.Reset_CommandError_ThrowsIOException [4 ms]
+  Passed Bmp3xxBaseTests.Reset_WritesB6ToCommandRegister_AndKeepsSettings [4 ms]
+  Passed Bmp3xxBaseTests.SetPowerMode_Forced_KeepsSensorsEnabled [2 ms]
+  Passed Bmp3xxBaseTests.SetPowerMode_FromNormalToForced_GoesThroughSleep [2 ms]
+  Passed Bmp3xxBaseTests.SetPowerMode_Normal_IsReportedByReadPowerMode [2 ms]
+  Passed Bmp3xxBaseTests.SetPowerMode_Normal_WithConfigurationError_Throws_AndReturnsToSleep [2 ms]
+  Passed Bmp3xxBaseTests.Settings_InvalidValue_ThrowsArgumentOutOfRange [2 ms]
+  Passed Bmp3xxBaseTests.TemperatureSampling_SetX32_WritesOsrBitsAndKeepsPressureBits [2 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_DoesNotClamp [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 7321232, temperatureCelsius: 20.000000970999999, expectedPascals: 97999.995818341995) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 11823592, temperatureCelsius: 79.999992907999996, expectedPascals: 30999.993900952999) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 8205337, temperatureCelsius: 4.9999992569999998, expectedPascals: 69999.993475020994) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 6429257, temperatureCelsius: 40.000008358999999, expectedPascals: 109999.996364267) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8388608, temperatureCelsius: 23.677637156999999, expectedPascals: 79898.812328694999) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 6737211, temperatureCelsius: 0, expectedPascals: 100000.000532955) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 7033326, temperatureCelsius: 25.00000769, expectedPascals: 101324.996390588) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8181227, temperatureCelsius: 59.999994463, expectedPascals: 90000.006120834994) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_DoesNotClamp [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 8155705, expectedCelsius: 20.000000970999999) [3 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 11610253, expectedCelsius: 79.999992907999996) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 7314736, expectedCelsius: 4.9999992569999998) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 9309276, expectedCelsius: 40.000008358999999) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8388608, expectedCelsius: 23.677637156999999) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 7028480, expectedCelsius: 0) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8464793, expectedCelsius: 25.00000769) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 10489938, expectedCelsius: 59.999994463) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 0) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 20) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 22) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.Parse_ScalesEachCoefficient [1 ms]
+  Passed SimulatedBmp3xxTests.BurstRead_CrossesRegisters [< 1 ms]
+  Passed SimulatedBmp3xxTests.ForcedMode_MeasuresOnce_AndReturnsToSleep [< 1 ms]
+  Passed SimulatedBmp3xxTests.ReadingErrorRegister_ClearsCommandAndConfigurationErrors [6 ms]
+  Passed SimulatedBmp3xxTests.SoftReset_RestoresResetValues_KeepsCalibration_AndCountsResets [< 1 ms]
+  Passed SimulatedBmp3xxTests.Write_IsRegisterValuePairs [5 ms]
+
+=================== NUMERIC LITERALS in Bmp3xxBase.cs outside const declarations (magic-number check)
+105:            _conversionMicroseconds = isBmp388 ? 2000 : 2020;
+106:            _temperatureSettleMicroseconds = isBmp388 ? 313 : 163;
+258:            return (microseconds + 999) / 1000;
+348:                0b00 => Bmp3xxPowerMode.Sleep,
+349:                0b11 => Bmp3xxPowerMode.Normal,
+
+=================== SECOND RUN after naming the timing constants and using Math.Ceiling (the scan above found 2000/2020/313/163 and 999/1000 inline): 2026-10-05 22:41:19 PDT
+=================== BUILD
+    0 Warning(s)
+    0 Error(s)
+=================== TEST
+     Passed: 50
+  Passed Bmp3xxBaseTests.Constructor_Bmp388_AcceptsChipId50 [2 ms]
+  Passed Bmp3xxBaseTests.Constructor_Bmp390_AcceptsChipId60 [7 ms]
+  Passed Bmp3xxBaseTests.Constructor_NullDevice_Throws [< 1 ms]
+  Passed Bmp3xxBaseTests.Constructor_ResetsOnce_AndWritesDefaults [4 ms]
+  Passed Bmp3xxBaseTests.Constructor_WrongChipId_ThrowsIOException(chipId: 80) [< 1 ms]
+  Passed Bmp3xxBaseTests.Constructor_WrongChipId_ThrowsIOException(chipId: 88) [< 1 ms]
+  Passed Bmp3xxBaseTests.Dispose_DisposesI2cDevice_AndBlocksFurtherUse [2 ms]
+  Passed Bmp3xxBaseTests.FilterCoefficient_RoundTrips [3 ms]
+  Passed Bmp3xxBaseTests.GetMeasurementDuration_X1X1_Is5ms [2 ms]
+  Passed Bmp3xxBaseTests.GetMeasurementDuration_X32X2_MatchesFormula(chipId: 80, expectedMilliseconds: 69) [2 ms]
+  Passed Bmp3xxBaseTests.GetMeasurementDuration_X32X2_MatchesFormula(chipId: 96, expectedMilliseconds: 70) [2 ms]
+  Passed Bmp3xxBaseTests.OutputDataRate_RoundTrips [3 ms]
+  Passed Bmp3xxBaseTests.PressureSampling_SetX8_WritesOsrBitsAndKeepsTemperatureBits [2 ms]
+  Passed Bmp3xxBaseTests.ReadErrors_ReportsFlags_AndReadingClearsThem [3 ms]
+  Passed Bmp3xxBaseTests.ReadStatus_ReportsFlags [3 ms]
+  Passed Bmp3xxBaseTests.Reset_CommandError_ThrowsIOException [4 ms]
+  Passed Bmp3xxBaseTests.Reset_WritesB6ToCommandRegister_AndKeepsSettings [4 ms]
+  Passed Bmp3xxBaseTests.SetPowerMode_Forced_KeepsSensorsEnabled [2 ms]
+  Passed Bmp3xxBaseTests.SetPowerMode_FromNormalToForced_GoesThroughSleep [2 ms]
+  Passed Bmp3xxBaseTests.SetPowerMode_Normal_IsReportedByReadPowerMode [2 ms]
+  Passed Bmp3xxBaseTests.SetPowerMode_Normal_WithConfigurationError_Throws_AndReturnsToSleep [2 ms]
+  Passed Bmp3xxBaseTests.Settings_InvalidValue_ThrowsArgumentOutOfRange [2 ms]
+  Passed Bmp3xxBaseTests.TemperatureSampling_SetX32_WritesOsrBitsAndKeepsPressureBits [2 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_DoesNotClamp [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 7321232, temperatureCelsius: 20.000000970999999, expectedPascals: 97999.995818341995) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawPressure: 11823592, temperatureCelsius: 79.999992907999996, expectedPascals: 30999.993900952999) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 8205337, temperatureCelsius: 4.9999992569999998, expectedPascals: 69999.993475020994) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawPressure: 6429257, temperatureCelsius: 40.000008358999999, expectedPascals: 109999.996364267) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8388608, temperatureCelsius: 23.677637156999999, expectedPascals: 79898.812328694999) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 6737211, temperatureCelsius: 0, expectedPascals: 100000.000532955) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 7033326, temperatureCelsius: 25.00000769, expectedPascals: 101324.996390588) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensatePressure_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawPressure: 8181227, temperatureCelsius: 59.999994463, expectedPascals: 90000.006120834994) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_DoesNotClamp [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V11", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 8155705, expectedCelsius: 20.000000970999999) [3 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V12", calibrationHex: "0a6bb449f60cff4af323001765f57af3f6d63f1dc4", rawTemperature: 11610253, expectedCelsius: 79.999992907999996) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V13", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 7314736, expectedCelsius: 4.9999992569999998) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V14", calibrationHex: "3f6b38490a36ff6e09ddfb7e62e5750d0a3bbded3c", rawTemperature: 9309276, expectedCelsius: 40.000008358999999) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V15", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8388608, expectedCelsius: 23.677637156999999) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V6", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 7028480, expectedCelsius: 0) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V7", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 8464793, expectedCelsius: 25.00000769) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.CompensateTemperature_MatchesReference(vector: "V8", calibrationHex: "3f6b3849f6ca0092f623007e62e575f3f6c54213c4", rawTemperature: 10489938, expectedCelsius: 59.999994463) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 0) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 20) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.Parse_RejectsWrongLength(length: 22) [< 1 ms]
+  Passed Bmp3xxCalibrationDataTests.Parse_ScalesEachCoefficient [1 ms]
+  Passed SimulatedBmp3xxTests.BurstRead_CrossesRegisters [< 1 ms]
+  Passed SimulatedBmp3xxTests.ForcedMode_MeasuresOnce_AndReturnsToSleep [< 1 ms]
+  Passed SimulatedBmp3xxTests.ReadingErrorRegister_ClearsCommandAndConfigurationErrors [5 ms]
+  Passed SimulatedBmp3xxTests.SoftReset_RestoresResetValues_KeepsCalibration_AndCountsResets [< 1 ms]
+  Passed SimulatedBmp3xxTests.Write_IsRegisterValuePairs [5 ms]
+Total tests: 50
+=================== NUMERIC LITERALS in Bmp3xxBase.cs outside const declarations and comments
+262:            return (int)Math.Ceiling(microseconds / 1000.0);
+352:                0b00 => Bmp3xxPowerMode.Sleep,
+353:                0b11 => Bmp3xxPowerMode.Normal,
+(remaining: 0b00 / 0b11 = PWR_CTRL mode field values, decoded right under the table 42 citation; 1000.0 = microseconds per millisecond)

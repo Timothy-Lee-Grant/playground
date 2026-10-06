@@ -1,0 +1,206 @@
+Step 0 audit: plan v2 vs. upstream code and the BMP390/BMP388 datasheets (no edits to the fork)
+Date: 2026-10-05 ~21:40-21:46 (local)
+dotnet --version: 10.0.302 inside iot/ (global.json 9.0.306 + rollForward major); 11.0.100-preview.5 outside the repo
+Fork commit: HEAD = main @ 1eb0b2f6 (unchanged; read-only audit). Audited against upstream/main @ 336e4696 (2026-10-05)
+Commands: git -C iot fetch upstream; git show upstream/main:<path>; curl (datasheets) ; pypdf 6.x text extraction
+          in scratch/new-device-binding/tools/.venv (pypdf + cryptography + pillow; outside the fork)
+
+================================================================================================
+1. Workspace and disk
+================================================================================================
+df -h ~             : /dev/disk3s5 228Gi size, 145Gi used, 37Gi avail (80%)
+git -C iot remote -v:
+  origin   git@github.com:Timothy-Lee-Grant/iot.git (fetch/push)
+  upstream https://github.com/dotnet/iot.git (fetch)
+  upstream PUSH_DISABLED_use_origin_your_fork (push)          -> placeholder, OK
+upstream/main       : 336e4696337771a5fc79865d44dfb148779f979c  "[main] Update dependencies from dotnet/arcade (#2563)" 2026-10-05
+git status          : clean, on main @ 1eb0b2f6
+
+================================================================================================
+2. Nobody else is doing it
+================================================================================================
+git ls-tree -d --name-only upstream/main src/devices/ | grep -i bmp  ->  src/devices/Bmp180   (plus Bmxx80, name has no "bmp")
+PR heads >= 2600 (git ls-remote upstream 'refs/pull/*/head'):
+  2601 2603 2605 2606 2607 2608 2609 2610 2611 2612 2613 2616
+For each: fetched into refs/remotes/pr/N, git diff --name-only --diff-filter=A $(merge-base upstream/main pr/N) pr/N | grep -ci bmp3
+  pr/2601 0  2026-08-27 Potential fix for pull request finding
+  pr/2603 0  2026-09-17 Add missing using directive for System namespace
+  pr/2605 0  2026-09-04 Address libgpiod review feedback
+  pr/2606 0  2026-09-09 Bump the dotnet-runtime group with 7 updates
+  pr/2607 0  2026-09-16 Bump the skiasharp group with 2 updates
+  pr/2608 0  2026-10-04 Fix inconsistent parameter name
+  pr/2609 0  2026-09-30 Bump the skiasharp group with 2 updates
+  pr/2610 0  2026-10-05 Copilot-assisted signature check against the C++ headers
+  pr/2611 0  2026-10-02 Initialize GpioButton.IsPressed from the pin level   (Timothy's)
+  pr/2612 0  2026-10-03 Fix signed readings and shunt ADC setting in Ina219
+  pr/2613 0  2026-10-03 Fix DCMotor and ExplorerHat disposal with a shared GpioController
+  pr/2616 0  2026-10-03 New binding: Cap1208 capacitive touch sensor
+Refs deleted afterwards (git for-each-ref refs/remotes/pr | wc -l -> 0).
+RESULT: no competing BMP3xx work in PRs. (Upstream *issues* not searched: Timothy's part, Step 17.)
+
+================================================================================================
+3. Conventions (quoted from upstream/main)
+================================================================================================
+[OK] src/devices/Ina236/Ina236.csproj:
+       <TargetFrameworks>$(DefaultBindingTfms)</TargetFrameworks>
+       <EnableDefaultItems>false</EnableDefaultItems>
+       <Compile Include="*.cs" />  <None Include="README.md" />
+     Files: Ina236.cs, Ina236.csproj, Ina236.sln, Ina236OperatingMode.cs, Ina236Register.cs, README.md, category.txt,
+            samples/Ina236.Samples.csproj, samples/Program.cs, tests/Ina236.Tests.csproj, tests/Ina236Tests.cs,
+            tests/SimulatedIna236.cs
+[OK] Ina236.Tests.csproj: <TargetFramework>$(DefaultSampleTfms)</TargetFramework> <LangVersion>10</LangVersion>
+       <IsPackable>false</IsPackable> <GenerateDocumentationFile>false</GenerateDocumentationFile>
+       <ProjectReference Include="../Ina236.csproj" />
+     NOTE: LangVersion 10 in Ina236 tests. Collection expressions ([..]) need C# 12; don't copy LangVersion 10 blindly.
+[OK] Ina236.Samples.csproj: <OutputType>Exe</OutputType> <TargetFramework>$(DefaultSampleTfms)</TargetFramework>
+       (also references Arduino.csproj: Ina236-specific, we don't need it)
+[OK] Ina236.sln: projects samples/, Ina236.Samples, Ina236, Arduino, tests/, Ina236.Tests, ..\Common\Common.csproj
+[OK] category.txt: one per line. Bmp180 = "barometer altimeter thermometer"; Bmxx80 adds voc/gas/hygrometer
+[OK] src/devices/Directory.Build.props: DefaultBindingTfms/DefaultSampleTfms/DefaultTestTfms = net8.0;
+       <Nullable>enable</Nullable>; ProjectReference to System.Device.Model and Common for every project except
+       those two; ProjectReference to System.Device.Gpio for all
+[OK] build.proj:16  <UnitTestProjects Include="$(MSBuildThisFileDirectory)src\devices\**\*.Tests.csproj" />
+[OK] eng/Compilers.props:
+       11 <_IsTestProject Condition="$(MSBuildProjectName.EndsWith('Tests', ...))">true</_IsTestProject>
+       12 <NoWarn Condition="'$(_IsTestProject)' != 'true'">$(NoWarn.Replace("1591", ""))</NoWarn> (CS1591 enforced)
+       13 <GenerateDocumentationFile Condition="'$(_IsTestProject)' != 'true'">true</GenerateDocumentationFile>
+       14 <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+[OK] eng/stylecop.json copyrightText:
+       "Licensed to the .NET Foundation under one or more agreements.\nThe .NET Foundation licenses this file to you under the MIT license."
+       usingDirectivesPlacement outsideNamespace; documentInternalElements false
+[OK] eng/Versions.external.props:12 <ItemGroup Condition="$(MSBuildProjectName.EndsWith('Tests'))">
+       Moq 4.20.72, xunit 2.9.3 (+core/assert/runner.visualstudio 3.1.5), Shouldly 4.3.0
+[OK] src/Iot.Device.Bindings/Iot.Device.Bindings.csproj:
+       10 <DeviceRoot>$(MSBuildThisFileDirectory)../devices/</DeviceRoot>
+       22 <_ExcludeProjectReferences Include="$(DeviceRoot)**/samples/**/*.csproj" />
+       23 <_ExcludeProjectReferences Include="$(DeviceRoot)**/tests/**/*.csproj" />
+[OK] Vcnl4040.csproj: RootNamespace Iot.Device.Vcnl4040; AssemblyAttribute InternalsVisibleToAttribute
+       <_Parameter1>$(AssemblyName).Tests</_Parameter1>   (matches plan Step 5)
+[OK] I2cSimulatedDeviceBase (src/devices/Common/System/Device/I2c/):
+       public I2cSimulatedDeviceBase(I2cConnectionSettings settings)
+       public Dictionary<byte, RegisterBase> RegisterMap
+       protected byte CurrentRegister { get; set; }
+       public abstract void WriteRead(byte[] inputBuffer, byte[] outputBuffer)   (all other bus calls funnel here)
+       public record class Register<T> : RegisterBase  ctor (initialValue, Func<T,T>? updateHandler, Func<T,T>? readHandler)
+       protected override void Dispose(bool) sets a private _disposed; NO public IsDisposed -> our fake must override
+       Dispose(bool) to record disposal (for Dispose_DisposesI2cDevice test)
+[OK, with notes] Bmxx80 sibling public API (U2/U5):
+       Bmxx80Base: PressureSampling, TemperatureSampling {get;set}; Reset() (no attribute); abstract TryReadTemperature,
+                   TryReadPressure; Dispose()/protected virtual Dispose(bool) disposes _i2cDevice (U7 OK)
+       Bmx280Base: [Interface("Represents the core functionality of the Bmx280 family.")]
+                   const DefaultI2cAddress = 0x77, SecondaryI2cAddress = 0x76
+                   [Property] FilterMode, [Property] StandbyTime
+                   [Telemetry("Temperature")] TryReadTemperature, [Telemetry("Pressure")] TryReadPressure
+                   [Property("PowerMode")] ReadPowerMode(), [Property("PowerMode")] SetPowerMode(...)   <- NOT [Command]
+                   TryReadAltitude(Pressure, out Length), TryReadAltitude(out Length) -> WeatherHelper.MeanSeaLevelPressure
+                   [Telemetry("Status")] ReadStatus()
+                   [Property("MeasurementDuration")] virtual int GetMeasurementDuration()
+       Bmp280:     public class (not sealed); Read()/ReadAsync() live HERE, not on the base:
+                   if ReadPowerMode() != Normal { SetPowerMode(Forced); Thread.Sleep/Task.Delay(GetMeasurementDuration()) }
+                   then TryRead*Core, null for failures -> Bmp280ReadResult(Temperature?, Pressure?)  (U5 semantics confirmed)
+       Bmxx80Base ctor: wrong id -> throw new IOException($"Unable to find a chip with id {deviceId}. Found one with id {readSignature}")
+                   (decimal, not hex; U8 type OK, message format differs slightly from plan's hex)
+       Bmp280ReadResult: public class, ctor (Temperature?, Pressure?), get-only Temperature?, Pressure?
+[OK] WeatherHelper: MeanSeaLevelPressure (101325 Pa); CalculateAltitude(Pressure, Pressure, Temperature);
+       CalculateBarometricPressure(...) overloads exist
+[OK] Ina236: ObjectDisposedException.ThrowIf(_i2cDevice == null, typeof(I2cDevice)); Dispose() -> _i2cDevice?.Dispose()
+
+================================================================================================
+4. Datasheet audit
+================================================================================================
+Sources (downloaded to scratch/new-device-binding/tools/datasheets/, not into the fork):
+  BMP390: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp390-ds002.pdf
+          BST-BMP390-DS002-07, Revision 1.7 (03/2021), 59 pages, sha256 8dcf0f74449cb1627e865c7f24d328b76c204d8b9621091ede8c6869fb393e48
+  BMP388: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp388-ds001.pdf
+          BST-BMP388-DS001-07, Revision 1.7 (11/2020), 59 pages, sha256 1ab21c90aaf15542751be6b970d53dc57893a4ea948f45f9fe96e844789fdec2
+Citations below are to the BMP390 datasheet ("DS390 §x, p.y"); the BMP388's section numbers are shifted by 1-2.
+
+--- 4a. Brief §3, row by row ---
+[✔] I2C address 0x76 (SDO=GND) / 0x77 (SDO=VDDIO); SDO must not float          DS390 §5.2, p.40
+[✔] CHIP_ID reg 0x00: 0x60 BMP390                                               DS390 Table 25, p.30
+    CHIP_ID 0x50 BMP388                                                         DS388 memory map, p.~30
+[✔] ERR_REG 0x02: bit0 fatal_err, bit1 cmd_err (clear on read), bit2 conf_err (clear on read;
+    DS390 adds "only working in normal mode")                                   DS390 §4.3.3 Table 28, p.31
+[✔] STATUS 0x03: bit4 cmd_rdy, bit5 drdy_press, bit6 drdy_temp.
+    NOTE: drdy_* "gets reset when one ... DATA register is read out"           DS390 §4.3.4 Table 29, p.32
+[✔] DATA 0x04..0x09 = press xlsb/lsb/msb, temp xlsb/lsb/msb, unsigned 24-bit   DS390 §4.3.5-4.3.6, p.32; §3.10 p.27
+[✔] PWR_CTRL 0x1B: bit0 press_en, bit1 temp_en, bits5..4 mode 00 sleep / 01,10 forced / 11 normal
+                                                                                DS390 §4.3.17 Table 42, p.36; §3.3 Table 5 p.11
+[✔] OSR 0x1C: bits2..0 osr_p, bits5..3 osr_t, 000=x1 .. 101=x32               DS390 §4.3.18 Table 43, p.37
+[✔] ODR 0x1D: bits4..0 odr_sel, 0..17 (others saturate at 17), prescaler 2^n, 0x00=200 Hz/5 ms .. 0x11=655.36 s
+    (Table 45 has a typo: prescaler "127" for 0x07; period 640 ms is consistent with 128)
+                                                                                DS390 §4.3.19-4.3.20 Tables 44-45, p.37-38
+[✔] CONFIG 0x1F: bits3..1 iir_filter: 000 coef_0 (bypass), 001 coef_1, 010 coef_3, 011 coef_7, 100 coef_15,
+    101 coef_31, 110 coef_63, 111 coef_127. (Table 8 p.16 labels the noise columns "off 2 4 8 ... 128" =
+    coefficient+1; the REGISTER table is authoritative and matches O7's names)  DS390 §4.3.21 Table 46, p.39
+[✔] Calibration: 21 bytes 0x31..0x45 (calibration area 0x30..0x57), types:
+    T1 u16 0x31, T2 u16 0x33, T3 s8 0x35, P1 s16 0x36, P2 s16 0x38, P3 s8 0x3A, P4 s8 0x3B, P5 u16 0x3C,
+    P6 u16 0x3E, P7 s8 0x40, P8 s8 0x41, P9 s16 0x42, P10 s8 0x44, P11 s8 0x45 (little-endian)
+                                                                                DS390 §3.11.1 Table 24, p.28
+[~] CMD 0x7E: 0xB6 softreset ("all user configuration settings are overwritten with their default state");
+    reads as 0x00; 0xB0 fifo_flush.                                             DS390 §4.3.23 Tables 47-48, p.39
+    "wait ~2 ms": NOT stated for soft reset. The datasheet gives: tstartup = 2 ms max "time to first
+    communication after VDD/VDDIO > 1.8 V" (Table 2, p.8); and "Completion of the power-on-reset or soft
+    reset is indicated by the bit por_detected" = EVENT 0x10 bit0, clear-on-read (§3.2 p.11; §4.3.8 Table 33 p.33).
+    cmd_rdy (STATUS bit4) = "Command decoder is ready to accept a new command" (Table 29) -> check before CMD.
+[✘] Measurement time. Brief: 234 + (392 + 2^osr_p*2000) + (313 + 2^osr_t*2000) µs (Bosch driver constants).
+    DS390 §3.9.2 p.27:  Tconv = 234 µs + press_en*(392 µs + 2^osr_p * 2020 µs) + temp_en*(163 µs + 2^osr_t * 2020 µs)
+    DS388 §3.9.2:       Tconv = 234 µs + press_en*(392 µs + 2^osr_p * 2000 µs) + temp_en*(313 µs + 2^osr_t * 2000 µs)
+    DS390 revision history p.57: rev 1.1 (28.01.2020) "Changed the T_conv equation".
+    Check vs Table 23 (both datasheets, identical): x1/x1 typ 4.82 ms, max 5.70 ms.
+       DS390 formula x1/x1 = 4829 µs (matches 4.82); DS388 formula = 4939 µs.
+    Table 23 (typ/max ms): x1x1 4.82/5.70 · x2x1 6.84/7.96 · x4x1 10.88/12.48 · x8x1 18.69/21.53 ·
+                           x16x2 37.14/41.89 · x32x2 69.46/78.09
+    -> The chips' formulas differ by datasheet. ceil(ms) is 5 for x1/x1 with either.
+[✔] Valid range: operating -40..+85 °C, 300..1250 hPa (both chips)            DS390 Table 1 p.3, Table 2 p.7
+    Full-accuracy range: 0..65 °C, 300..1250 hPa.
+
+--- 4b. Extra facts (plan Step 0.4) ---
+[✔] Reset values (DS390 Table 25, p.30): OSR 0x02 (osr_p x4, osr_t x1), ODR 0x00, CONFIG 0x00, PWR_CTRL 0x00,
+    CMD 0x00, ERR 0x00, STATUS 0x00, EVENT 0x01,
+    DATA_0..2 = 00 00 80, DATA_3..5 = 00 00 80  -> raw pressure = raw temperature = 0x800000 (8,388,608) after reset.
+    Same in DS388.
+    !! U5 caveat: a real raw temperature near room temperature is also ~8.3-8.4 million (T1 typ ~27000*2^8 ≈ 6.9M,
+       T2 ≈ 1.8e-5 °C/LSB -> 25 °C ≈ 6.9M+1.4M), so a genuine reading can, rarely, equal exactly 0x800000.
+       Checking BOTH raw values == 0x800000 makes a false "no data" vanishingly rare and harmless (next read OK).
+       (estimate, unverified until E1 gives real raw values)
+[✔] Burst read required for consistency (data shadowing; "strongly recommended to use a burst read",
+    "must use burst reads if he does not synchronize ...") DS390 §3.10-3.10.1, p.27
+[✔] Register auto-increment on READ: "Multiple byte read (using a single register address which is
+    auto-incremented)" DS390 §5 p.40; §5.2.2 p.41
+[!] I2C multi-byte WRITE is "using pairs of register addresses and register data" (DS390 §5 p.40; §5.2.1 p.41),
+    NOT auto-increment. -> Plan Step 8's fake ("following input bytes are written to consecutive registers")
+    would model the chip wrongly. Binding writes one register per transaction anyway.
+[✔] Power-on: sleep mode after POR (§3.2, §3.3.1 p.11); tstartup 2 ms (Table 2 p.8)
+[✔] Forced mode returns to sleep automatically: "When the measurement is finished, the sensor returns to sleep
+    mode ... For a next measurement, forced mode needs to be selected again." DS390 §3.3.2 p.11
+[?] Mode transitions: §3.3.4 p.13 "mode change commands that are not legal are ignored"; Figure 4 is vector art
+    (arrows not extractable without a renderer). Which transitions are legal (esp. Normal -> Forced) is
+    UNVERIFIED. Mode switch during a measurement is delayed until the measurement ends.
+[✔] Normal-mode rule: max normal-mode rate from the measurement time: odr_sel >= ceil(log2(200 Hz / f_max)),
+    f_max = 1e6 / Tconv[µs] (DS390 §3.9.2 p.27); conf_err reports a bad configuration in normal mode (Table 28).
+    O5 note: x1/x1 at 200 Hz: typ 4.82 ms < 5 ms OK, but MAX 5.70 ms > 5 ms. Whether the chip raises conf_err
+    for this is UNVERIFIED (defaults are written in sleep mode, where conf_err isn't evaluated).
+[✔] IIR filter is reset when CONFIG is written, when press_en/temp_en go 1->0, and on sleep->normal (§3.4.3 p.15)
+[✔] Calibration scaling (DS390 Appendix §8.4 p.55), identical in DS388 §9.x:
+    T1 = NVM/2^-8 (= x2^8) · T2 = /2^30 · T3 = /2^48 · P1 = (NVM-2^14)/2^20 · P2 = (NVM-2^14)/2^29 ·
+    P3 = /2^32 · P4 = /2^37 · P5 = NVM/2^-3 (= x2^3) · P6 = /2^6 · P7 = /2^8 · P8 = /2^15 · P9 = /2^48 ·
+    P10 = /2^48 · P11 = /2^65     -> all 14 match plan Step 7's table
+[✔] Compensation (Appendix §8.5-8.6 p.55-56): t = (rawT - T1)*T2 + (rawT - T1)^2 * T3;
+    p = (P5 + P6 t + P7 t^2 + P8 t^3) + rawP*(P1 + P2 t + P3 t^2 + P4 t^3) + rawP^2*(P9 + P10 t) + rawP^3 * P11
+    -> matches plan Step 7's description. (The appendix is itself Bosch C code with float temporaries;
+       clean room: implement from the formulas, own names, no "partial_data" etc.)
+[✔] BMP388 vs BMP390, section-by-section text diff (PWR_CTRL..CONFIG, STATUS, calibration table, compensation,
+    I2C write, forced mode, shadowing): only numbering/whitespace differs. Real differences:
+      chip ID 0x50 vs 0x60 · T_conv constants (above) · REV_ID 0x01 exists only on BMP390 ·
+      EVENT bit1 itf_act_pt only on BMP390 · conf_err "only working in normal mode" wording only in DS390 ·
+      sleep/forced current slightly different (3.4 vs 3.2 µA @1 Hz). Ranges identical.
+
+================================================================================================
+5. Toolchain
+================================================================================================
+dotnet --list-sdks: 9.0.303, 10.0.302, 11.0.100-preview.5.26302.115
+  inside iot/: global.json {"version":"9.0.306","allowPrerelease":true,"rollForward":"major"} -> resolves to 10.0.302
+dotnet --list-runtimes: Microsoft.NETCore.App 8.0.13, 9.0.7, 10.0.10  (net8.0 tests can run)
+cc --version: Apple clang version 17.0.0 (clang-1700.0.13.5)  -> Step 4 Bosch oracle can be built
+python3 --version: Python 3.14.0                                -> Step 4 formulas.py

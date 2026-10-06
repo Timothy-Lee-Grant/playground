@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/Users/timothygrant/Desktop/projects/exercises/iot/new-device-binding/shared",
+      "/Users/timothygrant/Desktop/projects/exercises/iot/new-device-binding/sample"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git -C * push*)",
+      "Bash(gh:*)"
+    ],
+    "ask": [
+      "Bash(git commit:*)",
+      "Bash(git -C * commit*)",
+      "Bash(git rebase:*)",
+      "Bash(git -C * rebase*)",
+      "Bash(git reset:*)",
+      "Bash(git -C * reset*)",
+      "Bash(git clean:*)",
+      "Bash(git -C * clean*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(rsync:*)"
+    ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
+}

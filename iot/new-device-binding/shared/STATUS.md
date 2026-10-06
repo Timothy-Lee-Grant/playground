@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Date | 2026-10-05 (folder created; plan v1 written by desktop; no CLI session yet) |
+| Date | 2026-10-05 (plan v2 by desktop: shared-clone layout; no CLI session yet) |
 | Mode | P |
 | Plan step | waiting for G1 |
 | Branch / last commit | — |
 | Tests | — |
-| Needs Timothy / desktop | approve the plan (G1) |
+| Needs Timothy / desktop | run `exercises/iot/cli-project/setup.sh`; approve the plan (G1) |

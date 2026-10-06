@@ -1,16 +1,23 @@
 # 00 — Start here (operating agreement for the CLI)
 
 > Owner: desktop Claude. **CLI: read-only.** If something here is wrong or unclear, say so in your session report.
-> Auto-loaded every session via the workspace `CLAUDE.md`.
+> Loaded at the start of every session by `/issue new-device-binding` (project layout since 2026-10-05: the
+> project root `CLAUDE.md` and `ISSUES.md` come first; where they and this file disagree about the clone or
+> branches, they win).
 
 ## 1. Where you are
 
 ```
-~/Desktop/projects/oss-work/iot-bmp3xx/     ← you start here (not a git repo)
-├── CLAUDE.md          our instructions (never copy into the fork)
-├── shared/            the mailbox between you and desktop Claude (a symlink into Timothy's `exercises` repo)
-└── develop/iot/       Timothy's fork of dotnet/iot: the ONLY place code changes
+~/Desktop/projects/open_source/iot_project/     ← you start here (not a git repo)
+├── CLAUDE.md, ISSUES.md, persona.md, .claude/   project-wide instructions, registry, commands (symlinks)
+├── iot/                    THE clone, shared by every issue: origin = Timothy's fork, upstream = dotnet/iot
+│                           (fetch only). The ONLY place code changes. This issue's branch: feature/bmp3xx-binding
+├── new-device-binding/     THIS issue's mailbox (a symlink to exercises/iot/new-device-binding/shared)
+└── scratch/new-device-binding/   tools/ (reference oracle) and publish/ (builds for the Pi); not versioned
 ```
+
+**Path conventions in this file and in `plan.md`:** `shared/` means this issue's mailbox, i.e. the project-root
+folder `new-device-binding/`. `develop/iot` (in older entries) means the clone `iot/`.
 
 You are the **developer** half of a two-session setup. A separate desktop Claude (the **planner**) talks things
 through with Timothy, researches upstream, and writes the brief and your work orders. You never talk to it
@@ -37,9 +44,10 @@ How to explain things to him:
 
 ## 3. Hard rules
 
-1. **Never** `git push`, open or edit PRs, or comment on GitHub. Timothy does all of that himself. (Settings deny
-   `git push` and `gh`.)
-2. **Only edit** files in `develop/`, the files you own in `shared/` (§5), and the places §7 allows. Never put anything from `shared/` or
+1. **Pushing:** only `git -C iot push origin feature/bmp3xx-binding` (Timothy's fork), only when Timothy says so
+   (settings ask each time); never `--force`; **never to `upstream`** (denied, and its push URL is disabled). Never
+   open or edit PRs, never comment on GitHub (`gh` is denied). Other branches: see the project `CLAUDE.md` rules.
+2. **Only edit** files in `iot/` (on this issue's branch), the files you own in `shared/` (§5), and the places §7 allows. Never put anything from `shared/` or
    this `CLAUDE.md` into the fork.
 3. **Timothy must understand every line** that could reach an upstream PR. Follow the current mode in `04`.
 4. **Don't make design decisions.** When a choice matters (API behavior, approach, scope), lay out the options with
@@ -54,9 +62,9 @@ How to explain things to him:
 ## 4. Every session
 
 **Start:**
-1. Read `shared/STATUS.md`, then `shared/02-decisions.md`. (00, 01, 03, 04 should be auto-loaded by the workspace
-   `CLAUDE.md`; if they aren't in your context, read them too and say so in the report.)
-2. Check the fork: `git -C develop/iot status` and current branch.
+1. `/issue new-device-binding` does this: reads `00`–`04`, `STATUS.md`, `02-decisions.md`, the newest session
+   report and `plan.md`, checks the clone, and switches to `feature/bmp3xx-binding` if that's safe.
+2. If `/issue` wasn't run, do the same by hand (see `.claude/commands/issue.md` in the project root).
 3. Tell Timothy in 3–6 lines: where things stand, the work order you'll work on, and the mode you'll use. **Wait for
    his go-ahead.**
 
@@ -110,14 +118,14 @@ verified/unverified; save evidence; ask before commits.
 
 - **There is no upstream issue.** The plan's Step 17 creates a proposal issue (Timothy posts it). Until then, never
   refer to an issue number in code or commits.
-- **Extra places you may write** (and nowhere else outside `develop/` and your `shared/` files):
+- **Extra places you may write** (and nowhere else outside `iot/` and your `shared/` files):
   - `../sample/` in the issue folder (i.e. `~/Desktop/projects/exercises/iot/new-device-binding/sample/`): the E1
     hardware probe and its evidence (plan Step 3). It's in the settings' `additionalDirectories`.
-  - `~/Desktop/projects/oss-work/iot-bmp3xx/tools/` (the reference oracle, plan Step 4) and
-    `~/Desktop/projects/oss-work/iot-bmp3xx/publish/` (build output for the Pi).
+  - `~/Desktop/projects/open_source/iot_project/scratch/new-device-binding/tools/` (the reference oracle, plan
+    Step 4) and `…/scratch/new-device-binding/publish/` (build output for the Pi).
 - **Clean room.** Bosch's `BMP3_SensorAPI` lives only in `tools/`. Nothing from it (code, comments, internal names,
-  structure) goes into `develop/`. Only numbers (test vectors) cross over. The binding is written from the datasheet.
+  structure) goes into the clone `iot/`. Only numbers (test vectors) cross over. The binding is written from the datasheet.
 - **The Raspberry Pi.** Hardware steps need Timothy's hands. `ssh`, `scp` and `rsync` always ask first (settings);
   use them only if Timothy has set up access (plan Step 2.5). Never change anything on the Pi beyond running our
   published programs in a folder he names.
-- **Fork scope.** Only `src/devices/Bmp3xx/**` may change in the fork. Anything else is a **CHANGE REQUEST**.
+- **Fork scope.** Only `src/devices/Bmp3xx/**` may change on `feature/bmp3xx-binding`. Anything else is a **CHANGE REQUEST**.

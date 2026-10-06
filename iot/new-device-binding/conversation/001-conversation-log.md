@@ -5,7 +5,7 @@
 
 ## Where we are now *(updated in place)*
 
-**Stage:** plan v1 written (2026-10-05); **waiting for G1.** Last entry: #2. Open decisions: everything in `shared/plan.md` Stage 2 (Timothy may change any before G1); when to start upstream activity (#2611 still open). Next: Timothy reviews the plan and grants G1; buys the sensor; runs `workspace/setup.sh`.
+**Stage:** plan v2 (shared-clone layout, 2026-10-05); **waiting for G1.** Last entry: #3. Open decisions: everything in `shared/plan.md` Stage 2 (Timothy may change any before G1); when to start upstream activity (#2611 still open). Next: Timothy runs `iot/cli-project/setup.sh`, reviews the plan and grants G1; buys the sensor.
 
 ## Index
 
@@ -13,6 +13,7 @@
 |---|---|---|
 | 1 | 2026-10-04 | 🧭 Investigation: should I add a sensor binding, which device |
 | 2 | 2026-10-05 | 📍 Implementation blueprint (`shared/plan.md` v1) and mode-P scaffolding |
+| 3 | 2026-10-05 | 🧭 Shared-clone project layout; pushing to the fork allowed (plan v2) |
 
 ---
 
@@ -46,4 +47,24 @@ Timothy asked for a very detailed implementation guide that the CLI will follow 
 - Verified while writing: Ina236/Bmxx80/Vcnl4040 project patterns, `build.proj` test glob, analyzer/docs rules,
   `I2cSimulatedDeviceBase` API, `Bmp280` public API (all on `main` @ `95384e7`). Chip facts are **unverified against
   the datasheet**; plan Step 0 does that.
+
+## #3 · 2026-10-05 · 🧭 Decision: one shared clone, one folder per issue; push to the fork
+
+Timothy's new design for developing on open-source projects: **one folder per upstream project**
+(`~/Desktop/projects/open_source/iot_project/`) holding **one clone** of his fork (`iot/`), a project-level
+`CLAUDE.md`, `persona.md`, and **one folder per issue that is a symlink to that issue's `shared/` mailbox**. He tells
+the CLI which issue at start; it loads that issue's context and switches to its branch. #2328 stays exactly as it
+is (old workspace `oss-work/iot-2328/`, PR #2611 awaiting review). He wants to push the binding's commits to his
+fork for safekeeping and study, without announcing anything upstream yet.
+
+**Done (desktop):**
+- New `iot/cli-project/` (versioned config): `CLAUDE.md` (shared-clone rules), `issues.md` (issue ↔ branch registry;
+  `fix/2328-gpiobutton-initial-state` and `main` protected), `.claude/settings.json` (push asks; upstream push,
+  force-push, pushes/checkouts of `fix/2328*` and `main`, `gh` denied), `.claude/commands/issue.md` (`/issue <folder>`:
+  load context, switch branch only if safe) and `handoff.md`, `setup.sh` (adds `upstream` fetch-only with a
+  disabled push URL; creates the symlinks; never touches branches), `README.md`.
+- This issue: `00-start-here.md` §1/§3/§4/§7, `01-brief.md`, `plan.md` → **v2** (paths; Step 14 adds pushing to
+  `origin`), `CLAUDE.md`, STATUS, D3/D4 in `02-decisions.md`. `workspace/` marked superseded.
+- Not changed: `ai-workflow/templates/` still scaffold the old per-issue workspace (see the note in
+  `ai-workflow/README.md`); #2328's folder.
 

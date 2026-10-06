@@ -36,9 +36,10 @@ issue (plan Step 17) gets linked here once posted.
 | `lectures/` | Lecture 1 "The binding, end to end" (plan Stage 6); `lectures/audio/` only if asked | desktop |
 | `report/` | Lab report, if wanted | desktop |
 
-**CLI workspace:** `~/Desktop/projects/oss-work/iot-bmp3xx/` (fork at `develop/iot`, origin
-`Timothy-Lee-Grant/iot`, upstream `dotnet/iot`; oracle tools at `tools/`, publish output at `publish/`).
-Timothy already has a fork (used for #2328), so setup only needs: `bash iot/new-device-binding/workspace/setup.sh`.
+**CLI project (since 2026-10-05):** the shared-clone layout, config in [`../cli-project/`](../cli-project/). The CLI
+starts in `~/Desktop/projects/open_source/iot_project/` (clone at `iot/`, origin = `Timothy-Lee-Grant/iot` over SSH,
+upstream = `dotnet/iot` fetch-only), this issue's mailbox appears there as `new-device-binding/`, scratch at
+`scratch/new-device-binding/`. Branch: `feature/bmp3xx-binding`. `workspace/` here is superseded.
 
 ## Upstream facts (checked 2026-10-04, `main` @ `95384e7`)
 
@@ -51,13 +52,14 @@ Timothy already has a fork (used for #2328), so setup only needs: `bash iot/new-
 ## Status
 
 - 2026-10-04: investigation written (001–003). Recommendation: BMP390/BMP388 as the next ⚓ anchor.
+- 2026-10-05: moved to the shared-clone project layout (`../cli-project/`); plan v2 (paths + pushing to the fork allowed).
 - 2026-10-05: folder scaffolded for mode P (templates); `shared/01-brief.md` and `shared/plan.md` v1 written. **Waiting for G1.** No hardware bought yet; nothing posted upstream. PR #2611 still open (one-active-PR rule applies to Step 17+).
 
 ## Next steps
 
 1. Timothy reads `shared/plan.md` Stage 2 + 3.4, changes anything he wants, grants **G1**.
 2. Buy the sensor (Adafruit #4816 or a BMP388 board) if not done; confirm the Pi model.
-3. `bash iot/new-device-binding/workspace/setup.sh`, then `cd ~/Desktop/projects/oss-work/iot-bmp3xx && claude`.
+3. `bash ~/Desktop/projects/exercises/iot/cli-project/setup.sh`, then `cd ~/Desktop/projects/open_source/iot_project && claude` and `/issue new-device-binding`.
 
 ## Desktop duties after each CLI session
 

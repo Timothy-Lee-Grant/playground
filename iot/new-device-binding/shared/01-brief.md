@@ -50,6 +50,9 @@ Source: Bosch reference driver `bmp3_defs.h` / `bmp3.c` @ `db4cf8e`. Datasheet: 
 
 ## 4. Constraints
 
+- **Shared clone (since 2026-10-05):** `iot_project/iot/` serves every issue. Work only on `feature/bmp3xx-binding`;
+  never touch `fix/2328-gpiobutton-initial-state` (PR #2611) or `main`. Push only to `origin` (Timothy's fork), with his OK.
+
 - **Only one active upstream PR at a time:** Timothy's PR #2611 (iot#2328) is open. Nothing upstream (G2) until
   he says #2611 is settled or he chooses to go ahead anyway.
 - **Clean room:** Bosch's driver is BSD-3. It may be built and run **outside the fork** as a test oracle, but
@@ -67,11 +70,11 @@ Source: Bosch reference driver `bmp3_defs.h` / `bmp3.c` @ `db4cf8e`. Datasheet: 
 ## 5. How to build and test (worked on macOS for iot#2328, SDK 10.0.302)
 
 ```bash
-cd develop/iot
+cd iot      # from ~/Desktop/projects/open_source/iot_project (the shared clone)
 dotnet build src/devices/Bmp3xx/tests/ --no-incremental      # builds binding + tests; 0 warnings required
 dotnet test  src/devices/Bmp3xx/tests/ --no-build
 dotnet build src/devices/Bmp3xx/samples/
-dotnet publish src/devices/Bmp3xx/samples/ -c Release -r linux-arm64 --self-contained -o /tmp/bmp3xx-sample   # for the Pi (linux-arm on a 32-bit OS)
+dotnet publish src/devices/Bmp3xx/samples/ -c Release -r linux-arm64 --self-contained -o ../scratch/new-device-binding/publish/sample   # for the Pi (linux-arm on a 32-bit OS)
 ```
 
 The full `./build.sh` (30–45 min, Arcade feeds) is **not** needed; CI runs it on the PR.

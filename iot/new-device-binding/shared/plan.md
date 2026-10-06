@@ -11,7 +11,14 @@
 > posted upstream · **G3** after the teach-back → PR may be opened. Between gates the CLI works autonomously.
 > Deviation rules: `00-start-here.md` §6. The standard sequence is `exercises/ai-workflow/default-workflow.md`.
 >
-> **Plan version:** v1 (2026-10-05, desktop). Status: **waiting for G1.**
+> **Plan version:** v2 (2026-10-05, desktop). Status: **waiting for G1.**
+> v2 = v1 adapted to the **project layout** (Timothy, 2026-10-05): one shared clone at
+> `~/Desktop/projects/open_source/iot_project/iot/`, this mailbox at `iot_project/new-device-binding/`, scratch at
+> `iot_project/scratch/new-device-binding/`; and **pushing the branch to Timothy's fork is now allowed** (with his
+> OK, never upstream, never force). No step's content changed otherwise.
+>
+> **Paths below:** `iot/` = the shared clone (run commands from the project root); `shared/` = this mailbox;
+> `$SAMPLE` = `~/Desktop/projects/exercises/iot/new-device-binding/sample`; `$SCRATCH` = `~/Desktop/projects/open_source/iot_project/scratch/new-device-binding`.
 
 ---
 
@@ -62,15 +69,19 @@ categorized list in `src/devices/README.md` (generated).
 
 ## 1.6 Constraints the CLI must respect throughout
 
-1. **Clean room.** Bosch's `BMP3_SensorAPI` (BSD-3) may be cloned, built and run **outside `develop/`** as an
+1. **Clean room.** Bosch's `BMP3_SensorAPI` (BSD-3) may be cloned, built and run **outside the clone `iot/`** (in `$SCRATCH/tools/`) as an
    oracle (Step 4). Nothing from it (code, comments, names of internal functions, structure) is copied into the
    fork. The binding is written from the **datasheet**; XML remarks cite datasheet sections.
 2. **Only `src/devices/Bmp3xx/**` changes in the fork.** If anything else seems to need changing (Common, a shared
    helper, a repo-level file), stop: **CHANGE REQUEST**.
-3. **No upstream activity.** Never push, never use `gh`, never comment. Timothy owns G2/G3 and all public actions.
+3. **No upstream activity.** Never push to `upstream`, never use `gh`, never comment, never open a PR. Pushing
+   `feature/bmp3xx-binding` to **origin** (Timothy's fork) is allowed when Timothy says so: it notifies nobody
+   upstream. Timothy owns G2/G3 and all public actions.
 4. **Hardware steps need Timothy's hands** (wiring, power, and possibly running commands on the Pi). Prepare exact
    commands; run over `ssh`/`scp` only if Timothy has set that up and approves each command.
-5. **One active PR:** #2611 is still open. This branch stays local until Timothy decides otherwise.
+5. **One active PR:** #2611 is still open. This branch lives only locally and on Timothy's fork until he decides
+   otherwise. **Never touch `fix/2328-gpiobutton-initial-state`** (protected in `ISSUES.md`), and never switch
+   branches with uncommitted work.
 
 ---
 
@@ -137,7 +148,7 @@ Phase F  Timothy's part        Steps 16–20: lecture, proposal issue (G2), teac
 | **0** | Plan review against the code and the datasheet (no edits) | CLI | Stage 5 entry + `evidence/001-step0-audit.txt` | G1 |
 | **1** | Branch `feature/bmp3xx-binding`; build + test `Ina236` as a toolchain baseline | CLI | `evidence/002-baseline.txt` | G1 |
 | **2** | Pi ready: model/OS, I2C on, wiring, `i2cdetect` shows the sensor; decide ssh vs manual | **Timothy** + CLI | `evidence/003-pi-i2cdetect.txt` | — |
-| **3** | E1 probe (outside fork): chip ID, calibration bytes, raw data from the real chip | CLI writes, Timothy/ssh runs | `../sample/evidence/001-E1-probe.txt` + copy in `evidence/004-E1-probe.txt` | — |
+| **3** | E1 probe (outside fork): chip ID, calibration bytes, raw data from the real chip | CLI writes, Timothy/ssh runs | `$SAMPLE/evidence/001-E1-probe.txt` + copy in `evidence/004-E1-probe.txt` | — |
 | **4** | Reference oracle (outside fork) → test vectors | CLI | `evidence/005-oracle-vectors.txt` | — |
 | **5** | Scaffold `src/devices/Bmp3xx/` (projects, sln, empty types); builds clean | CLI | `evidence/006-scaffold-build.txt` | — |
 | **6** | Register map + enums, with XML docs | CLI | build clean (in `007`) | — |
@@ -173,12 +184,13 @@ so, a **CHANGE REQUEST**, then continue with unaffected steps.
 
 **Do:**
 
-1. **Workspace and disk:** `df -h ~` (the Mac has little free space; record it). `git -C develop/iot remote -v`
-   (origin = `Timothy-Lee-Grant/iot`, upstream = `dotnet/iot`). `git -C develop/iot fetch upstream`.
+1. **Workspace and disk:** `df -h ~` (the Mac has little free space; record it). `git -C iot remote -v`
+   (origin = `git@github.com:Timothy-Lee-Grant/iot.git`; upstream fetch = `dotnet/iot`, upstream **push** = the
+   disabled placeholder set by `setup.sh`: if it's a real URL, stop). `git -C iot fetch upstream`.
    Record `upstream/main`'s hash.
-2. **Nobody else is doing it:** `git -C develop/iot ls-tree -d upstream/main src/devices/ | grep -i bmp` (only
+2. **Nobody else is doing it:** `git -C iot ls-tree -d upstream/main src/devices/ | grep -i bmp` (only
    `Bmp180`, `Bmxx80` expected). Then list PR heads newer than #2600 and check whether any adds a BMP3 folder:
-   `git -C develop/iot ls-remote upstream 'refs/pull/*/head'`, fetch heads ≥ 2600 into `refs/remotes/pr/*`, and
+   `git -C iot ls-remote upstream 'refs/pull/*/head'`, fetch heads ≥ 2600 into `refs/remotes/pr/*`, and
    `git diff --name-only --diff-filter=A <merge-base> pr/N | grep -i bmp3`. Delete those refs afterwards.
 3. **Conventions are as described:** confirm each and quote the line in the audit file:
    - `src/devices/Ina236/Ina236.csproj`, `Ina236.sln`, `category.txt`, `tests/Ina236.Tests.csproj`, `samples/*.csproj`
@@ -218,7 +230,8 @@ Stage 2 decision · the conventions differ from what Steps 5–11 assume.
 
 **Do:**
 ```bash
-cd develop/iot
+git -C iot status --porcelain          # must be empty before switching (project CLAUDE.md rule 2)
+cd iot
 git switch -c feature/bmp3xx-binding upstream/main
 dotnet build src/devices/Ina236/tests/ --no-incremental
 dotnet test  src/devices/Ina236/tests/ --no-build
@@ -254,12 +267,12 @@ dotnet test  src/devices/Ina236/tests/ --no-build
 
 **Goal:** read the real chip's bytes before writing the binding. These become test vectors and catch datasheet misreadings early.
 
-**Where:** `../sample/E1-probe/` (the issue folder's `sample/`, reachable from the workspace via the settings'
-`additionalDirectories`). **Not** in `develop/`.
+**Where:** `$SAMPLE/E1-probe/` (the issue folder's `sample/` in `exercises`, reachable via the settings'
+`additionalDirectories`). **Not** in the clone `iot/`.
 
 **Do:**
-1. `dotnet new console -o ../sample/E1-probe -f net8.0`, then pin the package version (no `global.json` needed):
-   `dotnet add ../sample/E1-probe package System.Device.Gpio --version 4.2.0` (the public NuGet; no repo build needed).
+1. `dotnet new console -o $SAMPLE/E1-probe -f net8.0`, then pin the package version (no `global.json` needed):
+   `dotnet add $SAMPLE/E1-probe package System.Device.Gpio --version 4.2.0` (the public NuGet; no repo build needed).
 2. `Program.cs` uses only `I2cDevice.Create(new I2cConnectionSettings(1, address))` with the address as a
    command-line argument (default `0x77`), and prints, as hex:
    - chip ID (`WriteRead([0x00], 1 byte)`), `ERR` (`0x02`), `STATUS` (`0x03`)
@@ -268,12 +281,13 @@ dotnet test  src/devices/Ina236/tests/ --no-build
      read `STATUS`, burst-read 6 bytes from `0x04`, print raw pressure and raw temperature as 24-bit integers
    - finally write `PWR_CTRL` = `0x00` (sleep)
    Keep it ~60 lines, no abstractions: it's a probe, not product code.
-3. Publish: `dotnet publish ../sample/E1-probe -c Release -r <rid from Step 2> --self-contained -o ../sample/E1-probe/out`
+3. Publish: `dotnet publish $SAMPLE/E1-probe -c Release -r <rid from Step 2> --self-contained -o $SCRATCH/publish/E1-probe`
+   (binaries go to scratch, never into `exercises`)
 4. Run on the Pi (route from Step 2.5): `./E1-probe 0x77`. Also note the room temperature and the time, and
    look up the nearest weather station's **station pressure** (not sea-level) at that time.
-5. Write `../sample/README.md` (what E1 is, how to run it) if it doesn't exist.
+5. Write `$SAMPLE/README.md` (what E1 is, how to run it) if it doesn't exist.
 
-**Output:** `../sample/evidence/001-E1-probe.txt` (header: date, Pi model, OS, rid, package version, command) and the
+**Output:** `$SAMPLE/evidence/001-E1-probe.txt` (header: date, Pi model, OS, rid, package version, command) and the
 same content as `evidence/004-E1-probe.txt` for the CLI's own record.
 **Done when:** chip ID is `0x60` (BMP390) or `0x50` (BMP388), 21 calibration bytes are printed, and the 5 raw
 readings are stable (small variation).
@@ -285,7 +299,7 @@ readings are stable (small variation).
 
 **Goal:** independent expected values for the compensation, so the tests check the math against something other than our own code.
 
-**Where:** `~/Desktop/projects/oss-work/iot-bmp3xx/tools/bmp3-oracle/` (the workspace root, not `develop/`, not `shared/`).
+**Where:** `$SCRATCH/tools/bmp3-oracle/` (outside the clone, outside `exercises`). Below, `tools/` means `$SCRATCH/tools/`.
 
 **Do:**
 1. `git clone --depth 1 https://github.com/boschsensortec/BMP3_SensorAPI tools/bmp3-oracle/BMP3_SensorAPI` and
@@ -603,7 +617,7 @@ Out-of-range behavior (U4); TryRead* in sleep mode (U5)
 ### Step 13 — The binding on real hardware
 
 **Do:**
-1. `dotnet publish src/devices/Bmp3xx/samples/ -c Release -r <rid> --self-contained -o ~/Desktop/projects/oss-work/iot-bmp3xx/publish/sample`
+1. `dotnet publish src/devices/Bmp3xx/samples/ -c Release -r <rid> --self-contained -o $SCRATCH/publish/sample`
 2. Run on the Pi via the Step 2.5 route for ~1 minute.
 3. Record alongside: room temperature (any thermometer), nearest weather station's **station pressure** (or
    sea-level pressure + known elevation → convert with `WeatherHelper.CalculateBarometricPressure`), time.
@@ -628,6 +642,12 @@ Per O8, on `feature/bmp3xx-binding`:
 4. `Add Bmp3xx sample, README and category`
 
 No AI trailers (rule 7 in `00-start-here.md`). Show Timothy `git diff --stat` for each before asking.
+
+**Push to the fork (new in v2):** when Timothy says so, `git -C iot push -u origin feature/bmp3xx-binding`
+(first time; afterwards `git -C iot push origin feature/bmp3xx-binding`). Settings ask every time. This is a
+backup and lets him browse the code on GitHub; it is **not** a PR and notifies nobody. Never force-push: if a
+pushed commit must change, add a new commit, or stop and let Timothy decide. Pushing earlier (e.g. after each
+green step) is fine whenever he asks.
 **Output:** `git log --oneline upstream/main..HEAD` in the Stage 5 entry.
 
 ---
@@ -655,7 +675,7 @@ One Stage 5 entry, written for a reader who wasn't watching:
   our proposal becomes a plan revision (v2) and a CLI step.
 - **18 Teach-back (G3)** — on lecture 1's checklist; desktop analyzes per root `CLAUDE.md` §10.4.
 - **19 PR** — CLI drafts the description (Stage 7 skeleton); desktop reviews; Timothy reruns Step 12 himself,
-  pushes `feature/bmp3xx-binding` to his fork, opens the PR **with "Fixes #<proposal issue>"** as the first line.
+  makes sure `feature/bmp3xx-binding` is pushed to his fork, opens the PR **with "Fixes #<proposal issue>"** as the first line.
 - **20 Review** — each comment becomes a numbered step in Stage 8; AI drafts code and replies; Timothy posts.
 
 ## 3.4 Stage 3 Discussion Subsection

@@ -131,8 +131,11 @@ Timothy's machine is a MacBook Air, so anything needing real GPIO needs a Raspbe
 
 ## 6. Where the fork lives
 
-Forks are cloned **outside this repo**, one CLI workspace per issue (see [`../ai-workflow/README.md`](../ai-workflow/README.md)):
+Forks are cloned **outside this repo**. **Since 2026-10-05: one shared clone for all new iot work** at
+`~/Desktop/projects/open_source/iot_project/iot/`, one mailbox link per issue, config in [`cli-project/`](cli-project/)
+(registry: [`cli-project/issues.md`](cli-project/issues.md)). Older issues keep their own workspace:
 
 | Issue | Workspace | Fork clone |
 |---|---|---|
-| #2328 | `~/Desktop/projects/oss-work/iot-2328/` | `develop/iot` (origin `Timothy-Lee-Grant/iot`, upstream `dotnet/iot`); created by the issue's `workspace/setup.sh` |
+| #2328 (old layout, left intact) | `~/Desktop/projects/oss-work/iot-2328/` | `develop/iot` (origin `Timothy-Lee-Grant/iot`, upstream `dotnet/iot`); created by the issue's `workspace/setup.sh` |
+| new binding (BMP3xx) | `~/Desktop/projects/open_source/iot_project/` (shared-clone layout) | `iot/` (origin `Timothy-Lee-Grant/iot` via SSH, upstream `dotnet/iot` fetch-only); branch `feature/bmp3xx-binding` |

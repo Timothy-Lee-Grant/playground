@@ -1,0 +1,54 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/Users/timothygrant/Desktop/projects/exercises/iot/new-device-binding/shared",
+      "/Users/timothygrant/Desktop/projects/exercises/iot/new-device-binding/sample"
+    ],
+    "deny": [
+      "Bash(gh:*)",
+      "Bash(git push upstream*)",
+      "Bash(git -C * push upstream*)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f*)",
+      "Bash(git -C * push --force*)",
+      "Bash(git -C * push -f*)",
+      "Bash(git -C * push * --force*)",
+      "Bash(git -C * push * -f*)",
+      "Bash(git push *main*)",
+      "Bash(git -C * push *main*)",
+      "Bash(git push *fix/2328*)",
+      "Bash(git -C * push *fix/2328*)",
+      "Bash(git checkout *fix/2328*)",
+      "Bash(git -C * checkout *fix/2328*)",
+      "Bash(git switch *fix/2328*)",
+      "Bash(git -C * switch *fix/2328*)",
+      "Bash(git remote set-url*)",
+      "Bash(git -C * remote set-url*)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(git -C * push*)",
+      "Bash(git commit*)",
+      "Bash(git -C * commit*)",
+      "Bash(git rebase*)",
+      "Bash(git -C * rebase*)",
+      "Bash(git reset*)",
+      "Bash(git -C * reset*)",
+      "Bash(git clean*)",
+      "Bash(git -C * clean*)",
+      "Bash(git stash*)",
+      "Bash(git -C * stash*)",
+      "Bash(git branch -D*)",
+      "Bash(git -C * branch -D*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(rsync:*)"
+    ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
+}

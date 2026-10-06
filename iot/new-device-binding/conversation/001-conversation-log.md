@@ -5,7 +5,7 @@
 
 ## Where we are now *(updated in place)*
 
-**Stage:** G1 open. CLI session 001 (2026-10-05) did Steps 0–11 without hardware: binding, 65/65 tests, sample + README; branch `feature/bmp3xx-binding` pushed to the fork @ `8d23d3d4`. **Open:** U4 gap (pressure when only temperature is out of range), fritzing diagram, hardware Steps 2/3/13 (no sensor yet). **Next:** CLI Step 12 (hygiene) + Step 15 (implementation summary); then desktop writes lecture 1. Last entry: #4.
+**Stage:** G1 open. CLI session 001 (2026-10-05) did Steps 0–11 without hardware: binding, 65/65 tests, sample + README; branch `feature/bmp3xx-binding` pushed to the fork @ `8d23d3d4`. **Open:** U4 gap (pressure when only temperature is out of range), fritzing diagram, hardware Steps 2/3/13 (no sensor yet). **Next:** CLI Step 12 (hygiene) + Step 15 (implementation summary); then desktop writes lecture 1. Last entry: #5. Lecture 1 written (`lectures/001-…`), not yet read.
 
 ## Index
 
@@ -15,6 +15,7 @@
 | 2 | 2026-10-05 | 📍 Implementation blueprint (`shared/plan.md` v1) and mode-P scaffolding |
 | 3 | 2026-10-05 | 🧭 Shared-clone project layout; pushing to the fork allowed (plan v2) |
 | 4 | 2026-10-05 | 📍 CLI session 001: Steps 0–11 done without hardware; pushed to the fork |
+| 5 | 2026-10-05 | 📍 Lecture 1 written: the binding end to end, testing with and without hardware |
 
 ---
 
@@ -84,4 +85,12 @@ Read from `shared/STATUS.md`, `shared/sessions/001-2026-10-05.md` and the Stage 
   200 Hz ×1/×1.
 - **Open for Timothy:** U4 gap; fritzing diagram. Desktop recommendation in the chat reply of 2026-10-05.
 - **CLI process note:** it ran a path-only `git reset` to preview a commit (rule says ask first); reported it itself.
+
+## #5 · 2026-10-05 · 📍 Lecture 1: the binding end to end
+
+Timothy asked for a lecture on what was done, how it works, and how to test it with and without hardware.
+Written from the code on his fork (`feature/bmp3xx-binding` @ `8d23d3d4`, fetched from GitHub) and the session-001
+report: [`lectures/001-the-bmp3xx-binding-end-to-end.md`](../lectures/001-the-bmp3xx-binding-end-to-end.md).
+Written before Steps 12/15 (plan Stage 6 assumed after); covers the plan's spec plus the hardware test ladder and
+§9 "what only hardware can tell us" (biggest risk: `CommandReady` idle value → constructor would throw).
 

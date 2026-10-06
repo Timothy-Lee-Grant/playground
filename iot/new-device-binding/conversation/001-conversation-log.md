@@ -5,7 +5,7 @@
 
 ## Where we are now *(updated in place)*
 
-**Stage:** plan v2 (shared-clone layout, 2026-10-05); **waiting for G1.** Last entry: #3. Open decisions: everything in `shared/plan.md` Stage 2 (Timothy may change any before G1); when to start upstream activity (#2611 still open). Next: Timothy runs `iot/cli-project/setup.sh`, reviews the plan and grants G1; buys the sensor.
+**Stage:** G1 open. CLI session 001 (2026-10-05) did Steps 0–11 without hardware: binding, 65/65 tests, sample + README; branch `feature/bmp3xx-binding` pushed to the fork @ `8d23d3d4`. **Open:** U4 gap (pressure when only temperature is out of range), fritzing diagram, hardware Steps 2/3/13 (no sensor yet). **Next:** CLI Step 12 (hygiene) + Step 15 (implementation summary); then desktop writes lecture 1. Last entry: #4.
 
 ## Index
 
@@ -14,6 +14,7 @@
 | 1 | 2026-10-04 | 🧭 Investigation: should I add a sensor binding, which device |
 | 2 | 2026-10-05 | 📍 Implementation blueprint (`shared/plan.md` v1) and mode-P scaffolding |
 | 3 | 2026-10-05 | 🧭 Shared-clone project layout; pushing to the fork allowed (plan v2) |
+| 4 | 2026-10-05 | 📍 CLI session 001: Steps 0–11 done without hardware; pushed to the fork |
 
 ---
 
@@ -67,4 +68,20 @@ fork for safekeeping and study, without announcing anything upstream yet.
   `origin`), `CLAUDE.md`, STATUS, D3/D4 in `02-decisions.md`. `workspace/` marked superseded.
 - Not changed: `ai-workflow/templates/` still scaffold the old per-issue workspace (see the note in
   `ai-workflow/README.md`); #2328's folder.
+
+## #4 · 2026-10-05 · 📍 CLI session 001: the binding exists (Steps 0–11, no hardware)
+
+Read from `shared/STATUS.md`, `shared/sessions/001-2026-10-05.md` and the Stage 5 entries in `shared/plan.md`.
+
+- **Built:** `src/devices/Bmp3xx/` (14 source files, sample, README, `category.txt`, 4 test files), nothing outside it.
+  5 commits on `upstream/main` @ `336e4696`, last `8d23d3d4`; pushed to `origin` (Timothy pushed). 65/65 tests,
+  0 warnings, suite 0.8 s. Evidence `001`–`013` (`003`/`004` reserved for hardware).
+- **Decisions:** D5 G1 granted; D6 output-data-rate values named by period (`Period5Milliseconds` …).
+- **Datasheet findings:** BMP390 timing formula differs from BMP388's (implemented per chip); writes are
+  (register, value) pairs; forced mode self-returns to sleep; soft-reset completion via EVENT `por_detected`;
+  reset value `0x800000` collides with a room-temperature reading → "both fields" rule.
+- **Unverified until hardware:** legal mode transitions, `cmd_rdy` when idle, `conf_err` timing, Normal mode at
+  200 Hz ×1/×1.
+- **Open for Timothy:** U4 gap; fritzing diagram. Desktop recommendation in the chat reply of 2026-10-05.
+- **CLI process note:** it ran a path-only `git reset` to preview a commit (rule says ask first); reported it itself.
 

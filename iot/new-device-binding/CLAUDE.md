@@ -52,6 +52,7 @@ upstream = `dotnet/iot` fetch-only), this issue's mailbox appears there as `new-
 ## Status
 
 - 2026-10-04: investigation written (001–003). Recommendation: BMP390/BMP388 as the next ⚓ anchor.
+- 2026-10-05: **CLI session 001**: G1 granted; Steps 0–11 done without hardware (binding + 65/65 tests + sample + README), branch pushed to the fork @ `8d23d3d4`. Next: Step 12, 15; hardware steps wait for the sensor.
 - 2026-10-05: moved to the shared-clone project layout (`../cli-project/`); plan v2 (paths + pushing to the fork allowed).
 - 2026-10-05: folder scaffolded for mode P (templates); `shared/01-brief.md` and `shared/plan.md` v1 written. **Waiting for G1.** No hardware bought yet; nothing posted upstream. PR #2611 still open (one-active-PR rule applies to Step 17+).
 

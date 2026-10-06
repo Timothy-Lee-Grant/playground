@@ -77,6 +77,7 @@ One row per CLI session. Newest at the bottom.
 | Date | Issue | Work order | Mode(s) | U | S | Q | E | Note (what worked, what didn't) |
 |---|---|---|---|---|---|---|---|---|
 | 2026-09-30 | iot#2328 | WO-1 (1–3) | M0 | – | – | – | – | Mostly a setup test; scores skipped. Tour came as one monologue, no questions from Timothy → CLI now told to chunk + checkpoint |
+| 2026-10-05 | iot new binding (BMP3xx) | plan Steps 0–11 (session 001) | P | – | – | – | – | First session in the shared-clone layout. 4 commits' worth of work in one session; Timothy approved every step and commit promptly and committed/pushed twice himself, but asked **no questions**: the checkpoints worked as status, not teaching. Understanding has to come from lecture 1 + teach-back |
 
 ---
 

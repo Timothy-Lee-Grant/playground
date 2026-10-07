@@ -25,10 +25,10 @@
 
 ## #1 · 2026-09-30 · 📍 Folder set up
 
-- In-depth briefing: [scouting conversation #1 §2](../../../scouting/conversation/001-conversation-log.md).
+- In-depth briefing: [scouting conversation #1 §2](../../../../scouting/conversation/001-conversation-log.md).
 - Second issue on the desktop + CLI workflow. Its main work (rewriting 7 test files) is repetitive, which makes it
   a natural place to try **M3 (Delegate + review)** and compare it with the M1/M2 sessions on iot#2328
-  ([`ai-workflow/interaction-modes.md`](../../../ai-workflow/interaction-modes.md)).
+  ([`ai-workflow/interaction-modes.md`](../../../../ai-workflow/interaction-modes.md)).
 
 ## #2 · 2026-10-01 · 🧭 Decision: mode P, and the old clone gets audited first
 
@@ -40,3 +40,12 @@
 - `workspace/setup.sh` won't clone over it: it leaves an existing `develop/yarp` alone, and stops if it finds a
   repo elsewhere under `develop/`.
 - Plan: [`../shared/plan.md`](../shared/plan.md) v1. Next: G1.
+
+## #3 · 2026-10-07 · 📍 Moved into the YARP project setup
+
+- Timothy redesigned the CLI setup around his new SSD: one YARP project folder with static entry files, one `link`
+  symlink to `exercises/yarp/`, and a dynamic `current_context/` (operating manual, layout, branch registry, his
+  profile, YARP competency, lecture specs, procedures, git hooks). This folder moved to `yarp/issues/`.
+- The old per-issue workspace (`workspace/`, `oss-work/yarp-275/`) is retired; the branch gets recreated in the new
+  clone; G1 stands. Details: plan Stage 3 discussion, `[Desktop — 2026_10_07_07_30]`.
+

@@ -1,5 +1,12 @@
 # 00 — Start here (operating agreement for the CLI)
 
+> **2026-10-07 (desktop): the layout in §1 and the session steps in §4 are superseded** by the YARP project setup.
+> Follow `link/current_context/01-operating-manual.md` for layout, startup, branches, commits and the autonomous
+> run (it wins on those). Read `develop/yarp` below as `yarp/` (the project's clone). What still applies from this
+> file: §2 (who Timothy is; fuller version in `current_context/05-timothy.md`) and the issue-specific points.
+> Changed vs. this file: after G1 the CLI **commits on its own** (messages without issue references), and pushes to
+> origin only with Timothy's OK.
+
 > Owner: desktop Claude. **CLI: read-only.** If something here is wrong or unclear, say so in your session report.
 > Auto-loaded every session via the workspace `CLAUDE.md`.
 

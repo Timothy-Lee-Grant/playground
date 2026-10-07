@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# 1. Only the fork (origin) may receive pushes; never dotnet/yarp.
+# 2. Only branches listed under Active in current_context/04-branches.md may be pushed; never main.
+# 3. Every commit being pushed must pass check-message.sh.
+remote="$1"; url="$2"
+here="$(dirname "$(readlink -f "$0")")"
+case "$url" in
+  *dotnet/yarp*|*microsoft/reverse-proxy*|*PUSH_DISABLED*) echo "Blocked: pushes go to your fork (origin) only, never to dotnet/yarp." >&2; exit 1;;
+esac
+[ "$remote" = "origin" ] || { echo "Blocked: push only to 'origin' (your fork), not '$remote'." >&2; exit 1; }
+active="$("$here/active-branches.sh")" || exit 1
+zero=0000000000000000000000000000000000000000
+tmp=$(mktemp)
+while read -r local_ref local_sha remote_ref remote_sha; do
+  name="${remote_ref#refs/heads/}"
+  if [ "$name" = "main" ] || ! printf '%s\n' "$active" | grep -qxF "$name"; then
+    echo "Blocked: '$name' isn't an Active branch in current_context/04-branches.md (main is never pushed from here)." >&2
+    rm -f "$tmp"; exit 1
+  fi
+  [ "$local_sha" = "$zero" ] && continue          # deleting a remote branch: nothing to scan
+  if [ "$remote_sha" = "$zero" ]; then range="$local_sha --not --remotes=origin --remotes=upstream"
+  else range="$remote_sha..$local_sha"; fi
+  for c in $(git rev-list $range); do
+    git log -1 --format=%B "$c" > "$tmp"
+    if ! "$here/check-message.sh" "$tmp"; then
+      echo "  in commit $(git log -1 --format='%h %s' "$c")" >&2; rm -f "$tmp"; exit 1
+    fi
+  done
+done
+rm -f "$tmp"
+exit 0

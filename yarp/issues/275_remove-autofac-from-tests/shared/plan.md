@@ -89,6 +89,21 @@ teach back; push and open the PR. Everything else he may watch or skip.
 
 **[Timothy — 2026_10_02_00_27] G1: plan approved; go ahead with Step 1.** (Said to the CLI in session 1; recorded by CLI.)
 
+**[Desktop — 2026_10_07_07_30] Moved to the YARP project setup (Timothy's design, 2026-10-07)**
+
+- This folder moved to `exercises/yarp/issues/275_remove-autofac-from-tests/`. The CLI now starts in the YARP project
+  folder (on Timothy's SSD) with one clone at `yarp/` and reaches this folder as `link/issues/275_…/`. General rules:
+  `link/current_context/01-operating-manual.md`.
+- **The clone is new.** The old `oss-work/yarp-275/develop/yarp` clone had no unpushed work as of 2026-10-02 (Timothy
+  re-checks during setup). `remove-autofac-275` was created there but had no commits, so it is **recreated** from
+  `upstream/main` in the new clone when work resumes (registry row says "not created yet"). The local
+  `archive/pre-275-2026-10` branch isn't needed: it was a copy of `origin/tgrant/exploration-phase`, which is still on
+  the fork (protected in the registry). Acceptance criterion 4 is met by that origin branch.
+- **G1 stands** (granted 2026-10-02). Next: Step 2 (build + baseline), then Steps 3–10 as an autonomous run. Changes
+  to how the run works: no go-ahead between steps; the CLI commits on its own at the O3 commit points (Step 9 no
+  longer waits for approval, except a message that would reference an issue or person); Step 11 (lecture 1) and a
+  new "testing it yourself" lecture are written on request (`/lecture change`, `/lecture testing`).
+
 # Stage 4 (Upstream Communication)
 
 **[Desktop — 2026_10_01_19_45] Draft comment v1** (from scouting 002; revised after lecture 1 to say the change is

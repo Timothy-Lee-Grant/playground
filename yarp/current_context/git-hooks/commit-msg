@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Wired in with: git -C yarp config core.hooksPath <project>/link/current_context/git-hooks
+# Rejects commit messages that could notify or link to anything on GitHub (see check-message.sh).
+exec "$(dirname "$(readlink -f "$0")")/check-message.sh" "$1"

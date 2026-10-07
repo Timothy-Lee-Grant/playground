@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Only allow commits on branches registered under "Active" in current_context/04-branches.md. Never on main.
+here="$(dirname "$(readlink -f "$0")")"
+branch="$(git symbolic-ref --short -q HEAD)" || { echo "Blocked: detached HEAD. Switch to the issue's branch first." >&2; exit 1; }
+if [ "$branch" = "main" ]; then
+  echo "Blocked: never commit on main (it mirrors upstream/main)." >&2; exit 1
+fi
+if ! "$here/active-branches.sh" | grep -qxF "$branch"; then
+  echo "Blocked: branch '$branch' isn't listed under Active in current_context/04-branches.md." >&2
+  echo "Register it there first (what it's for, base, status), then commit." >&2
+  exit 1
+fi
+exit 0

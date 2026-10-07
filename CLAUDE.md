@@ -44,8 +44,9 @@ exercises/  (GitHub: Timothy-Lee-Grant/playground)
 │   ├── CLAUDE.md           orientation for the dotnet/iot project itself
 │   ├── iot_concepts/       lecture notes on IoT / dotnet/iot concepts, reusable across issues
 │   └── 2403_<slug>/        one folder per issue: README, CLAUDE, conversation/, sample/, report/
-├── yarp/                   dotnet/yarp work ────────────── LEGACY LAYOUT (v1), see §3; don't restructure
-│   └── 1764_websocket_idle_timeout/
+├── yarp/                   dotnet/yarp work ─── PROJECT SETUP (2026-10-07): current_context/, static_files/, issues/,
+│   │                       shared/, yarp_scouting/; see yarp/CLAUDE.md. Desktop + CLI both update current_context/
+│   └── 1764_websocket_idle_timeout/   legacy v1 layout, see §3; don't restructure
 ├── lectures/               cross-cutting lectures not tied to one upstream project (+ the YARP-era lecture)
 │   └── 000-pattern-catalog.md   cross-repo catalog of design patterns and practices seen in the code
 ├── hand_experiments/       older hand-written practice projects (Kafka, Redis, Rx, RabbitMQ, ...)

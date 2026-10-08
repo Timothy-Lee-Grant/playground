@@ -1,0 +1,37 @@
+# 011 · All test projects, Release configuration (as CI uses), branch vs main
+# Date: 2026-10-07 22:39 PDT
+# dotnet --version (repo-local): 11.0.100-rc.1.26420.103
+# Branch HEAD: 1665ced5 (remove-autofac-275); main = upstream/main 2aa3d835
+# Command (from yarp/): ./build.sh --configuration Release --rebuild --test
+
+## A. main (git switch --detach upstream/main; same command; then git switch remove-autofac-275)
+    0 Error(s)
+    0 Warning(s)
+Yarp.Application.Tests_net9.0_arm64 ::  total: 27  failed: 0  succeeded: 27  skipped: 0 
+Yarp.Kubernetes.Tests_net8.0_arm64 ::  total: 93  failed: 0  succeeded: 91  skipped: 2 
+Yarp.Kubernetes.Tests_net9.0_arm64 ::  total: 93  failed: 0  succeeded: 91  skipped: 2 
+Yarp.ReverseProxy.FunctionalTests_net8.0_arm64 ::  total: 269  failed: 0  succeeded: 235  skipped: 34 
+Yarp.ReverseProxy.FunctionalTests_net9.0_arm64 ::  total: 269  failed: 0  succeeded: 235  skipped: 34 
+Yarp.ReverseProxy.Tests_net8.0_arm64 ::  total: 1989  failed: 0  succeeded: 1989  skipped: 0 
+Yarp.ReverseProxy.Tests_net9.0_arm64 ::  total: 1989  failed: 0  succeeded: 1989  skipped: 0 
+
+## B. remove-autofac-275  (exit 0, 19s including rebuild)
+    0 Error(s)
+    0 Warning(s)
+Yarp.Application.Tests_net9.0_arm64 ::  total: 27  failed: 0  succeeded: 27  skipped: 0 
+Yarp.Kubernetes.Tests_net8.0_arm64 ::  total: 93  failed: 0  succeeded: 91  skipped: 2 
+Yarp.Kubernetes.Tests_net9.0_arm64 ::  total: 93  failed: 0  succeeded: 91  skipped: 2 
+Yarp.ReverseProxy.FunctionalTests_net8.0_arm64 ::  total: 269  failed: 0  succeeded: 235  skipped: 34 
+Yarp.ReverseProxy.FunctionalTests_net9.0_arm64 ::  total: 269  failed: 0  succeeded: 235  skipped: 34 
+Yarp.ReverseProxy.Tests_net8.0_arm64 ::  total: 1989  failed: 0  succeeded: 1989  skipped: 0 
+Yarp.ReverseProxy.Tests_net9.0_arm64 ::  total: 1989  failed: 0  succeeded: 1989  skipped: 0 
+
+## C. Result: identical totals, passes and skips in every project and framework.
+## (Closes the open item in Step 7: Kubernetes/Functional skips now verified equal to main.)
+
+## D. Pitfalls met while getting here
+- ./test.sh --configuration Release with no prior Release build: exit 1 in 1s, 7x 'XUnit : error : Tests failed',
+  log says '.../Release/net9.0/Yarp.ReverseProxy.Tests: No such file or directory'. test.sh = eng/common/build.sh --test:
+  it runs tests, it does not build. Fix: ./build.sh --configuration Release --test (restore + build + test).
+- dotnet test --filter-method Invoke_Works -> total: 0 (silently). Needs the full name:
+  --filter-method Yarp.ReverseProxy.Forwarder.Tests.ForwarderMiddlewareTests.Invoke_Works -> total: 1, passed.

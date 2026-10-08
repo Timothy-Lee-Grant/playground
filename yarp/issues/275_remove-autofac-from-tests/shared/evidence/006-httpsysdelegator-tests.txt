@@ -1,0 +1,182 @@
+# 006 · Step 6: HttpSysDelegatorTests (mocks wired into mocks)
+# Date: 2026-10-07 22:29 PDT
+# dotnet --version (repo-local): 11.0.100-rc.1.26420.103
+# Clone HEAD: 4526c6a5 on remove-autofac-275 + uncommitted Step 6 edit (diff below)
+
+## 1. Green, same count as baseline (002: 17 per framework -> 34)
+    0 Warning(s)
+    0 Error(s)
+HttpSysDelegatorTests ::  total: 34  failed: 0  succeeded: 34  skipped: 0 
+
+## 2. O2 proofs (builds --no-incremental). Each break cuts one mock chain:
+##  a) delegator ignores IServer.Features -> only the IServer -> IFeatureCollection -> _serverDelegationFeature chain can notice
+##  b) delegator never calls IHttpSysRequestDelegationFeature.DelegateRequest -> only _requestDelegationFeature.Verify can notice
+
+### O2: Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests
+Break in src/ReverseProxy/Delegation/HttpSysDelegator.cs:
+-        _serverDelegationFeature = server.Features?.Get<IServerDelegationFeature>();
++        _serverDelegationFeature = null;
+$ dotnet build (test project) --no-incremental && dotnet test --project <abs> --no-build --filter-class Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests
+Build succeeded.
+  failed: 18
+  skipped: 0
+  succeeded: 16
+  total: 34
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DelegationFails_Verify503StatusAndErrorFeatureSet (1ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DelegationFails_Verify503StatusAndErrorFeatureSet (3ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DestinationChanged_VerifyRequestDelegated (0ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DestinationChanged_VerifyRequestDelegated (3ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DestinationRemoved_VerifyRequestDelegated (0ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DestinationRemoved_VerifyRequestDelegated (5ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_VerifyRequestDelegated (0ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.OnClusterAdd_MultipleDelegationDestination_VerifyRulesCreated (4ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.OnClusterAdd_MultipleDelegationDestinationWithSameQueue_VerifyRuleCreated (0ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.OnClusterAdded_SingleDelegationDestination_RuleCreated (0ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.OnClusterChanged_NoRuleExists_NewRuleAdded_VerifyNewRuleCreated (0ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.OnClusterChanged_RuleExists_NewRuleAdded_VerifyNewRuleCreated (1ms)
+Reverted. git diff -- src/ReverseProxy/Delegation/HttpSysDelegator.cs: 0 changed lines (expect 0)
+Build succeeded.
+
+### O2: Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests
+Break in src/ReverseProxy/Delegation/HttpSysDelegator.cs:
+-                requestDelegationFeature.DelegateRequest(queueState.Rule);
++                // requestDelegationFeature.DelegateRequest(queueState.Rule);
+$ dotnet build (test project) --no-incremental && dotnet test --project <abs> --no-build --filter-class Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests
+Build succeeded.
+  failed: 8
+  skipped: 0
+  succeeded: 26
+  total: 34
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DelegationFails_Verify503StatusAndErrorFeatureSet (1ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DelegationFails_Verify503StatusAndErrorFeatureSet (2ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DestinationChanged_VerifyRequestDelegated (0ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DestinationChanged_VerifyRequestDelegated (5ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DestinationRemoved_VerifyRequestDelegated (0ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_DestinationRemoved_VerifyRequestDelegated (5ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests.DelegateRequest_VerifyRequestDelegated (0ms)
+Reverted. git diff -- src/ReverseProxy/Delegation/HttpSysDelegator.cs: 0 changed lines (expect 0)
+Build succeeded.
+
+## 3. Diff
+diff --git a/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs b/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs
+index c21d9645..138ecf72 100644
+--- a/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs
++++ b/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs
+@@ -7,35 +7,39 @@ using Microsoft.AspNetCore.Hosting.Server;
+ using Microsoft.AspNetCore.Http;
+ using Microsoft.AspNetCore.Http.Features;
+ using Microsoft.AspNetCore.Server.HttpSys;
++using Microsoft.Extensions.Logging.Abstractions;
+ using Moq;
+ using Xunit;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Forwarder;
+ using Yarp.ReverseProxy.Model;
+-using Yarp.Tests.Common;
+ 
+ namespace Yarp.ReverseProxy.Delegation;
+ 
+-public class HttpSysDelegatorTests : TestAutoMockBase
++public class HttpSysDelegatorTests
+ {
+     private readonly HttpSysDelegator _delegator;
+     private readonly IClusterChangeListener _changeListener;
+     private readonly DefaultHttpContext _context;
++    private readonly Mock<IServerDelegationFeature> _serverDelegationFeature = new();
++    private readonly Mock<IHttpSysRequestDelegationFeature> _requestDelegationFeature = new();
+ 
+     public HttpSysDelegatorTests()
+     {
+-        Mock<IFeatureCollection>()
++        var serverFeatures = new Mock<IFeatureCollection>();
++        serverFeatures
+             .Setup(m => m.Get<IServerDelegationFeature>())
+-            .Returns(Mock<IServerDelegationFeature>().Object);
+-        Mock<IServer>()
++            .Returns(_serverDelegationFeature.Object);
++        var server = new Mock<IServer>();
++        server
+             .SetupGet(p => p.Features)
+-            .Returns(Mock<IFeatureCollection>().Object);
++            .Returns(serverFeatures.Object);
+ 
+-        _delegator = Create<HttpSysDelegator>();
++        _delegator = new HttpSysDelegator(server.Object, NullLogger<HttpSysDelegator>.Instance);
+         _changeListener = _delegator;
+ 
+         _context = new DefaultHttpContext();
+-        _context.Features.Set(Mock<IHttpSysRequestDelegationFeature>().Object);
++        _context.Features.Set(_requestDelegationFeature.Object);
+ 
+         SetupCanDelegate(true);
+     }
+@@ -122,7 +126,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+     {
+         var destination = CreateDestination("dest1", "queue1");
+         var cluster = CreateCluster("cluster1", destination);
+-        Mock<IServerDelegationFeature>()
++        _serverDelegationFeature
+             .Setup(x => x.CreateDelegationRule(It.IsAny<string>(), It.IsAny<string>()))
+             .Throws<Exception>()
+             .Verifiable();
+@@ -139,7 +143,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+     {
+         var destination = CreateDestination("dest1", "queue1");
+         var cluster = CreateCluster("cluster1", destination);
+-        Mock<IHttpSysRequestDelegationFeature>()
++        _requestDelegationFeature
+             .Setup(x => x.DelegateRequest(It.IsAny<DelegationRule>()))
+             .Throws<Exception>()
+             .Verifiable();
+@@ -216,7 +220,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+         var cluster = CreateCluster("cluster1", destination1);
+ 
+         _changeListener.OnClusterAdded(cluster);
+-        Mock<IServerDelegationFeature>().Reset();
++        _serverDelegationFeature.Reset();
+ 
+         var destination2 = CreateDestination("dest2", "queue2");
+         cluster = CreateCluster(cluster.ClusterId, destination1, destination2);
+@@ -234,7 +238,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+         var cluster = CreateCluster("cluster1", destination1);
+ 
+         _changeListener.OnClusterAdded(cluster);
+-        Mock<IServerDelegationFeature>().Reset();
++        _serverDelegationFeature.Reset();
+ 
+         var destination2 = CreateDestination("dest2", queueName: null);
+         cluster = CreateCluster(cluster.ClusterId, destination1, destination2);
+@@ -269,7 +273,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+ 
+     private void SetupCanDelegate(bool canDelegate)
+     {
+-        Mock<IHttpSysRequestDelegationFeature>()
++        _requestDelegationFeature
+             .SetupGet(p => p.CanDelegate)
+             .Returns(canDelegate);
+     }
+@@ -286,7 +290,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+ 
+     private void VerifyRequestDelegated()
+     {
+-        Mock<IHttpSysRequestDelegationFeature>()
++        _requestDelegationFeature
+             .Verify(m => m.DelegateRequest(It.IsAny<DelegationRule>()), Times.Once());
+         var errorFeature = _context.Features.Get<IForwarderErrorFeature>();
+         Assert.Null(errorFeature);
+@@ -311,13 +315,13 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+ 
+     private void VerifyDelegationRuleCreated(DestinationState destination)
+     {
+-        Mock<IServerDelegationFeature>()
++        _serverDelegationFeature
+             .Verify(m => m.CreateDelegationRule(destination.GetHttpSysDelegationQueue(), destination.Model.Config.Address), Times.Once());
+     }
+ 
+     private void VerifyDelegationRuleNotCreated(DestinationState destination)
+     {
+-        Mock<IServerDelegationFeature>()
++        _serverDelegationFeature
+             .Verify(m => m.CreateDelegationRule(destination.GetHttpSysDelegationQueue(), destination.Model.Config.Address), Times.Never());
+     }
+ 

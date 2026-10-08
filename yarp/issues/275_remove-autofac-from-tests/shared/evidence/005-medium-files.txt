@@ -1,0 +1,319 @@
+# 005 · Step 5: medium files (ForwarderMiddlewareTests, ProxyPipelineInitializerMiddlewareTests, HttpSysDelegatorMiddlewareTests)
+# Date: 2026-10-07 22:27 PDT
+# dotnet --version (repo-local): 11.0.100-rc.1.26420.103
+# Clone HEAD: 9db5c959 on remove-autofac-275 + uncommitted Step 5 edits (diff below)
+
+## 1. Green, same counts as baseline (002: 3 / 5 / 5 per framework -> x2)
+    0 Warning(s)
+    0 Error(s)
+Forwarder.Tests.ForwarderMiddlewareTests ::  total: 6  failed: 0  succeeded: 6  skipped: 0 
+Model.Tests.ProxyPipelineInitializerMiddlewareTests ::  total: 10  failed: 0  succeeded: 10  skipped: 0 
+Delegation.HttpSysDelegatorMiddlewareTests ::  total: 10  failed: 0  succeeded: 10  skipped: 0 
+
+## 2. O2 proofs (each break targets the wiring the rewrite had to preserve; builds --no-incremental)
+##  - Forwarder: wrong URL to IHttpForwarder.SendAsync -> only the shared _forwarder mock's Setup/Verify can notice
+##  - Pipeline initializer: next not called -> only the 418 delegate passed in CreateMiddleware() can notice
+##  - HttpSys middleware: random factory ignored -> only the shared _randomFactory scripting can notice
+
+### O2: Yarp.ReverseProxy.Forwarder.Tests.ForwarderMiddlewareTests
+Break in src/ReverseProxy/Forwarder/ForwarderMiddleware.cs:
+-            var result = await _forwarder.SendAsync(context, destinationModel.Config.Address, clusterConfig.HttpClient,
++            var result = await _forwarder.SendAsync(context, destinationModel.Config.Address + "x", clusterConfig.HttpClient,
+$ dotnet build (test project) --no-incremental && dotnet test --project <abs> --no-build --filter-class Yarp.ReverseProxy.Forwarder.Tests.ForwarderMiddlewareTests
+Build succeeded.
+  failed: 2
+  skipped: 0
+  succeeded: 4
+  total: 6
+failed Yarp.ReverseProxy.Forwarder.Tests.ForwarderMiddlewareTests.Invoke_Works (10ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.ForwarderMiddlewareTests.Invoke_Works (12ms)
+Reverted. git diff -- src/ReverseProxy/Forwarder/ForwarderMiddleware.cs: 0 changed lines (expect 0)
+Build succeeded.
+
+### O2: Yarp.ReverseProxy.Model.Tests.ProxyPipelineInitializerMiddlewareTests
+Break in src/ReverseProxy/Model/ProxyPipelineInitializerMiddleware.cs:
+-            ? _next(context)
++            ? Task.CompletedTask
+$ dotnet build (test project) --no-incremental && dotnet test --project <abs> --no-build --filter-class Yarp.ReverseProxy.Model.Tests.ProxyPipelineInitializerMiddlewareTests
+Build succeeded.
+  failed: 4
+  skipped: 0
+  succeeded: 6
+  total: 10
+failed Yarp.ReverseProxy.Model.Tests.ProxyPipelineInitializerMiddlewareTests.Invoke_NoHealthyEndpoints_CallsNext (1ms)
+failed Yarp.ReverseProxy.Model.Tests.ProxyPipelineInitializerMiddlewareTests.Invoke_SetsFeatures (4ms)
+failed Yarp.ReverseProxy.Model.Tests.ProxyPipelineInitializerMiddlewareTests.Invoke_SetsFeatures (54ms)
+Reverted. git diff -- src/ReverseProxy/Model/ProxyPipelineInitializerMiddleware.cs: 0 changed lines (expect 0)
+Build succeeded.
+
+### O2: Yarp.ReverseProxy.Delegation.HttpSysDelegatorMiddlewareTests
+Break in src/ReverseProxy/Delegation/HttpSysDelegatorMiddleware.cs:
+-                destination = destinations[random.Next(destinations.Count)];
++                destination = destinations[0];
+$ dotnet build (test project) --no-incremental && dotnet test --project <abs> --no-build --filter-class Yarp.ReverseProxy.Delegation.HttpSysDelegatorMiddlewareTests
+Build succeeded.
+  failed: 2
+  skipped: 0
+  succeeded: 8
+  total: 10
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorMiddlewareTests.MultipleDestinations_OneDelegationAndOneProxyDestination_ProxyChosen_VerifyNextInvokedWithSingleProxyDestination (1ms)
+failed Yarp.ReverseProxy.Delegation.HttpSysDelegatorMiddlewareTests.MultipleDestinations_OneDelegationAndOneProxyDestination_ProxyChosen_VerifyNextInvokedWithSingleProxyDestination (96ms)
+Reverted. git diff -- src/ReverseProxy/Delegation/HttpSysDelegatorMiddleware.cs: 0 changed lines (expect 0)
+Build succeeded.
+
+## 3. Diff (test files only)
+diff --git a/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs b/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs
+index 2a7a0d82..ea45adca 100644
+--- a/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs
++++ b/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs
+@@ -5,23 +5,27 @@ using System;
+ using System.Collections.Generic;
+ using System.Net.Http;
+ using System.Threading.Tasks;
++using Microsoft.AspNetCore.Hosting.Server;
+ using Microsoft.AspNetCore.Http;
+ using Microsoft.AspNetCore.Server.HttpSys;
++using Microsoft.Extensions.Logging.Abstractions;
++using Moq;
+ using Xunit;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Model;
+ using Yarp.ReverseProxy.Utilities;
+-using Yarp.Tests.Common;
+ 
+ namespace Yarp.ReverseProxy.Delegation;
+ 
+-public class HttpSysDelegatorMiddlewareTests : TestAutoMockBase
++public class HttpSysDelegatorMiddlewareTests
+ {
+     private readonly HttpSysDelegatorMiddleware _sut;
+     private readonly RequestDelegate _next;
+     private readonly DefaultHttpContext _context;
+     private readonly ReverseProxyFeature _proxyFeature;
+     private readonly List<DestinationState> _availableDestinations;
++    private readonly Mock<IHttpSysRequestDelegationFeature> _delegationFeature = new();
++    private readonly Mock<IRandomFactory> _randomFactory = new();
+ 
+     private Action _nextCallback;
+     private bool _nextCalled;
+@@ -33,12 +37,12 @@ public class HttpSysDelegatorMiddlewareTests : TestAutoMockBase
+         _proxyFeature = new ReverseProxyFeature
+         {
+             AvailableDestinations = _availableDestinations,
+-            Cluster = new ClusterModel(new ClusterConfig(), new HttpMessageInvoker(Mock<HttpMessageHandler>().Object)),
++            Cluster = new ClusterModel(new ClusterConfig(), new HttpMessageInvoker(new Mock<HttpMessageHandler>().Object)),
+         };
+         _context.Features.Set<IReverseProxyFeature>(_proxyFeature);
+-        _context.Features.Set(Mock<IHttpSysRequestDelegationFeature>().Object);
++        _context.Features.Set(_delegationFeature.Object);
+ 
+-        Mock<IHttpSysRequestDelegationFeature>()
++        _delegationFeature
+             .SetupGet(p => p.CanDelegate)
+             .Returns(true);
+ 
+@@ -48,9 +52,12 @@ public class HttpSysDelegatorMiddlewareTests : TestAutoMockBase
+             _nextCallback?.Invoke();
+             return Task.CompletedTask;
+         };
+-        Provide(_next);
+ 
+-        _sut = Create<HttpSysDelegatorMiddleware>();
++        _sut = new HttpSysDelegatorMiddleware(
++            _next,
++            NullLogger<HttpSysDelegatorMiddleware>.Instance,
++            new HttpSysDelegator(new Mock<IServer>().Object, NullLogger<HttpSysDelegator>.Instance),
++            _randomFactory.Object);
+     }
+ 
+     [Fact]
+@@ -140,7 +147,7 @@ public class HttpSysDelegatorMiddlewareTests : TestAutoMockBase
+ 
+     private void SetupRandomToReturn(int value)
+     {
+-        Mock<IRandomFactory>().Setup(m => m.CreateRandomInstance()).Returns(new TestRandom(value));
++        _randomFactory.Setup(m => m.CreateRandomInstance()).Returns(new TestRandom(value));
+     }
+ 
+     private class TestRandom : Random
+diff --git a/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs b/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs
+index e39b7bc8..c60fdfe3 100644
+--- a/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs
++++ b/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs
+@@ -7,20 +7,24 @@ using System.Net;
+ using System.Net.Http;
+ using System.Threading.Tasks;
+ using Microsoft.AspNetCore.Http;
++using Microsoft.Extensions.Logging.Abstractions;
+ using Moq;
+ using Xunit;
+ using Yarp.Tests.Common;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Model;
++using Yarp.ReverseProxy.Utilities;
+ 
+ namespace Yarp.ReverseProxy.Forwarder.Tests;
+ 
+-public class ForwarderMiddlewareTests : TestAutoMockBase
++public class ForwarderMiddlewareTests
+ {
++    private readonly Mock<IHttpForwarder> _forwarder = new();
++
+     [Fact]
+     public void Constructor_Works()
+     {
+-        Create<ForwarderMiddleware>();
++        CreateMiddleware();
+     }
+ 
+     [Fact]
+@@ -67,7 +71,7 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+ 
+         var tcs1 = new TaskCompletionSource<bool>();
+         var tcs2 = new TaskCompletionSource<bool>();
+-        Mock<IHttpForwarder>()
++        _forwarder
+             .Setup(h => h.SendAsync(
+                 httpContext,
+                 It.Is<string>(uri => uri == "https://localhost:123/a/b/"),
+@@ -86,7 +90,7 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+                 })
+             .Verifiable();
+ 
+-        var sut = Create<ForwarderMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         Assert.Equal(0, cluster1.ConcurrencyCounter.Value);
+         Assert.Equal(0, destination1.ConcurrentRequestCount);
+@@ -98,7 +102,7 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+             await task;
+         }
+ 
+-        Mock<IHttpForwarder>().Verify();
++        _forwarder.Verify();
+ 
+         await tcs1.Task; // Wait until we get to the proxying step.
+         Assert.Equal(1, cluster1.ConcurrencyCounter.Value);
+@@ -141,7 +145,7 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+                 Route = routeConfig,
+             });
+ 
+-        Mock<IHttpForwarder>()
++        _forwarder
+             .Setup(h => h.SendAsync(
+                 httpContext,
+                 It.IsAny<string>(),
+@@ -150,17 +154,26 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+                 It.IsAny<HttpTransformer>()))
+             .Returns(() => throw new NotImplementedException());
+ 
+-        var sut = Create<ForwarderMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         Assert.Equal(0, cluster1.ConcurrencyCounter.Value);
+ 
+         await sut.Invoke(httpContext);
+         Assert.Equal(0, cluster1.ConcurrencyCounter.Value);
+ 
+-        Mock<IHttpForwarder>().Verify();
++        _forwarder.Verify();
+         Assert.Equal(StatusCodes.Status503ServiceUnavailable, httpContext.Response.StatusCode);
+         var errorFeature = httpContext.Features.Get<IForwarderErrorFeature>();
+         Assert.Equal(ForwarderError.NoAvailableDestinations, errorFeature?.Error);
+         Assert.Null(errorFeature.Exception);
+     }
++
++    private ForwarderMiddleware CreateMiddleware()
++    {
++        return new ForwarderMiddleware(
++            _ => Task.CompletedTask,
++            NullLogger<ForwarderMiddleware>.Instance,
++            _forwarder.Object,
++            new Mock<IRandomFactory>().Object);
++    }
+ }
+diff --git a/test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs b/test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs
+index 5d3c6785..fafef9ac 100644
+--- a/test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs
++++ b/test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs
+@@ -10,30 +10,22 @@ using Microsoft.AspNetCore.Http;
+ using Microsoft.AspNetCore.Http.Timeouts;
+ using Microsoft.AspNetCore.Routing;
+ using Microsoft.AspNetCore.Routing.Patterns;
++using Microsoft.Extensions.Logging.Abstractions;
++using Microsoft.Extensions.Options;
+ using Moq;
+ using Xunit;
+-using Yarp.Tests.Common;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Forwarder;
+ using System.Diagnostics;
+ 
+ namespace Yarp.ReverseProxy.Model.Tests;
+ 
+-public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
++public class ProxyPipelineInitializerMiddlewareTests
+ {
+-    public ProxyPipelineInitializerMiddlewareTests()
+-    {
+-        Provide<RequestDelegate>(context =>
+-        {
+-            context.Response.StatusCode = StatusCodes.Status418ImATeapot;
+-            return Task.CompletedTask;
+-        });
+-    }
+-
+     [Fact]
+     public void Constructor_Works()
+     {
+-        Create<ProxyPipelineInitializerMiddleware>();
++        CreateMiddleware();
+     }
+ 
+     [Fact]
+@@ -57,7 +49,7 @@ public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
+         var httpContext = new DefaultHttpContext();
+         httpContext.SetEndpoint(aspNetCoreEndpoint);
+ 
+-        var sut = Create<ProxyPipelineInitializerMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         await sut.Invoke(httpContext);
+ 
+@@ -110,7 +102,7 @@ public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
+         var httpContext = new DefaultHttpContext();
+         httpContext.SetEndpoint(aspNetCoreEndpoint);
+ 
+-        var sut = Create<ProxyPipelineInitializerMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         await sut.Invoke(httpContext);
+ 
+@@ -147,7 +139,7 @@ public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
+         var httpContext = new DefaultHttpContext();
+         httpContext.SetEndpoint(aspNetCoreEndpoint);
+ 
+-        var sut = Create<ProxyPipelineInitializerMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         if (timeoutMs == Timeout.Infinite || Debugger.IsAttached)
+         {
+@@ -160,6 +152,18 @@ public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
+         }
+     }
+ 
++    private static ProxyPipelineInitializerMiddleware CreateMiddleware()
++    {
++        return new ProxyPipelineInitializerMiddleware(
++            context =>
++            {
++                context.Response.StatusCode = StatusCodes.Status418ImATeapot;
++                return Task.CompletedTask;
++            },
++            NullLogger<ProxyPipelineInitializerMiddleware>.Instance,
++            new Mock<IOptionsMonitor<RequestTimeoutOptions>>().Object);
++    }
++
+     private static Endpoint CreateAspNetCoreEndpoint(RouteModel routeConfig, Action<RouteEndpointBuilder> configure = null)
+     {
+         var endpointBuilder = new RouteEndpointBuilder(

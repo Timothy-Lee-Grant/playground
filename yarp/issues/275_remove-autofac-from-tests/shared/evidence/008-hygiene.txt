@@ -1,0 +1,36 @@
+# 008 · Step 8: hygiene (3 runs, diff scope, whitespace, commits)
+# Date: 2026-10-07 22:32 PDT
+# dotnet --version (repo-local): 11.0.100-rc.1.26420.103
+# Clone HEAD: 1665ced5 on remove-autofac-275; base upstream/main = 2aa3d835
+# Build warnings: 0 (./build.sh --rebuild, evidence 007)
+
+## ReverseProxy.Tests, 3 consecutive runs: dotnet test --project <abs> --no-build
+run 1 ::  total: 3978  failed: 0  succeeded: 3978  skipped: 0 
+run 2 ::  total: 3978  failed: 0  succeeded: 3978  skipped: 0 
+run 3 ::  total: 3978  failed: 0  succeeded: 3978  skipped: 0 
+
+$ git diff --stat upstream/main...HEAD
+ eng/Versions.props                                 |  2 -
+ .../Delegation/HttpSysDelegatorMiddlewareTests.cs  | 23 +++--
+ .../Delegation/HttpSysDelegatorTests.cs            | 36 ++++----
+ .../Forwarder/ForwarderHttpClientFactoryTests.cs   | 27 +++---
+ .../Forwarder/ForwarderMiddlewareTests.cs          | 29 +++++--
+ .../Forwarder/StreamCopierTests.cs                 |  2 +-
+ .../LoadBalancing/LoadBalancingPoliciesTests.cs    | 16 ++--
+ .../ProxyPipelineInitializerMiddlewareTests.cs     | 34 ++++----
+ .../Yarp.ReverseProxy.Tests.csproj                 |  2 -
+ test/Tests.Common/TestAutoMockBase.cs              | 99 ----------------------
+ test/Tests.Common/Yarp.Tests.Common.csproj         |  2 -
+ 11 files changed, 96 insertions(+), 176 deletions(-)
+
+$ git diff --name-only upstream/main...HEAD | grep -v -E "^test/|^eng/Versions.props$"  (expect nothing)
+(end)
+
+$ git diff --check upstream/main...HEAD  (whitespace errors; expect nothing)
+exit 0
+
+$ git log --format="%h %s" upstream/main..HEAD
+1665ced5 Remove TestAutoMockBase and the Autofac test dependencies
+f5f16fef Build HttpSysDelegator and its mock graph explicitly in tests
+4526c6a5 Construct middleware under test directly instead of via AutoMock
+9db5c959 Construct simple test subjects directly instead of via AutoMock

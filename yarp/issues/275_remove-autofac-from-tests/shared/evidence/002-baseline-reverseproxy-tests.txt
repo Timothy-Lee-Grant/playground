@@ -1,0 +1,69 @@
+# 002 · Step 2 baseline: SDK install + ReverseProxy.Tests
+# Date: 2026-10-07 22:19 PDT
+# dotnet --version (repo-local): 11.0.100-rc.1.26420.103
+# Clone HEAD: 2aa3d835 on remove-autofac-275 (= upstream/main)
+# Machine: Darwin arm64
+
+## 1. ./restore.sh (in yarp/)  -> exit 0
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:46.83
+
+## 2. SDK
+$ ./.dotnet/dotnet --version  -> 11.0.100-rc.1.26420.103
+$ du -sh .dotnet  -> 760M
+$ ./.dotnet/dotnet --list-runtimes
+Microsoft.AspNetCore.App 8.0.13
+Microsoft.AspNetCore.App 9.0.2
+Microsoft.AspNetCore.App 11.0.0-rc.1.26420.103
+Microsoft.NETCore.App 8.0.13
+Microsoft.NETCore.App 9.0.2
+Microsoft.NETCore.App 11.0.0-rc.1.26420.103
+
+## 3. Command form (Microsoft.Testing.Platform runner, set in global.json)
+FAILS: ./.dotnet/dotnet test test/ReverseProxy.Tests/ --no-incremental
+FAILS: ./.dotnet/dotnet test --project test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj --no-incremental
+  both -> 'Unhandled exception: The project file could not be loaded. Could not find a part of the path
+           .../yarp/test/ReverseProxy.Tests/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj'  (path doubled)
+WORKS: ./.dotnet/dotnet test --project <ABSOLUTE path to>/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj
+Cause not established (unverified). Workaround: absolute --project path.
+
+## 4. Baseline: full test project (first build, artifacts/ was empty)
+$ ./.dotnet/dotnet test --project /Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj
+/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Debug/net8.0/Yarp.ReverseProxy.Tests.dll (net8.0|arm64) passed [+1989/x0/?0] (3s 897ms)
+/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Debug/net9.0/Yarp.ReverseProxy.Tests.dll (net9.0|arm64) passed [+1989/x0/?0] (3s 898ms)
+
+Test run summary: Passed!
+  /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Debug/net8.0/Yarp.ReverseProxy.Tests.dll (net8.0|arm64) passed [+1989/x0/?0] (3s 897ms)
+  /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Debug/net9.0/Yarp.ReverseProxy.Tests.dll (net9.0|arm64) passed [+1989/x0/?0] (3s 898ms)
+
+  total: 3978
+  failed: 0
+  succeeded: 3978
+  skipped: 0
+  duration: 4s 954ms
+
+## 5. Per-class counts for the 7 files (net9.0; same on net8.0 by construction: both TFMs ran 1989)
+$ ./.dotnet/dotnet test --project <abs> --framework net9.0 --no-build --filter-class <FullName>
+Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests 12
+Yarp.ReverseProxy.Forwarder.Tests.ForwarderHttpClientFactoryTests 23
+Yarp.ReverseProxy.LoadBalancing.Tests.LoadBalancingPoliciesTests 6
+Yarp.ReverseProxy.Forwarder.Tests.ForwarderMiddlewareTests 3
+Yarp.ReverseProxy.Model.Tests.ProxyPipelineInitializerMiddlewareTests 5
+Yarp.ReverseProxy.Delegation.HttpSysDelegatorMiddlewareTests 5
+Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests 17
+TOTAL 71
+Note: --filter-class goes directly on the dotnet test line (no '--' separator); it can be repeated.
+
+## 6. macOS HTTP.sys question (plan O4)
+Delegation tests have no platform gate (no #if, OS-skip attribute or csproj condition); they mock HTTP.sys.
+$ ... --framework net9.0 --filter-class Yarp.ReverseProxy.Delegation.HttpSysDelegatorTests --filter-class Yarp.ReverseProxy.Delegation.HttpSysDelegatorMiddlewareTests
+  -> total 22, succeeded 22, skipped 0.  ANSWER: they RUN and pass on macOS. No CHANGE REQUEST needed.
+
+## 7. Contribution rules (checked in the clone)
+- CONTRIBUTING.md (66 lines): almost all contributions start with an issue; help-wanted issues: 'Comment on an issue
+  if you want to create a fix'; substantial changes: agree a design in the issue first; CLA via bot on the PR;
+  'Make sure the repository can build and all tests pass.'
+- PR template: none (.github has CODEOWNERS, ISSUE_TEMPLATE, policies/resourceManagement.yml, workflows).
+- AI policy: none. Only eng/common/AGENTS.md, which is Arcade's note that eng/common is auto-synced (don't edit it).

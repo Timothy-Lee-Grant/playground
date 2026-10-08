@@ -13,7 +13,7 @@
 
 | Issue folder (`link/issues/…`) | Branch | What it's for | Base | On origin? | Status (date) |
 |---|---|---|---|---|---|
-| `275_remove-autofac-from-tests` | `remove-autofac-275` | dotnet/yarp#275 phase 1: build each test class's subject directly instead of through Autofac's AutoMock (7 test files), then delete `TestAutoMockBase` and the two Autofac packages. Moq stays | `upstream/main` | **not created yet** in this clone (it existed, empty, in the old `oss-work/yarp-275` clone) | G1 granted 2026-10-02; plan Steps 0–1 done; next Step 2 (build + baseline). Create from `upstream/main` when work starts (2026-10-07) |
+| `275_remove-autofac-from-tests` | `remove-autofac-275` | dotnet/yarp#275 phase 1: build each test class's subject directly instead of through Autofac's AutoMock (7 test files), then delete `TestAutoMockBase` and the two Autofac packages. Moq stays | `upstream/main` (`2aa3d835`) | no (local only; created 2026-10-07 in this clone) | G1 granted 2026-10-02; Steps 0–1 done; Steps 2–10 running autonomously (2026-10-07) |
 
 ## Protected (never commit on, rebase, reset or push from this project)
 

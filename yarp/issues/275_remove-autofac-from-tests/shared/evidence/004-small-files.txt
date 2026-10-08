@@ -1,0 +1,272 @@
+# 004 · Step 4: small files (StreamCopierTests, ForwarderHttpClientFactoryTests, LoadBalancingPoliciesTests)
+# Date: 2026-10-07 22:25 PDT
+# dotnet --version (repo-local): 11.0.100-rc.1.26420.103
+# Clone HEAD: 2aa3d835 on remove-autofac-275 + uncommitted Step 4 edits (diff below)
+
+## 1. Green, same counts as baseline (002: 12 / 23 / 6 per framework; both net8.0 and net9.0 run -> x2)
+$ dotnet build <test csproj> --no-incremental && dotnet test --project <abs> --no-build --filter-class <class>
+    0 Warning(s)
+    0 Error(s)
+Forwarder.Tests.StreamCopierTests ::  total: 24  failed: 0  succeeded: 24  skipped: 0 
+Forwarder.Tests.ForwarderHttpClientFactoryTests ::  total: 46  failed: 0  succeeded: 46  skipped: 0 
+LoadBalancing.Tests.LoadBalancingPoliciesTests ::  total: 12  failed: 0  succeeded: 12  skipped: 0 
+
+## 2. O2 proofs: break one product line, the class goes red, revert (script: o2.sh, builds with --no-incremental)
+## Note: a first run built incrementally and the SslProtocols break did NOT go red (stale Yarp.ReverseProxy.dll
+## in the test output). Re-run with --no-incremental: red. Everything below is from the --no-incremental run.
+
+### O2: Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests
+Break in src/ReverseProxy/Forwarder/StreamCopier.cs:
+-                await output.WriteAsync(buffer.AsMemory(0, read), cancellation);
++                await output.WriteAsync(buffer.AsMemory(0, 0), cancellation);
+$ dotnet build (test project) --no-incremental && dotnet test --project <abs> --no-build --filter-class Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests
+Build succeeded.
+  failed: 12
+  skipped: 0
+  succeeded: 12
+  total: 24
+failed Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests.CopyAsync_Works(isRequest: False) (0ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests.CopyAsync_Works(isRequest: True) (1ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests.CopyAsync_Works(isRequest: True) (27ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests.LongContentTransfer_TelemetryReportsTransferringEvents(isRequest: False) (0ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests.LongContentTransfer_TelemetryReportsTransferringEvents(isRequest: False) (24ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests.LongContentTransfer_TelemetryReportsTransferringEvents(isRequest: True) (0ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests.SlowStreams_TelemetryReportsCorrectTime(isRequest: False) (0ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.StreamCopierTests.SlowStreams_TelemetryReportsCorrectTime(isRequest: True) (0ms)
+Reverted. git diff -- src/ReverseProxy/Forwarder/StreamCopier.cs: 0 changed lines (expect 0)
+Build succeeded.
+
+### O2: Yarp.ReverseProxy.Forwarder.Tests.ForwarderHttpClientFactoryTests
+Break in src/ReverseProxy/Forwarder/ForwarderHttpClientFactory.cs:
+-            handler.SslOptions.EnabledSslProtocols = newConfig.SslProtocols.Value;
++            handler.SslOptions.EnabledSslProtocols = default;
+$ dotnet build (test project) --no-incremental && dotnet test --project <abs> --no-build --filter-class Yarp.ReverseProxy.Forwarder.Tests.ForwarderHttpClientFactoryTests
+Build succeeded.
+  failed: 2
+  skipped: 0
+  succeeded: 44
+  total: 46
+failed Yarp.ReverseProxy.Forwarder.Tests.ForwarderHttpClientFactoryTests.CreateClient_ApplySslProtocols_Success (16ms)
+failed Yarp.ReverseProxy.Forwarder.Tests.ForwarderHttpClientFactoryTests.CreateClient_ApplySslProtocols_Success (2ms)
+Reverted. git diff -- src/ReverseProxy/Forwarder/ForwarderHttpClientFactory.cs: 0 changed lines (expect 0)
+Build succeeded.
+
+### O2: Yarp.ReverseProxy.LoadBalancing.Tests.LoadBalancingPoliciesTests
+Break in src/ReverseProxy/LoadBalancing/RandomLoadBalancingPolicy.cs:
+-        return availableDestinations[random.Next(availableDestinations.Count)];
++        return availableDestinations[0];
+$ dotnet build (test project) --no-incremental && dotnet test --project <abs> --no-build --filter-class Yarp.ReverseProxy.LoadBalancing.Tests.LoadBalancingPoliciesTests
+Build succeeded.
+  failed: 2
+  skipped: 0
+  succeeded: 10
+  total: 12
+failed Yarp.ReverseProxy.LoadBalancing.Tests.LoadBalancingPoliciesTests.PickDestination_Random_Works (2ms)
+Reverted. git diff -- src/ReverseProxy/LoadBalancing/RandomLoadBalancingPolicy.cs: 0 changed lines (expect 0)
+Build succeeded.
+
+## 3. Diff (test files only)
+diff --git a/test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs b/test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs
+index 3af774ca..a1655354 100644
+--- a/test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs
++++ b/test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs
+@@ -8,25 +8,24 @@ using System.Net.Http;
+ using System.Reflection;
+ using System.Security.Authentication;
+ using System.Text;
+-using Microsoft.Extensions.Logging;
++using Microsoft.Extensions.Logging.Abstractions;
+ using Xunit;
+-using Yarp.Tests.Common;
+ using Yarp.ReverseProxy.Configuration;
+ 
+ namespace Yarp.ReverseProxy.Forwarder.Tests;
+ 
+-public class ForwarderHttpClientFactoryTests : TestAutoMockBase
++public class ForwarderHttpClientFactoryTests
+ {
+     [Fact]
+     public void Constructor_Works()
+     {
+-        new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+     }
+ 
+     [Fact]
+     public void CreateClient_Works()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+ 
+         var actual1 = factory.CreateClient(new ForwarderHttpClientContext()
+         {
+@@ -47,7 +46,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplySslProtocols_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig
+         {
+             SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
+@@ -64,7 +63,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyDangerousAcceptAnyServerCertificate_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig { DangerousAcceptAnyServerCertificate = true };
+         var client = factory.CreateClient(new ForwarderHttpClientContext { NewConfig = options });
+ 
+@@ -79,7 +78,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyMaxConnectionsPerServer_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig { MaxConnectionsPerServer = 22 };
+         var client = factory.CreateClient(new ForwarderHttpClientContext { NewConfig = options });
+ 
+@@ -93,7 +92,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyWebProxy_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig
+         {
+             WebProxy = new WebProxyConfig()
+@@ -116,7 +115,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyRequestHeaderEncoding_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig
+         {
+             RequestHeaderEncoding = Encoding.Latin1.WebName
+@@ -134,7 +133,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyResponseHeaderEncoding_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig
+         {
+             ResponseHeaderEncoding = Encoding.Latin1.WebName
+@@ -152,7 +151,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_OldClientExistsNoConfigChange_ReturnsOldInstance()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var oldClient = new HttpMessageInvoker(new SocketsHttpHandler());
+         var oldOptions = new HttpClientConfig
+         {
+@@ -177,7 +176,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [InlineData(false)]
+     public void CreateClient_ApplyEnableMultipleHttp2Connections_Success(bool enableMultipleHttp2Connections)
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig { EnableMultipleHttp2Connections = enableMultipleHttp2Connections };
+         var client = factory.CreateClient(new ForwarderHttpClientContext { NewConfig = options });
+ 
+@@ -190,7 +189,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [MemberData(nameof(GetChangedHttpClientOptions))]
+     public void CreateClient_OldClientExistsHttpClientOptionsChanged_ReturnsNewInstance(HttpClientConfig oldOptions, HttpClientConfig newOptions)
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var oldClient = new HttpMessageInvoker(new SocketsHttpHandler());
+         var context = new ForwarderHttpClientContext { ClusterId = "cluster1", OldConfig = oldOptions, OldClient = oldClient, NewConfig = newOptions };
+ 
+diff --git a/test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs b/test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs
+index 38152af9..47755fe9 100644
+--- a/test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs
++++ b/test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs
+@@ -14,7 +14,7 @@ using Yarp.ReverseProxy.Utilities;
+ 
+ namespace Yarp.ReverseProxy.Forwarder.Tests;
+ 
+-public class StreamCopierTests : TestAutoMockBase
++public class StreamCopierTests
+ {
+     [Theory]
+     [InlineData(true)]
+diff --git a/test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs b/test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs
+index 59e24a36..61fa268b 100644
+--- a/test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs
++++ b/test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs
+@@ -9,16 +9,14 @@ using Yarp.Tests.Common;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Model;
+ using Yarp.ReverseProxy.Forwarder;
+-using Yarp.ReverseProxy.Utilities;
+ 
+ namespace Yarp.ReverseProxy.LoadBalancing.Tests;
+ 
+-public class LoadBalancingPoliciesTests : TestAutoMockBase
++public class LoadBalancingPoliciesTests
+ {
+     public LoadBalancingPoliciesTests()
+     {
+         RandomFactory = new TestRandomFactory() { Instance = RandomInstance };
+-        Provide<IRandomFactory>(RandomFactory);
+     }
+ 
+     private TestRandom RandomInstance { get; set; } = new TestRandom();
+@@ -36,7 +34,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         };
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<FirstLoadBalancingPolicy>();
++        var loadBalancer = new FirstLoadBalancingPolicy();
+ 
+         for (var i = 0; i < 10; i++)
+         {
+@@ -61,7 +59,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         RandomInstance.Sequence = Enumerable.Range(0, Iterations).Select(_ => random.Next(destinations.Length)).ToArray();
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<RandomLoadBalancingPolicy>();
++        var loadBalancer = new RandomLoadBalancingPolicy(RandomFactory);
+ 
+         for (var i = 0; i < Iterations; i++)
+         {
+@@ -87,7 +85,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         RandomInstance.Sequence = Enumerable.Range(0, Iterations * Iterations).Select(_ => random.Next(destinations.Length)).ToArray();
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<PowerOfTwoChoicesLoadBalancingPolicy>();
++        var loadBalancer = new PowerOfTwoChoicesLoadBalancingPolicy(RandomFactory);
+ 
+         for (var i = 0; i < Iterations; i++)
+         {
+@@ -118,7 +116,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         RandomInstance.Sequence = Enumerable.Range(0, Iterations * Iterations).Select(_ => random.Next(destinations.Length)).ToArray();
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<PowerOfTwoChoicesLoadBalancingPolicy>();
++        var loadBalancer = new PowerOfTwoChoicesLoadBalancingPolicy(RandomFactory);
+ 
+         for (var i = 0; i < Iterations; i++)
+         {
+@@ -139,7 +137,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         destinations[0].ConcurrentRequestCount++;
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<LeastRequestsLoadBalancingPolicy>();
++        var loadBalancer = new LeastRequestsLoadBalancingPolicy();
+ 
+         for (var i = 0; i < 10; i++)
+         {
+@@ -170,7 +168,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         };
+         context.Features.Set<IReverseProxyFeature>(feature);
+ 
+-        var loadBalancer = Create<RoundRobinLoadBalancingPolicy>();
++        var loadBalancer = new RoundRobinLoadBalancingPolicy();
+ 
+         for (var i = 0; i < 10; i++)
+         {

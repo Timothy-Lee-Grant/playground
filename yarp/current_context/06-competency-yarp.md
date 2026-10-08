@@ -64,6 +64,8 @@ States: Generated → Read / Listened (he says so) → Questions → Teach-back 
 | `link/yarp_concepts/audio/001-audio-yarp-from-the-ground-up.md` (audio, 2 episodes) | 2026-10-03 | not yet listened | |
 | `exercises/aspnetcore/aspnetcore_concepts/audio/001-…` (audio, 3 episodes) | 2026-10-03 | not yet listened | Meant to come before YARP A001 |
 | `link/issues/275_remove-autofac-from-tests/` brief + plan | 2026-10-01 | approved the plan (G1, 2026-10-02); reading depth unknown | |
+| `link/issues/275_remove-autofac-from-tests/lectures/001-the-change-end-to-end.md` | 2026-10-07 (CLI) | Generated | Fast path ~20 min (§0 runs a test green → red → green) |
+| `link/issues/275_remove-autofac-from-tests/lectures/002-testing-it-yourself.md` | 2026-10-07 (CLI) | Generated | Procedure; fast path ~30 min at the keyboard |
 
 ## 5. Changelog
 

@@ -1,0 +1,94 @@
+# 003 · Step 3 plan check against the code + AutoMock default-value experiment
+# Date: 2026-10-07 22:21 PDT
+# dotnet --version (repo-local): 11.0.100-rc.1.26420.103
+# Clone HEAD: 2aa3d835 on remove-autofac-275
+
+## 1. Every Autofac reference in the repo
+$ git grep -n -i autofac
+eng/Versions.props:21:    <AutofacVersion>4.9.4</AutofacVersion>
+eng/Versions.props:22:    <AutofacExtrasMoqVersion>4.3.0</AutofacExtrasMoqVersion>
+test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj:19:    <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
+test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj:20:    <PackageReference Include="Autofac.Extras.Moq" Version="$(AutofacExtrasMoqVersion)" />
+test/Tests.Common/TestAutoMockBase.cs:5:using Autofac.Core;
+test/Tests.Common/TestAutoMockBase.cs:6:using Autofac.Extras.Moq;
+test/Tests.Common/Yarp.Tests.Common.csproj:13:    <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
+test/Tests.Common/Yarp.Tests.Common.csproj:14:    <PackageReference Include="Autofac.Extras.Moq" Version="$(AutofacExtrasMoqVersion)" />
+
+## 2. Every user of TestAutoMockBase
+$ git grep -l TestAutoMockBase
+test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs
+test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs
+test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs
+test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs
+test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs
+test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs
+test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs
+test/Tests.Common/TestAutoMockBase.cs
+
+## 3. Moq is referenced directly (not only via Autofac.Extras.Moq) in every project that uses it
+test/Kubernetes.Tests/Yarp.Kubernetes.Tests.csproj:16:    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj:22:    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+test/Tests.Common/Yarp.Tests.Common.csproj:16:    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+
+## 4. Constructors the rewrite must call
+src/ReverseProxy/Delegation/HttpSysDelegator.cs:29:    public HttpSysDelegator(
+src/ReverseProxy/Delegation/HttpSysDelegator.cs-30-            IServer server,
+src/ReverseProxy/Delegation/HttpSysDelegator.cs-31-            ILogger<HttpSysDelegator> logger)
+src/ReverseProxy/Delegation/HttpSysDelegator.cs-33-        ArgumentNullException.ThrowIfNull(logger);
+src/ReverseProxy/Delegation/HttpSysDelegatorMiddleware.cs:20:    public HttpSysDelegatorMiddleware(
+src/ReverseProxy/Delegation/HttpSysDelegatorMiddleware.cs-21-        RequestDelegate next,
+src/ReverseProxy/Delegation/HttpSysDelegatorMiddleware.cs-22-        ILogger<HttpSysDelegatorMiddleware> logger,
+src/ReverseProxy/Delegation/HttpSysDelegatorMiddleware.cs-23-        HttpSysDelegator delegator,
+src/ReverseProxy/Delegation/HttpSysDelegatorMiddleware.cs-24-        IRandomFactory randomFactory)
+src/ReverseProxy/Forwarder/ForwarderHttpClientFactory.cs:25:    public ForwarderHttpClientFactory() : this(NullLogger<ForwarderHttpClientFactory>.Instance) { }
+src/ReverseProxy/Forwarder/ForwarderHttpClientFactory.cs:30:    public ForwarderHttpClientFactory(ILogger<ForwarderHttpClientFactory> logger)
+src/ReverseProxy/Forwarder/ForwarderHttpClientFactory.cs-32-        ArgumentNullException.ThrowIfNull(logger);
+src/ReverseProxy/Forwarder/ForwarderMiddleware.cs:24:    public ForwarderMiddleware(RequestDelegate next, ILogger<ForwarderMiddleware> logger, IHttpForwarder forwarder, IRandomFactory randomFactory)
+src/ReverseProxy/Forwarder/ForwarderMiddleware.cs-26-        ArgumentNullException.ThrowIfNull(next);
+src/ReverseProxy/Forwarder/ForwarderMiddleware.cs-27-        ArgumentNullException.ThrowIfNull(logger);
+src/ReverseProxy/Forwarder/ForwarderMiddleware.cs-28-        ArgumentNullException.ThrowIfNull(forwarder);
+src/ReverseProxy/LoadBalancing/PowerOfTwoChoicesLoadBalancingPolicy.cs:15:    public PowerOfTwoChoicesLoadBalancingPolicy(IRandomFactory randomFactory)
+src/ReverseProxy/LoadBalancing/RandomLoadBalancingPolicy.cs:15:    public RandomLoadBalancingPolicy(IRandomFactory randomFactory)
+src/ReverseProxy/Model/ProxyPipelineInitializerMiddleware.cs:25:    public ProxyPipelineInitializerMiddleware(RequestDelegate next, ILogger<ProxyPipelineInitializerMiddleware> logger, IOptionsMonitor<RequestTimeoutOptions> timeoutOptions)
+src/ReverseProxy/Model/ProxyPipelineInitializerMiddleware.cs-27-        ArgumentNullException.ThrowIfNull(logger);
+src/ReverseProxy/Model/ProxyPipelineInitializerMiddleware.cs-28-        ArgumentNullException.ThrowIfNull(next);
+src/ReverseProxy/Model/ProxyPipelineInitializerMiddleware.cs-29-        ArgumentNullException.ThrowIfNull(timeoutOptions);
+src/ReverseProxy/LoadBalancing/FirstLoadBalancingPolicy.cs:14:internal sealed class FirstLoadBalancingPolicy : ILoadBalancingPolicy
+src/ReverseProxy/LoadBalancing/LeastRequestsLoadBalancingPolicy.cs:10:internal sealed class LeastRequestsLoadBalancingPolicy : ILoadBalancingPolicy
+src/ReverseProxy/LoadBalancing/RoundRobinLoadBalancingPolicy.cs:12:internal sealed class RoundRobinLoadBalancingPolicy : ILoadBalancingPolicy
+(First/LeastRequests/RoundRobin have no explicit constructor: parameterless.)
+
+## 5. Experiment: AutoMock.GetLoose() defaults vs new Mock<T>()  (scratch/275_remove-autofac-from-tests/automock-defaults, outside the fork)
+Packages: Autofac 4.9.4, Autofac.Extras.Moq 4.3.0, Moq 4.18.4 (the versions in eng/Versions.props)
+$ dotnet run
+AutoMock: Behavior=Loose DefaultValue=Empty
+AutoMock: server.Features is null? True
+AutoMock: Create<sealed Concrete> gave a real object? True; its IServer is the shared mock? True
+new Mock: Behavior=Loose DefaultValue=Empty
+new Mock: server.Features is null? True
+
+--- Program.cs ---
+// Question: what do AutoMock.GetLoose() mocks return for unscripted members, vs new Mock<T>()?
+using Autofac.Extras.Moq;
+using Moq;
+
+public interface IFeatures { object Get(); }
+public interface IServer { IFeatures Features { get; } }
+public sealed class Concrete { public IServer Server { get; } public Concrete(IServer s) { Server = s; } }
+
+public static class Program
+{
+    public static void Main()
+    {
+        using var am = AutoMock.GetLoose();
+        var server = am.Mock<IServer>();
+        Console.WriteLine($"AutoMock: Behavior={server.Behavior} DefaultValue={server.DefaultValue}");
+        Console.WriteLine($"AutoMock: server.Features is null? {server.Object.Features is null}");
+        var c = am.Create<Concrete>();
+        Console.WriteLine($"AutoMock: Create<sealed Concrete> gave a real object? {c.GetType() == typeof(Concrete)}; its IServer is the shared mock? {ReferenceEquals(c.Server, server.Object)}");
+
+        var plain = new Mock<IServer>();
+        Console.WriteLine($"new Mock: Behavior={plain.Behavior} DefaultValue={plain.DefaultValue}");
+        Console.WriteLine($"new Mock: server.Features is null? {plain.Object.Features is null}");
+    }
+}

@@ -1,0 +1,808 @@
+# 010 · Full diff of remove-autofac-275 against upstream/main
+# Date: 2026-10-07 22:32 PDT  dotnet: 11.0.100-rc.1.26420.103  HEAD: 1665ced5  base: upstream/main 2aa3d835
+# Command: git -C yarp format-patch --stdout upstream/main..HEAD
+
+From 9db5c95977600389c69f2aa2f741c3817fee337a Mon Sep 17 00:00:00 2001
+From: Timothy-Lee-Grant <timothyleegrant1995@gmail.com>
+Date: Wed, 7 Oct 2026 22:25:18 -0700
+Subject: [PATCH 1/4] Construct simple test subjects directly instead of via
+ AutoMock
+
+StreamCopierTests only inherited TestAutoMockBase. ForwarderHttpClientFactoryTests
+now passes NullLogger instead of an unused loose logger mock, and
+LoadBalancingPoliciesTests news up each policy, passing the test random
+factory that was previously registered with AutoMock.
+---
+ .../ForwarderHttpClientFactoryTests.cs        | 27 +++++++++----------
+ .../Forwarder/StreamCopierTests.cs            |  2 +-
+ .../LoadBalancingPoliciesTests.cs             | 16 +++++------
+ 3 files changed, 21 insertions(+), 24 deletions(-)
+
+diff --git a/test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs b/test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs
+index 3af774ca..a1655354 100644
+--- a/test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs
++++ b/test/ReverseProxy.Tests/Forwarder/ForwarderHttpClientFactoryTests.cs
+@@ -8,25 +8,24 @@ using System.Net.Http;
+ using System.Reflection;
+ using System.Security.Authentication;
+ using System.Text;
+-using Microsoft.Extensions.Logging;
++using Microsoft.Extensions.Logging.Abstractions;
+ using Xunit;
+-using Yarp.Tests.Common;
+ using Yarp.ReverseProxy.Configuration;
+ 
+ namespace Yarp.ReverseProxy.Forwarder.Tests;
+ 
+-public class ForwarderHttpClientFactoryTests : TestAutoMockBase
++public class ForwarderHttpClientFactoryTests
+ {
+     [Fact]
+     public void Constructor_Works()
+     {
+-        new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+     }
+ 
+     [Fact]
+     public void CreateClient_Works()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+ 
+         var actual1 = factory.CreateClient(new ForwarderHttpClientContext()
+         {
+@@ -47,7 +46,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplySslProtocols_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig
+         {
+             SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
+@@ -64,7 +63,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyDangerousAcceptAnyServerCertificate_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig { DangerousAcceptAnyServerCertificate = true };
+         var client = factory.CreateClient(new ForwarderHttpClientContext { NewConfig = options });
+ 
+@@ -79,7 +78,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyMaxConnectionsPerServer_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig { MaxConnectionsPerServer = 22 };
+         var client = factory.CreateClient(new ForwarderHttpClientContext { NewConfig = options });
+ 
+@@ -93,7 +92,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyWebProxy_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig
+         {
+             WebProxy = new WebProxyConfig()
+@@ -116,7 +115,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyRequestHeaderEncoding_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig
+         {
+             RequestHeaderEncoding = Encoding.Latin1.WebName
+@@ -134,7 +133,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_ApplyResponseHeaderEncoding_Success()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig
+         {
+             ResponseHeaderEncoding = Encoding.Latin1.WebName
+@@ -152,7 +151,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [Fact]
+     public void CreateClient_OldClientExistsNoConfigChange_ReturnsOldInstance()
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var oldClient = new HttpMessageInvoker(new SocketsHttpHandler());
+         var oldOptions = new HttpClientConfig
+         {
+@@ -177,7 +176,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [InlineData(false)]
+     public void CreateClient_ApplyEnableMultipleHttp2Connections_Success(bool enableMultipleHttp2Connections)
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var options = new HttpClientConfig { EnableMultipleHttp2Connections = enableMultipleHttp2Connections };
+         var client = factory.CreateClient(new ForwarderHttpClientContext { NewConfig = options });
+ 
+@@ -190,7 +189,7 @@ public class ForwarderHttpClientFactoryTests : TestAutoMockBase
+     [MemberData(nameof(GetChangedHttpClientOptions))]
+     public void CreateClient_OldClientExistsHttpClientOptionsChanged_ReturnsNewInstance(HttpClientConfig oldOptions, HttpClientConfig newOptions)
+     {
+-        var factory = new ForwarderHttpClientFactory(Mock<ILogger<ForwarderHttpClientFactory>>().Object);
++        var factory = new ForwarderHttpClientFactory(NullLogger<ForwarderHttpClientFactory>.Instance);
+         var oldClient = new HttpMessageInvoker(new SocketsHttpHandler());
+         var context = new ForwarderHttpClientContext { ClusterId = "cluster1", OldConfig = oldOptions, OldClient = oldClient, NewConfig = newOptions };
+ 
+diff --git a/test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs b/test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs
+index 38152af9..47755fe9 100644
+--- a/test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs
++++ b/test/ReverseProxy.Tests/Forwarder/StreamCopierTests.cs
+@@ -14,7 +14,7 @@ using Yarp.ReverseProxy.Utilities;
+ 
+ namespace Yarp.ReverseProxy.Forwarder.Tests;
+ 
+-public class StreamCopierTests : TestAutoMockBase
++public class StreamCopierTests
+ {
+     [Theory]
+     [InlineData(true)]
+diff --git a/test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs b/test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs
+index 59e24a36..61fa268b 100644
+--- a/test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs
++++ b/test/ReverseProxy.Tests/LoadBalancing/LoadBalancingPoliciesTests.cs
+@@ -9,16 +9,14 @@ using Yarp.Tests.Common;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Model;
+ using Yarp.ReverseProxy.Forwarder;
+-using Yarp.ReverseProxy.Utilities;
+ 
+ namespace Yarp.ReverseProxy.LoadBalancing.Tests;
+ 
+-public class LoadBalancingPoliciesTests : TestAutoMockBase
++public class LoadBalancingPoliciesTests
+ {
+     public LoadBalancingPoliciesTests()
+     {
+         RandomFactory = new TestRandomFactory() { Instance = RandomInstance };
+-        Provide<IRandomFactory>(RandomFactory);
+     }
+ 
+     private TestRandom RandomInstance { get; set; } = new TestRandom();
+@@ -36,7 +34,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         };
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<FirstLoadBalancingPolicy>();
++        var loadBalancer = new FirstLoadBalancingPolicy();
+ 
+         for (var i = 0; i < 10; i++)
+         {
+@@ -61,7 +59,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         RandomInstance.Sequence = Enumerable.Range(0, Iterations).Select(_ => random.Next(destinations.Length)).ToArray();
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<RandomLoadBalancingPolicy>();
++        var loadBalancer = new RandomLoadBalancingPolicy(RandomFactory);
+ 
+         for (var i = 0; i < Iterations; i++)
+         {
+@@ -87,7 +85,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         RandomInstance.Sequence = Enumerable.Range(0, Iterations * Iterations).Select(_ => random.Next(destinations.Length)).ToArray();
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<PowerOfTwoChoicesLoadBalancingPolicy>();
++        var loadBalancer = new PowerOfTwoChoicesLoadBalancingPolicy(RandomFactory);
+ 
+         for (var i = 0; i < Iterations; i++)
+         {
+@@ -118,7 +116,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         RandomInstance.Sequence = Enumerable.Range(0, Iterations * Iterations).Select(_ => random.Next(destinations.Length)).ToArray();
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<PowerOfTwoChoicesLoadBalancingPolicy>();
++        var loadBalancer = new PowerOfTwoChoicesLoadBalancingPolicy(RandomFactory);
+ 
+         for (var i = 0; i < Iterations; i++)
+         {
+@@ -139,7 +137,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         destinations[0].ConcurrentRequestCount++;
+ 
+         var context = new DefaultHttpContext();
+-        var loadBalancer = Create<LeastRequestsLoadBalancingPolicy>();
++        var loadBalancer = new LeastRequestsLoadBalancingPolicy();
+ 
+         for (var i = 0; i < 10; i++)
+         {
+@@ -170,7 +168,7 @@ public class LoadBalancingPoliciesTests : TestAutoMockBase
+         };
+         context.Features.Set<IReverseProxyFeature>(feature);
+ 
+-        var loadBalancer = Create<RoundRobinLoadBalancingPolicy>();
++        var loadBalancer = new RoundRobinLoadBalancingPolicy();
+ 
+         for (var i = 0; i < 10; i++)
+         {
+-- 
+2.39.5 (Apple Git-154)
+
+
+From 4526c6a54c314f43d718b2df19aeeef2a2e4e161 Mon Sep 17 00:00:00 2001
+From: Timothy-Lee-Grant <timothyleegrant1995@gmail.com>
+Date: Wed, 7 Oct 2026 22:27:55 -0700
+Subject: [PATCH 2/4] Construct middleware under test directly instead of via
+ AutoMock
+
+Each test class now builds its middleware through the real constructor.
+Mocks that tests set up or verify after construction (IHttpForwarder,
+IRandomFactory, IHttpSysRequestDelegationFeature) become fields, so the
+instance a test configures is the one the middleware received.
+
+HttpSysDelegatorMiddleware takes the sealed HttpSysDelegator, which
+AutoMock created as a real instance; the tests keep doing that.
+---
+ .../HttpSysDelegatorMiddlewareTests.cs        | 23 ++++++++-----
+ .../Forwarder/ForwarderMiddlewareTests.cs     | 29 +++++++++++-----
+ ...ProxyPipelineInitializerMiddlewareTests.cs | 34 +++++++++++--------
+ 3 files changed, 55 insertions(+), 31 deletions(-)
+
+diff --git a/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs b/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs
+index 2a7a0d82..ea45adca 100644
+--- a/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs
++++ b/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorMiddlewareTests.cs
+@@ -5,23 +5,27 @@ using System;
+ using System.Collections.Generic;
+ using System.Net.Http;
+ using System.Threading.Tasks;
++using Microsoft.AspNetCore.Hosting.Server;
+ using Microsoft.AspNetCore.Http;
+ using Microsoft.AspNetCore.Server.HttpSys;
++using Microsoft.Extensions.Logging.Abstractions;
++using Moq;
+ using Xunit;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Model;
+ using Yarp.ReverseProxy.Utilities;
+-using Yarp.Tests.Common;
+ 
+ namespace Yarp.ReverseProxy.Delegation;
+ 
+-public class HttpSysDelegatorMiddlewareTests : TestAutoMockBase
++public class HttpSysDelegatorMiddlewareTests
+ {
+     private readonly HttpSysDelegatorMiddleware _sut;
+     private readonly RequestDelegate _next;
+     private readonly DefaultHttpContext _context;
+     private readonly ReverseProxyFeature _proxyFeature;
+     private readonly List<DestinationState> _availableDestinations;
++    private readonly Mock<IHttpSysRequestDelegationFeature> _delegationFeature = new();
++    private readonly Mock<IRandomFactory> _randomFactory = new();
+ 
+     private Action _nextCallback;
+     private bool _nextCalled;
+@@ -33,12 +37,12 @@ public class HttpSysDelegatorMiddlewareTests : TestAutoMockBase
+         _proxyFeature = new ReverseProxyFeature
+         {
+             AvailableDestinations = _availableDestinations,
+-            Cluster = new ClusterModel(new ClusterConfig(), new HttpMessageInvoker(Mock<HttpMessageHandler>().Object)),
++            Cluster = new ClusterModel(new ClusterConfig(), new HttpMessageInvoker(new Mock<HttpMessageHandler>().Object)),
+         };
+         _context.Features.Set<IReverseProxyFeature>(_proxyFeature);
+-        _context.Features.Set(Mock<IHttpSysRequestDelegationFeature>().Object);
++        _context.Features.Set(_delegationFeature.Object);
+ 
+-        Mock<IHttpSysRequestDelegationFeature>()
++        _delegationFeature
+             .SetupGet(p => p.CanDelegate)
+             .Returns(true);
+ 
+@@ -48,9 +52,12 @@ public class HttpSysDelegatorMiddlewareTests : TestAutoMockBase
+             _nextCallback?.Invoke();
+             return Task.CompletedTask;
+         };
+-        Provide(_next);
+ 
+-        _sut = Create<HttpSysDelegatorMiddleware>();
++        _sut = new HttpSysDelegatorMiddleware(
++            _next,
++            NullLogger<HttpSysDelegatorMiddleware>.Instance,
++            new HttpSysDelegator(new Mock<IServer>().Object, NullLogger<HttpSysDelegator>.Instance),
++            _randomFactory.Object);
+     }
+ 
+     [Fact]
+@@ -140,7 +147,7 @@ public class HttpSysDelegatorMiddlewareTests : TestAutoMockBase
+ 
+     private void SetupRandomToReturn(int value)
+     {
+-        Mock<IRandomFactory>().Setup(m => m.CreateRandomInstance()).Returns(new TestRandom(value));
++        _randomFactory.Setup(m => m.CreateRandomInstance()).Returns(new TestRandom(value));
+     }
+ 
+     private class TestRandom : Random
+diff --git a/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs b/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs
+index e39b7bc8..c60fdfe3 100644
+--- a/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs
++++ b/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs
+@@ -7,20 +7,24 @@ using System.Net;
+ using System.Net.Http;
+ using System.Threading.Tasks;
+ using Microsoft.AspNetCore.Http;
++using Microsoft.Extensions.Logging.Abstractions;
+ using Moq;
+ using Xunit;
+ using Yarp.Tests.Common;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Model;
++using Yarp.ReverseProxy.Utilities;
+ 
+ namespace Yarp.ReverseProxy.Forwarder.Tests;
+ 
+-public class ForwarderMiddlewareTests : TestAutoMockBase
++public class ForwarderMiddlewareTests
+ {
++    private readonly Mock<IHttpForwarder> _forwarder = new();
++
+     [Fact]
+     public void Constructor_Works()
+     {
+-        Create<ForwarderMiddleware>();
++        CreateMiddleware();
+     }
+ 
+     [Fact]
+@@ -67,7 +71,7 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+ 
+         var tcs1 = new TaskCompletionSource<bool>();
+         var tcs2 = new TaskCompletionSource<bool>();
+-        Mock<IHttpForwarder>()
++        _forwarder
+             .Setup(h => h.SendAsync(
+                 httpContext,
+                 It.Is<string>(uri => uri == "https://localhost:123/a/b/"),
+@@ -86,7 +90,7 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+                 })
+             .Verifiable();
+ 
+-        var sut = Create<ForwarderMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         Assert.Equal(0, cluster1.ConcurrencyCounter.Value);
+         Assert.Equal(0, destination1.ConcurrentRequestCount);
+@@ -98,7 +102,7 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+             await task;
+         }
+ 
+-        Mock<IHttpForwarder>().Verify();
++        _forwarder.Verify();
+ 
+         await tcs1.Task; // Wait until we get to the proxying step.
+         Assert.Equal(1, cluster1.ConcurrencyCounter.Value);
+@@ -141,7 +145,7 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+                 Route = routeConfig,
+             });
+ 
+-        Mock<IHttpForwarder>()
++        _forwarder
+             .Setup(h => h.SendAsync(
+                 httpContext,
+                 It.IsAny<string>(),
+@@ -150,17 +154,26 @@ public class ForwarderMiddlewareTests : TestAutoMockBase
+                 It.IsAny<HttpTransformer>()))
+             .Returns(() => throw new NotImplementedException());
+ 
+-        var sut = Create<ForwarderMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         Assert.Equal(0, cluster1.ConcurrencyCounter.Value);
+ 
+         await sut.Invoke(httpContext);
+         Assert.Equal(0, cluster1.ConcurrencyCounter.Value);
+ 
+-        Mock<IHttpForwarder>().Verify();
++        _forwarder.Verify();
+         Assert.Equal(StatusCodes.Status503ServiceUnavailable, httpContext.Response.StatusCode);
+         var errorFeature = httpContext.Features.Get<IForwarderErrorFeature>();
+         Assert.Equal(ForwarderError.NoAvailableDestinations, errorFeature?.Error);
+         Assert.Null(errorFeature.Exception);
+     }
++
++    private ForwarderMiddleware CreateMiddleware()
++    {
++        return new ForwarderMiddleware(
++            _ => Task.CompletedTask,
++            NullLogger<ForwarderMiddleware>.Instance,
++            _forwarder.Object,
++            new Mock<IRandomFactory>().Object);
++    }
+ }
+diff --git a/test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs b/test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs
+index 5d3c6785..fafef9ac 100644
+--- a/test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs
++++ b/test/ReverseProxy.Tests/Model/ProxyPipelineInitializerMiddlewareTests.cs
+@@ -10,30 +10,22 @@ using Microsoft.AspNetCore.Http;
+ using Microsoft.AspNetCore.Http.Timeouts;
+ using Microsoft.AspNetCore.Routing;
+ using Microsoft.AspNetCore.Routing.Patterns;
++using Microsoft.Extensions.Logging.Abstractions;
++using Microsoft.Extensions.Options;
+ using Moq;
+ using Xunit;
+-using Yarp.Tests.Common;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Forwarder;
+ using System.Diagnostics;
+ 
+ namespace Yarp.ReverseProxy.Model.Tests;
+ 
+-public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
++public class ProxyPipelineInitializerMiddlewareTests
+ {
+-    public ProxyPipelineInitializerMiddlewareTests()
+-    {
+-        Provide<RequestDelegate>(context =>
+-        {
+-            context.Response.StatusCode = StatusCodes.Status418ImATeapot;
+-            return Task.CompletedTask;
+-        });
+-    }
+-
+     [Fact]
+     public void Constructor_Works()
+     {
+-        Create<ProxyPipelineInitializerMiddleware>();
++        CreateMiddleware();
+     }
+ 
+     [Fact]
+@@ -57,7 +49,7 @@ public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
+         var httpContext = new DefaultHttpContext();
+         httpContext.SetEndpoint(aspNetCoreEndpoint);
+ 
+-        var sut = Create<ProxyPipelineInitializerMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         await sut.Invoke(httpContext);
+ 
+@@ -110,7 +102,7 @@ public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
+         var httpContext = new DefaultHttpContext();
+         httpContext.SetEndpoint(aspNetCoreEndpoint);
+ 
+-        var sut = Create<ProxyPipelineInitializerMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         await sut.Invoke(httpContext);
+ 
+@@ -147,7 +139,7 @@ public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
+         var httpContext = new DefaultHttpContext();
+         httpContext.SetEndpoint(aspNetCoreEndpoint);
+ 
+-        var sut = Create<ProxyPipelineInitializerMiddleware>();
++        var sut = CreateMiddleware();
+ 
+         if (timeoutMs == Timeout.Infinite || Debugger.IsAttached)
+         {
+@@ -160,6 +152,18 @@ public class ProxyPipelineInitializerMiddlewareTests : TestAutoMockBase
+         }
+     }
+ 
++    private static ProxyPipelineInitializerMiddleware CreateMiddleware()
++    {
++        return new ProxyPipelineInitializerMiddleware(
++            context =>
++            {
++                context.Response.StatusCode = StatusCodes.Status418ImATeapot;
++                return Task.CompletedTask;
++            },
++            NullLogger<ProxyPipelineInitializerMiddleware>.Instance,
++            new Mock<IOptionsMonitor<RequestTimeoutOptions>>().Object);
++    }
++
+     private static Endpoint CreateAspNetCoreEndpoint(RouteModel routeConfig, Action<RouteEndpointBuilder> configure = null)
+     {
+         var endpointBuilder = new RouteEndpointBuilder(
+-- 
+2.39.5 (Apple Git-154)
+
+
+From f5f16fef7a81705a276ef8355cbc86335ec7aa5a Mon Sep 17 00:00:00 2001
+From: Timothy-Lee-Grant <timothyleegrant1995@gmail.com>
+Date: Wed, 7 Oct 2026 22:29:33 -0700
+Subject: [PATCH 3/4] Build HttpSysDelegator and its mock graph explicitly in
+ tests
+
+The server, feature collection and delegation feature mocks were wired
+together through AutoMock. They are now created in the test constructor;
+the two feature mocks the tests verify later are kept as fields.
+---
+ .../Delegation/HttpSysDelegatorTests.cs       | 36 ++++++++++---------
+ 1 file changed, 20 insertions(+), 16 deletions(-)
+
+diff --git a/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs b/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs
+index c21d9645..138ecf72 100644
+--- a/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs
++++ b/test/ReverseProxy.Tests/Delegation/HttpSysDelegatorTests.cs
+@@ -7,35 +7,39 @@ using Microsoft.AspNetCore.Hosting.Server;
+ using Microsoft.AspNetCore.Http;
+ using Microsoft.AspNetCore.Http.Features;
+ using Microsoft.AspNetCore.Server.HttpSys;
++using Microsoft.Extensions.Logging.Abstractions;
+ using Moq;
+ using Xunit;
+ using Yarp.ReverseProxy.Configuration;
+ using Yarp.ReverseProxy.Forwarder;
+ using Yarp.ReverseProxy.Model;
+-using Yarp.Tests.Common;
+ 
+ namespace Yarp.ReverseProxy.Delegation;
+ 
+-public class HttpSysDelegatorTests : TestAutoMockBase
++public class HttpSysDelegatorTests
+ {
+     private readonly HttpSysDelegator _delegator;
+     private readonly IClusterChangeListener _changeListener;
+     private readonly DefaultHttpContext _context;
++    private readonly Mock<IServerDelegationFeature> _serverDelegationFeature = new();
++    private readonly Mock<IHttpSysRequestDelegationFeature> _requestDelegationFeature = new();
+ 
+     public HttpSysDelegatorTests()
+     {
+-        Mock<IFeatureCollection>()
++        var serverFeatures = new Mock<IFeatureCollection>();
++        serverFeatures
+             .Setup(m => m.Get<IServerDelegationFeature>())
+-            .Returns(Mock<IServerDelegationFeature>().Object);
+-        Mock<IServer>()
++            .Returns(_serverDelegationFeature.Object);
++        var server = new Mock<IServer>();
++        server
+             .SetupGet(p => p.Features)
+-            .Returns(Mock<IFeatureCollection>().Object);
++            .Returns(serverFeatures.Object);
+ 
+-        _delegator = Create<HttpSysDelegator>();
++        _delegator = new HttpSysDelegator(server.Object, NullLogger<HttpSysDelegator>.Instance);
+         _changeListener = _delegator;
+ 
+         _context = new DefaultHttpContext();
+-        _context.Features.Set(Mock<IHttpSysRequestDelegationFeature>().Object);
++        _context.Features.Set(_requestDelegationFeature.Object);
+ 
+         SetupCanDelegate(true);
+     }
+@@ -122,7 +126,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+     {
+         var destination = CreateDestination("dest1", "queue1");
+         var cluster = CreateCluster("cluster1", destination);
+-        Mock<IServerDelegationFeature>()
++        _serverDelegationFeature
+             .Setup(x => x.CreateDelegationRule(It.IsAny<string>(), It.IsAny<string>()))
+             .Throws<Exception>()
+             .Verifiable();
+@@ -139,7 +143,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+     {
+         var destination = CreateDestination("dest1", "queue1");
+         var cluster = CreateCluster("cluster1", destination);
+-        Mock<IHttpSysRequestDelegationFeature>()
++        _requestDelegationFeature
+             .Setup(x => x.DelegateRequest(It.IsAny<DelegationRule>()))
+             .Throws<Exception>()
+             .Verifiable();
+@@ -216,7 +220,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+         var cluster = CreateCluster("cluster1", destination1);
+ 
+         _changeListener.OnClusterAdded(cluster);
+-        Mock<IServerDelegationFeature>().Reset();
++        _serverDelegationFeature.Reset();
+ 
+         var destination2 = CreateDestination("dest2", "queue2");
+         cluster = CreateCluster(cluster.ClusterId, destination1, destination2);
+@@ -234,7 +238,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+         var cluster = CreateCluster("cluster1", destination1);
+ 
+         _changeListener.OnClusterAdded(cluster);
+-        Mock<IServerDelegationFeature>().Reset();
++        _serverDelegationFeature.Reset();
+ 
+         var destination2 = CreateDestination("dest2", queueName: null);
+         cluster = CreateCluster(cluster.ClusterId, destination1, destination2);
+@@ -269,7 +273,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+ 
+     private void SetupCanDelegate(bool canDelegate)
+     {
+-        Mock<IHttpSysRequestDelegationFeature>()
++        _requestDelegationFeature
+             .SetupGet(p => p.CanDelegate)
+             .Returns(canDelegate);
+     }
+@@ -286,7 +290,7 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+ 
+     private void VerifyRequestDelegated()
+     {
+-        Mock<IHttpSysRequestDelegationFeature>()
++        _requestDelegationFeature
+             .Verify(m => m.DelegateRequest(It.IsAny<DelegationRule>()), Times.Once());
+         var errorFeature = _context.Features.Get<IForwarderErrorFeature>();
+         Assert.Null(errorFeature);
+@@ -311,13 +315,13 @@ public class HttpSysDelegatorTests : TestAutoMockBase
+ 
+     private void VerifyDelegationRuleCreated(DestinationState destination)
+     {
+-        Mock<IServerDelegationFeature>()
++        _serverDelegationFeature
+             .Verify(m => m.CreateDelegationRule(destination.GetHttpSysDelegationQueue(), destination.Model.Config.Address), Times.Once());
+     }
+ 
+     private void VerifyDelegationRuleNotCreated(DestinationState destination)
+     {
+-        Mock<IServerDelegationFeature>()
++        _serverDelegationFeature
+             .Verify(m => m.CreateDelegationRule(destination.GetHttpSysDelegationQueue(), destination.Model.Config.Address), Times.Never());
+     }
+ 
+-- 
+2.39.5 (Apple Git-154)
+
+
+From 1665ced5c71a870e7359656800512265d108c4bf Mon Sep 17 00:00:00 2001
+From: Timothy-Lee-Grant <timothyleegrant1995@gmail.com>
+Date: Wed, 7 Oct 2026 22:31:40 -0700
+Subject: [PATCH 4/4] Remove TestAutoMockBase and the Autofac test dependencies
+
+No test uses TestAutoMockBase any more, so delete it together with the
+Autofac and Autofac.Extras.Moq package references and their versions.
+Moq is still referenced directly by every project that uses it.
+---
+ eng/Versions.props                            |  2 -
+ .../Yarp.ReverseProxy.Tests.csproj            |  2 -
+ test/Tests.Common/TestAutoMockBase.cs         | 99 -------------------
+ test/Tests.Common/Yarp.Tests.Common.csproj    |  2 -
+ 4 files changed, 105 deletions(-)
+ delete mode 100644 test/Tests.Common/TestAutoMockBase.cs
+
+diff --git a/eng/Versions.props b/eng/Versions.props
+index 75ab5940..72d6a55e 100644
+--- a/eng/Versions.props
++++ b/eng/Versions.props
+@@ -18,8 +18,6 @@
+     <MicrosoftDotNetXUnitV3ExtensionsPackageVersion>12.0.0-beta.26502.2</MicrosoftDotNetXUnitV3ExtensionsPackageVersion>
+     <CoverletCollectorVersion>6.0.0</CoverletCollectorVersion>
+     <MoqVersion>4.18.4</MoqVersion>
+-    <AutofacVersion>4.9.4</AutofacVersion>
+-    <AutofacExtrasMoqVersion>4.3.0</AutofacExtrasMoqVersion>
+     <PollyVersion>8.4.2</PollyVersion>
+     <LettuceEncryptVersion>1.3.0</LettuceEncryptVersion>
+     <PrometheusNetVersion>8.2.1</PrometheusNetVersion>
+diff --git a/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj b/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj
+index 262294e2..f6db8987 100644
+--- a/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj
++++ b/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj
+@@ -16,8 +16,6 @@
+   </ItemGroup>
+ 
+   <ItemGroup>
+-    <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
+-    <PackageReference Include="Autofac.Extras.Moq" Version="$(AutofacExtrasMoqVersion)" />
+     <PackageReference Include="coverlet.collector" Version="$(CoverletCollectorVersion)" />
+     <PackageReference Include="Moq" Version="$(MoqVersion)" />
+     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MicrosoftAspNetCoreTestHostVersion)" />
+diff --git a/test/Tests.Common/TestAutoMockBase.cs b/test/Tests.Common/TestAutoMockBase.cs
+deleted file mode 100644
+index 49a478a1..00000000
+--- a/test/Tests.Common/TestAutoMockBase.cs
++++ /dev/null
+@@ -1,99 +0,0 @@
+-// Licensed to the .NET Foundation under one or more agreements.
+-// The .NET Foundation licenses this file to you under the MIT license.
+-
+-using System;
+-using Autofac.Core;
+-using Autofac.Extras.Moq;
+-using Moq;
+-
+-namespace Yarp.Tests.Common;
+-
+-/// <summary>
+-/// Automatically generates mocks for interfaces on the Class under test.
+-/// </summary>
+-public class TestAutoMockBase : IDisposable
+-{
+-    private bool _isDisposed;
+-
+-    /// <summary>
+-    /// Initializes a new instance of the <see cref="TestAutoMockBase" /> class.
+-    /// </summary>
+-    public TestAutoMockBase()
+-    {
+-        AutoMock = AutoMock.GetLoose();
+-    }
+-
+-    /// <summary>
+-    /// Gets the mocks.
+-    /// </summary>
+-    protected AutoMock AutoMock { get; private set; }
+-
+-    /// <summary>
+-    /// Resets the mocks.
+-    /// </summary>
+-    public void ResetMocks()
+-    {
+-        AutoMock.Dispose();
+-        AutoMock = AutoMock.GetLoose();
+-    }
+-
+-    /// <summary>
+-    /// Creates an object of <typeparamref name="TService"/> using the dependency container.
+-    /// </summary>
+-    /// <typeparam name="TService">The type of the object to create.</typeparam>
+-    /// <param name="parameters">The parameters.</param>
+-    /// <returns>
+-    /// Instance of <typeparamref name="TService"/>.
+-    /// </returns>
+-    public virtual TService Create<TService>(params Parameter[] parameters)
+-        where TService : class
+-    {
+-        return AutoMock.Create<TService>(parameters);
+-    }
+-
+-    /// <summary>
+-    /// Creates a mock of the specified abstraction.
+-    /// </summary>
+-    /// <typeparam name="TDependencyToMock">The type of the dependency to mock.</typeparam>
+-    /// <returns>A mock of the type.</returns>
+-    public Mock<TDependencyToMock> Mock<TDependencyToMock>()
+-        where TDependencyToMock : class
+-    {
+-        return AutoMock.Mock<TDependencyToMock>();
+-    }
+-
+-    /// <summary>
+-    /// Provide the specified abstraction to the dependency injection container.
+-    /// </summary>
+-    /// <typeparam name="TService">The type of the service.</typeparam>
+-    /// <param name="instance">The instance.</param>
+-    public void Provide<TService>(TService instance)
+-        where TService : class
+-    {
+-        ArgumentNullException.ThrowIfNull(instance);
+-        AutoMock.Provide(instance);
+-    }
+-
+-    /// <summary>
+-    /// Provide the specified concrete type to the dependency injection container.
+-    /// </summary>
+-    /// <typeparam name="TService">The type of the service.</typeparam>
+-    /// <typeparam name="TImplementation">The type that implements the service.</typeparam>
+-    /// <returns>An instance of <typeparamref name="TImplementation"/> that implements <typeparamref name="TService"/>.</returns>
+-    public TImplementation Provide<TService, TImplementation>()
+-        where TService : class
+-        where TImplementation : TService
+-    {
+-        return (TImplementation)AutoMock.Provide<TService, TImplementation>();
+-    }
+-
+-    /// <inheritdoc/>
+-    public virtual void Dispose()
+-    {
+-        if (!_isDisposed)
+-        {
+-            AutoMock.Dispose();
+-            _isDisposed = true;
+-        }
+-    }
+-}
+diff --git a/test/Tests.Common/Yarp.Tests.Common.csproj b/test/Tests.Common/Yarp.Tests.Common.csproj
+index 19f726c3..4a247209 100644
+--- a/test/Tests.Common/Yarp.Tests.Common.csproj
++++ b/test/Tests.Common/Yarp.Tests.Common.csproj
+@@ -10,8 +10,6 @@
+   </PropertyGroup>
+ 
+   <ItemGroup>
+-    <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
+-    <PackageReference Include="Autofac.Extras.Moq" Version="$(AutofacExtrasMoqVersion)" />
+     <PackageReference Include="coverlet.collector" Version="$(CoverletCollectorVersion)" />
+     <PackageReference Include="Moq" Version="$(MoqVersion)" />
+     <PackageReference Include="xunit.v3.extensibility.core" Version="$(XUnitV3Version)" />
+-- 
+2.39.5 (Apple Git-154)
+

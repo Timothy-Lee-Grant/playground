@@ -54,7 +54,7 @@ then make sure the clone is on the **right branch before any work**:
 | The registry (`04-branches.md`) lists a branch for this issue and you're on it | Nothing; continue |
 | Listed, exists locally, you're elsewhere, tree clean | `git -C yarp switch <branch>` |
 | Listed, not local | `git -C yarp fetch origin`; if `origin/<branch>` exists, `git -C yarp switch --track origin/<branch>`. If it's on neither, say so: the registry and reality disagree; ask Timothy |
-| Listed with *On origin?* = "not created yet", or not listed and the plan says to create it (normally after G1) | `git -C yarp fetch upstream`, then `git -C yarp switch -c <branch> upstream/main` (or the plan's base), **then add or update the row in `04-branches.md`** with what it's for |
+| Listed with *On origin?* = "not created yet", or not listed and the plan says to create it (normally after G1) | `git -C yarp fetch upstream`, then `git -C yarp switch --no-track --create <branch> upstream/main` (or the plan's base), **then add or update the row in `04-branches.md`** with what it's for. Use `--create`, not `-c`: the deny rule `git -C * -c *` (blocks `git -c key=value` config overrides) also matches `switch -c` |
 | Uncommitted changes on the current branch | **Stop.** Show `git -C yarp status --short`; ask. Never stash, reset, restore or clean on your own |
 | The branch you'd need is protected | Stop and ask. Never commit on a protected branch |
 
@@ -62,7 +62,9 @@ The `pre-commit` hook refuses commits on any branch not listed under **Active** 
 first, commit second.
 
 After the switch: the build output under `yarp/artifacts/` is shared by all branches, so build once with
-`--no-incremental` (or run `./build.sh`) before trusting a test result.
+`--no-incremental` (or run `./build.sh`) before trusting a test result. The same goes **within** a branch for
+break-it proofs (O2): rebuild with `--no-incremental` every time, or a stale build can leave a break green
+(#275 evidence `004`).
 
 ## 5. The autonomous run (after G1)
 

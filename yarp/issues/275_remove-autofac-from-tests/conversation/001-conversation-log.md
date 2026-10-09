@@ -9,10 +9,10 @@
 
 | | |
 |---|---|
-| **Stage** | Mode P; plan v1 written, waiting for G1. PR queued behind iot#2328's PR. |
-| **Last entry** | #2 (2026-10-01) |
-| **Open decisions** | G1 (Timothy). Upstream: still wanted? scope? style? (asked in the comment after lecture 1) |
-| **Next step** | Timothy reads `shared/plan.md` and grants G1. Then `workspace/setup.sh` (keeps his old clone) and `claude` in `~/Desktop/projects/oss-work/yarp-275/`: the CLI starts with Step 0, the fork audit. |
+| **Stage** | Mode P, Stage 6 (understanding). Change built and verified locally on `remove-autofac-275` (4 commits, not pushed). Lectures 001 and 002 written, not yet read |
+| **Last entry** | #5 (2026-10-08) |
+| **Open decisions** | Mention the vacuous `Verify()` in `ForwarderMiddlewareTests.NoDestinations_503`? (lecture 001 §8, Timothy). Upstream: still wanted? Autofac-only phase 1? (asked in the G2 comment) |
+| **Next step** | Timothy reads lecture 001 (fast path ~20 min) → teach-back → edits and posts the §7 comment (G2). Push only after the maintainers answer (G3) |
 
 ## Index
 
@@ -20,6 +20,9 @@
 |---|---|---|---|
 | 1 | 2026-09-30 | 📍 | Folder set up with the AI workflow; briefing lives in scouting |
 | 2 | 2026-10-01 | 🧭 | Switched to mode P; plan v1; the old clone gets audited first |
+| 3 | 2026-10-07 | 📍 | Moved into the YARP project setup |
+| 4 | 2026-10-08 | 📍 | Change built and verified (CLI session 002); lectures written |
+| 5 | 2026-10-08 | ❓💬 | Review of the G2 comment draft; Moq left out although the issue names both |
 
 ---
 
@@ -48,4 +51,32 @@
   profile, YARP competency, lecture specs, procedures, git hooks). This folder moved to `yarp/issues/`.
 - The old per-issue workspace (`workspace/`, `oss-work/yarp-275/`) is retired; the branch gets recreated in the new
   clone; G1 stands. Details: plan Stage 3 discussion, `[Desktop — 2026_10_07_07_30]`.
+
+## #4 · 2026-10-08 · 📍 Change built and verified (CLI session 002)
+
+- The CLI ran plan Steps 2–10 autonomously after Timothy's "go ahead", then wrote lectures 001 and 002 on request.
+  Report: [`../shared/sessions/002-2026-10-07.md`](../shared/sessions/002-2026-10-07.md).
+- **Verified** (evidence in `../shared/evidence/`): the 7 test files no longer use AutoMock; `TestAutoMockBase` and
+  the Autofac packages are gone (`007`); ReverseProxy.Tests 3,978 passed = baseline; Release build of all 4 test
+  projects identical to `main` with 0 warnings (`011`); all 8 break-it proofs went red (`004`–`006`).
+- Worth knowing for the comment and the PR: `HttpSysDelegator` is `internal sealed`, so AutoMock had been building a
+  **real** one; the rewrite builds it explicitly, so the tests still exercise the same code (`003`).
+- Desktop follow-ups done 2026-10-08: test commands corrected in `current_context/03` §3 and `02` §4; the
+  `switch -c` denial explained (the deny rule `git -C * -c *` matches it) and the recipe changed to
+  `switch --create`.
+- Next: Timothy reads lecture 001 → teach-back → posts the comment (G2).
+
+## #5 · 2026-10-08 · ❓ Question → 💬 Answer: is the comment right, and what about Moq?
+
+**❓ Timothy:** shared his own draft of the G2 comment (still wanted? / Autofac-only first step / constructor + explicit
+Moq mocks, helper and packages deleted, no product change / counts unchanged, break-it checked / PR if useful, Moq
+folder by folder later) and asked: "the issue says both [Autofac and Moq], but we didn't remove Moq."
+
+**💬 Answer (short):** the draft is accurate and the right size. Add one sentence that says openly the issue asks for
+both and this covers only the Autofac half, and ask the maintainers what they want for Moq. Leaving Moq out is a
+defensible scope choice (Autofac is fully gone in 11 files; Moq is in ~25 files (brief count; re-check with
+`git grep -l "using Moq" -- test | wc -l` before posting) and replacing it is a design choice the maintainers
+should make), not a gap, as long as it's stated. The PR then says "Contributes to #275", not "Fixes #275", so the
+issue stays open. The `Verify()` note, the `HttpSysDelegator` detail and the AI disclosure go in the PR description,
+not the comment.
 

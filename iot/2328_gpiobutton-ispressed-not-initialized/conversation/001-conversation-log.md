@@ -13,7 +13,7 @@
 | | |
 |---|---|
 | **Stage** | **PR open: [#2611](https://github.com/dotnet/iot/pull/2611)**. CI awaiting maintainer approval; review pending. |
-| **Last entry** | #13 (2026-10-01) |
+| **Last entry** | #14 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
 | **Next step** | Wait for review; reply within 48 h; no force-push. Teach-back questions still open (optional). |
 
@@ -34,6 +34,7 @@
 | 11 | 2026-10-02 | 📍 | **First code PR opened: dotnet/iot#2611** |
 | 12 | 2026-10-02 | 📍 | Lecture 002: the contribution process (git/GitHub, comments, hunt, verification, coordination) |
 | 13 | 2026-10-06 | 📍 | #2608 merged; conflict resolved by **merge** (not rebase); desktop checked before push |
+| 14 | 2026-10-08 | 📍 | **Approved by pgrawehr**; Windows Debug CI leg failed with 0 errors (likely infrastructure) |
 
 ---
 
@@ -211,3 +212,16 @@ ran `git merge upstream/main` (Scenario B, not a rebase): merge commit `5adc9b9c
 0 warnings; **25/25** (evidence 009, 010). Desktop checked the clone read-only before the push: branch tracks
 `origin/fix/2328-gpiobutton-initial-state`, 3 ahead, so a plain `git push` (no force) publishes it. No session
 report/plan entry yet for this CLI session.
+
+---
+
+## #14 · 2026-10-08 · 📍 Approved; one CI leg failed without an error
+
+pgrawehr (write access): "Looks good, thanks. Bonus points for adding tests!" → **Changes approved** (1 approving
+review). CI ran: Linux Debug/Release and macOS Debug/Release **passed**; `Build Windows Build_Debug` **failed**
+(build #20261008.1). Desktop read the Windows log Timothy pasted: the step ends "Build FAILED. 0 Warning(s) 0 Error(s)"
+after 7m32s; no compile error, no failing test; the 7 test runs that finished all passed; `Button.Tests` was built
+but its run hadn't started. Verdict: no evidence it's caused by the change (same commit passed 4 legs that run the
+Button tests); likely an infrastructure/flaky failure (cf. pgrawehr's draft #2520 about an intermittent runtime GC
+issue: unconfirmed link). Next: polite comment asking a maintainer to re-run the leg (contributors can't re-run Azure
+Pipelines). The separate GitHub Actions workflow is still awaiting approval.

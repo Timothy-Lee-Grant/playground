@@ -46,13 +46,13 @@ names Timothy knows: Clerk, Dispatcher, Courier, Pump, Watchdog…) and `link/ya
 |---|---|
 | SDK | `global.json` pins **11.0.100-rc.1.26420.103** (plus runtimes 8.0.13 and 9.0.2 for multi-targeted tests). Test runner: **Microsoft.Testing.Platform** |
 | Machines | **Mac: yes.** The Linux desktop **can't** run .NET 11 (CPU lacks x86-64-v2). Codespaces works |
-| First time in a clone | `cd yarp && ./restore.sh` installs that SDK into `yarp/.dotnet/` (a few GB; on the SSD now). Then `source activate.sh` puts it on `PATH` for that shell, or call `./.dotnet/dotnet` directly |
+| First time in a clone | `cd yarp && ./restore.sh` installs that SDK into `yarp/.dotnet/` (about 760 MB; on the SSD now). Then `source activate.sh` puts it on `PATH` for that shell, or call `./.dotnet/dotnet` directly |
 | Build everything | `./build.sh` |
-| All tests | `./test.sh` (wraps `eng/common/build.sh --test`) |
-| One test project | `./.dotnet/dotnet test test/ReverseProxy.Tests/` |
-| One test class / method | add a filter; with Microsoft.Testing.Platform + xUnit v3 use `-- --filter-class <FullName>` or `-- --filter-method <Name>` (unverified on this repo; record what works in the issue's evidence the first time) |
+| All tests | `./build.sh --test` (or `./build.sh --configuration Release --rebuild --test`). `./test.sh` only runs tests and doesn't build first: on a fresh tree it "fails" in about 1 s. `./build.sh` passes `/warnaserror`; plain `dotnet build` doesn't |
+| One test project | `./.dotnet/dotnet test --project "$PWD/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj"`: an **absolute** `--project` path. The relative/positional form (`dotnet test test/ReverseProxy.Tests/`) fails with a doubled path (verified #275 `002`; cause unverified) |
+| One test class / method | `--filter-class <Namespace.Class>` or `--filter-method <Namespace.Class.Method>` (no `--` needed). Names must be **full**: a short name silently matches 0 tests and still "passes", so check the test count (verified #275 `002`) |
 | Build output | `yarp/artifacts/`, shared by every branch: build with `--no-incremental` after switching |
-| HTTP.sys tests | Windows-only feature. Whether `HttpSysDelegator*Tests` run, skip or fail on macOS is **unverified** (#275 plan Step 2 checks) |
+| HTTP.sys tests | Windows-only feature, but `HttpSysDelegator*Tests` (mocked) **run** on macOS (verified #275 `002`) |
 
 ## 4. Contribution rules (from `CONTRIBUTING.md`, checked 2026-10-07)
 

@@ -63,7 +63,7 @@ link/  (= ~/Desktop/projects/exercises/yarp/)
 | An issue's status / session reports / evidence | `link/issues/<f>/shared/STATUS.md`, `…/sessions/`, `…/evidence/` |
 | An issue's lectures | `link/issues/<f>/lectures/` |
 | The branch registry | `link/current_context/04-branches.md` |
-| Run all YARP tests | `cd yarp && ./test.sh` · one project: `./.dotnet/dotnet test test/ReverseProxy.Tests/` (see `03-yarp-project.md`) |
+| Run all YARP tests | `cd yarp && ./test.sh` · `./build.sh --test` builds first; `./test.sh` doesn't · one project: `./.dotnet/dotnet test --project <absolute path to .csproj>` (see `03-yarp-project.md` §3) |
 | Git on the clone without `cd` | `git -C yarp <command>` |
 
 ## 5. Things that look odd but are on purpose

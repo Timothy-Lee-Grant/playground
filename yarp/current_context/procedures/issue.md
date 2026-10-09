@@ -23,7 +23,7 @@
    - uncommitted changes anywhere → **stop**, show `git -C yarp status --short`, ask;
    - exists locally → `git -C yarp switch <branch>`;
    - only on origin → `git -C yarp fetch origin && git -C yarp switch --track origin/<branch>`;
-   - row says "not created yet": create it **only if G1 is granted** (`git -C yarp fetch upstream && git -C yarp switch -c <branch> <base>`),
+   - row says "not created yet": create it **only if G1 is granted** (`git -C yarp fetch upstream && git -C yarp switch --no-track --create <branch> <base>`),
      then update the row (Status, date). Before G1, stay on `main` and say the branch will be created when work starts;
    - row says it exists but it's on neither local nor origin → stop; tell Timothy the registry and reality disagree.
    After any switch: note that the next build must be `--no-incremental`.

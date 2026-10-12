@@ -1,0 +1,20 @@
+# 000 — Manual I2C checks on the Pi (by Timothy, pasted into the desktop chat; recorded by desktop Claude)
+Date: 2026-10-11
+Pi: Raspberry Pi 4 Model B Rev 1.2, kernel 6.1.21-v8+ (uname -m: aarch64)
+Board: Adafruit BMP390 (product 4816), STEMMA QT cable, I2C bus 1
+Tools: i2c-tools 4.2-1+b1
+
+$ i2cdetect -y 1        (first run, 2026-10-10: no device found)
+$ i2cdetect -y 1        (second run, 2026-10-11)
+70: -- -- -- -- -- -- -- 77
+
+$ i2cget -y 1 0x77 0x00
+0x60        -> chip ID = BMP390 (brief §3 row verified on hardware)
+
+$ i2cget -y 1 0x77 0x03
+0x10        -> STATUS at idle: cmd_rdy = 1, drdy bits = 0.
+               Resolves lecture 001 §9 risk #1 / session-001 "unverified: cmd_rdy reads 1 when idle":
+               VERIFIED on this chip. The datasheet's reset table (STATUS = 0x00) does not describe the idle value.
+
+Sample run (published linux-arm64, self-contained): "./Bmp3xx.Samples: No such file or directory" although the
+file exists -> suspected 32-bit userland under a 64-bit kernel (RID should be linux-arm). Not yet confirmed.

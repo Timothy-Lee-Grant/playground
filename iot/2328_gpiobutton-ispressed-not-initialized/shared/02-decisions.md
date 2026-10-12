@@ -14,6 +14,7 @@
 | D7 | 2026-10-02 | Maintainer reply: keep immediate read (no delay, no events) and register-then-read (document the window, no lock). PR welcome, avoiding collisions with #2608 | Matches our defaults | desktop |
 | D8 | 2026-10-02 | **PR opened: https://github.com/dotnet/iot/pull/2611** | Maintainer go-ahead (D7); evidence 008 | Timothy |
 | D9 | 2026-10-06 | PR #2611 conflict after #2608 merged: **merge `upstream/main` into the branch** (keep both csproj lines) and push normally; no rebase, no force-push. Pushed `5adc9b9c` | Follows the repo's "avoid force-pushing during review" and plan Stage 8; tested first (25/25, evidence 009/010). Proceeded without asking desktop first | CLI |
+| D10 | 2026-10-08 | **PR #2611 merged** by pgrawehr; #2328 closed by it | — | desktop |
 
 ## Pending (not decided)
 

@@ -1,0 +1,26 @@
+# 002 — Reference-pressure comparison and lift test (plan Step 13; pasted by Timothy, recorded by desktop Claude)
+Date: 2026-10-11 · Same setup as 001 (Pi 4, 32-bit userland, Adafruit BMP390 @ 0x77, branch @ 8d23d3d4, linux-arm build)
+Location: Newberg, Oregon. Elevation (city, per Timothy): 194.0 ft = 59.1 m
+Reference: local weather report "Pressure 29.89 in" (sea-level pressure, inHg; read by Timothy at the time of the runs)
+
+## Runs (board lifted up and down by hand through ~3-4 ft during the runs, per Timothy)
+Run 3 forced (hPa): 1005.51 1005.52 1005.51 1005.50 1005.49 1005.49 1005.48 1005.47 1005.47 1005.50 · T 22.21-22.22 °C
+Run 3 normal 25 Hz: 1005.59 1005.58 1005.57 1005.57 1005.57
+Run 3 altitude (standard atmosphere, m): 66.3 66.3 66.3 66.4 66.5 66.5 66.6 66.7 66.7 66.4
+Run 4 forced (hPa): 1005.60 1005.61 1005.60 1005.60 1005.59 1005.57 1005.55 1005.54 1005.52 1005.51 · T 22.19-22.16 °C
+Run 4 normal 25 Hz: 1005.48 1005.47 1005.47 1005.46 1005.47
+Run 4 altitude (m): 65.6 65.5 65.6 65.6 65.6 65.8 66.0 66.1 66.3 66.3
+
+## Desktop analysis (arithmetic, not a measurement)
+Reference station pressure:
+  29.89 inHg × 33.8639 hPa/inHg = 1012.19 hPa at sea level
+  at 59.1 m: 1012.19 × exp(−59.1 / ~8400 m) ≈ 1012.19 − 7.1 ≈ 1005.1 hPa
+Measured: 1005.5 ± 0.1 hPa → difference ≈ +0.4 hPa.
+  BMP390 absolute accuracy (datasheet): ±0.5 hPa. Also uncertain: the house's elevation vs the city's 194 ft
+  (4 m ≈ 0.5 hPa), the report's timing and rounding (0.01 inHg ≈ 0.34 hPa). → AGREES within the expected uncertainty.
+Altitude using the reported sea-level pressure instead of 1013.25 hPa: 66 m − (1013.25 − 1012.19)/0.12 ≈ 57 m,
+  vs 59 m city elevation. → consistent.
+Lift test: at rest, run-to-run noise ≈ ±1 Pa (±0.01 hPa ≈ ±8 cm). During the hand movements the pressure moved by
+  0.10-0.14 hPa (10-14 Pa) and the computed altitude by 0.8-1.2 m, i.e. the expected ~12 Pa/m for a 3-4 ft range.
+  Movement was continuous and the IIR filter (coefficient 3) lags, so this is qualitative. A cleaner version: one
+  full run held still on the floor, one held still ~1 m higher, compare the averages.

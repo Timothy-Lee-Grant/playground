@@ -12,10 +12,10 @@
 
 | | |
 |---|---|
-| **Stage** | **PR open: [#2611](https://github.com/dotnet/iot/pull/2611)**. CI awaiting maintainer approval; review pending. |
-| **Last entry** | #14 (2026-10-01) |
+| **Stage** | ✅ **Done: PR #2611 merged (2026-10-08).** |
+| **Last entry** | #15 (2026-10-01) |
 | **Open decisions** | U1/U2 stay open for the maintainers; built on our defaults |
-| **Next step** | Wait for review; reply within 48 h; no force-push. Teach-back questions still open (optional). |
+| **Next step** | Reflect (root CLAUDE.md §9.3); then pick the next issue (casebook 005: #1887 top candidate). |
 
 ## Index
 
@@ -35,6 +35,7 @@
 | 12 | 2026-10-02 | 📍 | Lecture 002: the contribution process (git/GitHub, comments, hunt, verification, coordination) |
 | 13 | 2026-10-06 | 📍 | #2608 merged; conflict resolved by **merge** (not rebase); desktop checked before push |
 | 14 | 2026-10-08 | 📍 | **Approved by pgrawehr**; Windows Debug CI leg failed with 0 errors (likely infrastructure) |
+| 15 | 2026-10-08 | 📍 | ✅ **Merged** |
 
 ---
 
@@ -225,3 +226,11 @@ but its run hadn't started. Verdict: no evidence it's caused by the change (same
 Button tests); likely an infrastructure/flaky failure (cf. pgrawehr's draft #2520 about an intermittent runtime GC
 issue: unconfirmed link). Next: polite comment asking a maintainer to re-run the leg (contributors can't re-run Azure
 Pipelines). The separate GitHub Actions workflow is still awaiting approval.
+
+---
+
+## #15 · 2026-10-08 · 📍 ✅ Merged
+
+[PR #2611](https://github.com/dotnet/iot/pull/2611) merged into dotnet/iot `main` by pgrawehr. Timothy's **first merged code contribution to open
+source**. Timeline: picked the issue Tue 9/29 → built Thu 10/1 → commented Thu → PR Fri 10/2 → approved and merged
+10/8. In his words: "I finally feel so much less intimidated by open source."

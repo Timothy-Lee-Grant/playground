@@ -142,13 +142,13 @@ The concept areas I want exposure to, and where I've encountered each one throug
 | Concept area | Examples | Encountered via (issue / PR) | Depth |
 |---|---|---|---|
 | Native interop & memory layout | P/Invoke, struct layout across architectures, native asserts, `SafeHandle` | | |
-| Hardware protocols & drivers | I2C/SPI edge cases, register maps, libgpiod | dotnet/iot#2403 (driver event paths, libgpiod v1/v2) | Read |
+| Hardware protocols & drivers | I2C/SPI edge cases, register maps, libgpiod | dotnet/iot#2403 (driver event paths, libgpiod v1/v2); **dotnet/iot#2611** (GpioButton initial state, merged) | **Contributed** |
 | Concurrency & event dispatch | Observer threads, locks vs. concurrent collections, event wrappers | dotnet/iot#2403 (`sender`, event accessors, delegate identity) | Read |
 | Error handling & API compatibility | Exception design, fallbacks, behavior changes vs. breaking changes | dotnet/iot#2403 (behavioral break → major release; #2341, #2421 precedent) | Read |
 | Networking & proxies | Reverse proxies, WebSockets, timeouts, keep-alives | dotnet/yarp#1764 (idle WebSocket abort at `ActivityTimeout`, keep-alive fix) | Reproduced |
 | Security & identity | OAuth 2.0 / OIDC, TLS, certificate automation (ACME) | | |
 | Protocols & versioning | Capability negotiation, spec-driven SDKs (MCP), JSON-RPC | | |
-| Testing infrastructure | Flaky tests, CI timing, `WebApplicationFactory`, fakes vs. mocks | | |
+| Testing infrastructure | Flaky tests, CI timing, `WebApplicationFactory`, fakes vs. mocks | dotnet/iot#2611 (Moq + `MockableGpioDriver`, red → green, multi-OS CI) | **Contributed** |
 | Build, packaging & CI | MSBuild, multi-targeting, NuGet packaging, GitHub Actions / Azure Pipelines | | |
 | Containers & deployment | Device access in containers, minimal/chiseled images | | |
 | Observability | OpenTelemetry, `Activity`, metrics | | |
@@ -266,7 +266,7 @@ Update after each contribution. This is the source for resume lines and intervie
 
 | Date | Repo | Issue / PR | Type | Status | What I learned |
 |---|---|---|---|---|---|
-| | | | | | |
+| 2026-10-08 | dotnet/iot | [#2328](https://github.com/dotnet/iot/issues/2328) / [PR #2611](https://github.com/dotnet/iot/pull/2611) | Bug fix + tests (first code PR) | **Merged** by pgrawehr ("Looks good, thanks. Bonus points for adding tests!") | Edge vs. level state; red → green tests with a mocked `GpioDriver`; reading maintainer replies; coordinating with a parallel PR (#2608: merge simulation, then merging `main`); fork/remote/tracking/PR mechanics; CI on 3 OSes |
 
 ---
 

@@ -487,3 +487,5 @@ opening; Timothy chose to proceed (recorded as-is).
 
 Rules: reply within 48 h; **no force-push**: add commits; if #2608 merges and the PR shows a conflict, ask desktop
 before resolving (merging `main` into the branch avoids a force-push).
+
+**[Desktop — 2026_10_10] Merged.** https://github.com/dotnet/iot/pull/2611 merged into `dotnet/iot` `main` by pgrawehr on 2026-10-08 (3 commits; approved by pgrawehr; CI re-run). #2328 closed. **Plan complete.**

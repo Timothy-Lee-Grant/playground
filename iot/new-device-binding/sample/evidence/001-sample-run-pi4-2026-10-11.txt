@@ -1,0 +1,84 @@
+# 001 — Bmp3xx sample on real hardware (plan Step 13, first pass; pasted by Timothy, recorded by desktop Claude)
+Date: 2026-10-11
+Pi: Raspberry Pi 4 Model B Rev 1.2, Raspberry Pi OS 32-bit userland (getconf LONG_BIT = 32, dpkg arch = armhf)
+    on a 64-bit kernel (6.1.21-v8+, uname -m = aarch64)
+Board: Adafruit BMP390 (product 4816) at 0x77, STEMMA QT cable, I2C bus 1
+Binding: fork branch feature/bmp3xx-binding @ 8d23d3d4
+Build (Mac): dotnet publish iot/src/devices/Bmp3xx/samples/ -c Release -r linux-arm --self-contained -o scratch/new-device-binding/publish/sample-arm32
+Note: the first publish used -r linux-arm64 -> "./Bmp3xx.Samples: No such file or directory" (64-bit loader missing
+      on a 32-bit userland). uname -m reports the kernel, not the userland; use dpkg --print-architecture.
+Command (Pi): ./Bmp3xx.Samples | tee sample-run-$(date +%F).txt   (run twice; the second run overwrote the file on the Pi)
+Sample settings: pressure x8, temperature x1, IIR coefficient 3; then normal mode, ODR 40 ms (25 Hz)
+
+## Run 1
+Hello Bmp3xx!
+One measurement takes about 19 ms.
+Forced mode, one measurement per second:
+  Temperature: 22.05 °C, pressure: 1005.53 hPa
+  Altitude (standard atmosphere): 66.1 m
+  Temperature: 22.05 °C, pressure: 1005.53 hPa
+  Altitude (standard atmosphere): 66.2 m
+  Temperature: 22.05 °C, pressure: 1005.52 hPa
+  Altitude (standard atmosphere): 66.2 m
+  Temperature: 22.05 °C, pressure: 1005.54 hPa
+  Altitude (standard atmosphere): 66.1 m
+  Temperature: 22.05 °C, pressure: 1005.54 hPa
+  Altitude (standard atmosphere): 66.1 m
+  Temperature: 22.06 °C, pressure: 1005.54 hPa
+  Altitude (standard atmosphere): 66.1 m
+  Temperature: 22.06 °C, pressure: 1005.54 hPa
+  Altitude (standard atmosphere): 66.1 m
+  Temperature: 22.06 °C, pressure: 1005.54 hPa
+  Altitude (standard atmosphere): 66.1 m
+  Temperature: 22.05 °C, pressure: 1005.53 hPa
+  Altitude (standard atmosphere): 66.1 m
+  Temperature: 22.06 °C, pressure: 1005.54 hPa
+  Altitude (standard atmosphere): 66.1 m
+Normal mode at 25 Hz:
+  Pressure: 1005.55 hPa
+  Pressure: 1005.53 hPa
+  Pressure: 1005.52 hPa
+  Pressure: 1005.54 hPa
+  Pressure: 1005.56 hPa
+Done.
+
+## Run 2
+Hello Bmp3xx!
+One measurement takes about 19 ms.
+Forced mode, one measurement per second:
+  Temperature: 22.80 °C, pressure: 1005.69 hPa
+  Altitude (standard atmosphere): 65.0 m
+  Temperature: 22.83 °C, pressure: 1005.68 hPa
+  Altitude (standard atmosphere): 65.1 m
+  Temperature: 22.90 °C, pressure: 1005.67 hPa
+  Altitude (standard atmosphere): 65.1 m
+  Temperature: 22.94 °C, pressure: 1005.68 hPa
+  Altitude (standard atmosphere): 65.0 m
+  Temperature: 22.97 °C, pressure: 1005.68 hPa
+  Altitude (standard atmosphere): 65.1 m
+  Temperature: 22.98 °C, pressure: 1005.67 hPa
+  Altitude (standard atmosphere): 65.1 m
+  Temperature: 23.00 °C, pressure: 1005.67 hPa
+  Altitude (standard atmosphere): 65.2 m
+  Temperature: 23.00 °C, pressure: 1005.66 hPa
+  Altitude (standard atmosphere): 65.2 m
+  Temperature: 23.00 °C, pressure: 1005.65 hPa
+  Altitude (standard atmosphere): 65.3 m
+  Temperature: 23.00 °C, pressure: 1005.64 hPa
+  Altitude (standard atmosphere): 65.4 m
+Normal mode at 25 Hz:
+  Pressure: 1005.63 hPa
+  Pressure: 1005.61 hPa
+  Pressure: 1005.60 hPa
+  Pressure: 1005.59 hPa
+  Pressure: 1005.58 hPa
+Done.
+
+## Desktop reading (not a measurement)
+- Verified on hardware: constructor path (chip ID, soft reset with cmd_rdy + por_detected, calibration read,
+  defaults), forced-mode Read() x20 with valid values, TryReadAltitude, switch to normal mode (ODR 40 ms, x8/x1 =
+  19 ms) without a configuration error, TryReadPressure in normal mode x10.
+- Noise: run 1 forced pressure spread 0.02 hPa (2 Pa) with x8 + IIR 3; temperature spread 0.01 °C.
+- Plausibility: 1005.5 hPa station pressure, 22 °C room. Not yet compared with a weather station (unverified).
+- Still untested on hardware: lecture §9 #3 (conf_err path), #4 (normal mode at default 200 Hz x1/x1),
+  1 m lift test, station-pressure comparison, real calibration bytes (E1, vectors V1-V5).

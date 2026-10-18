@@ -776,6 +776,8 @@ AI-assisted; I've reviewed all of it and can explain every part.
 
 *(One entry per review comment and its resolution.)*
 
+[Desktop — 2026_10_18] **CI on #2627, first run (Azure build 133095, merge commit `fc1b278b`): 1 of 6 legs red — Windows Release.** The Build step (`build.cmd -ci -configuration Release -prepareMachine /p:BuildPackages=true`) ends with `Build FAILED.` / `0 Warning(s)` / `0 Error(s)` at 21:48:48, right after `Bmp3xx.Tests` and `Amg88xx.Tests` finished compiling and before `Iot.Device.Bindings` was built or packed. The two red annotations (`Not found SourceFolder …\packages\Release\Shipping`, `Path does not exist …\a\Packages`) are follow-on: no packages were produced to copy. Windows Debug runs the same command with BuildPackages and passed (packed `Iot.Device.Bindings` fine), and the Linux and macOS Release legs passed. Main (133087) is green. **Read: most likely a silent MSBuild failure (flake), not our code; unproven** (binlog not reachable from desktop). Side finding: CI runs only ~9 test projects; `Bmp3xx.Tests` is built but not run in CI (same as e.g. `Vcnl4040.Tests`). Action: Timothy asks for a re-run in a short PR comment; if it fails again the same way, reproduce on the Mac with the exact command plus `-bl` and read the binlog.
+
 [CLI — 2026_10_05_21_46] **Step 0: plan review against code and datasheets. Verdict: plan holds; no CHANGE REQUEST.**
 
 *Changed:* nothing in the fork. Datasheets + a Python venv (pypdf, for text extraction) in `scratch/new-device-binding/tools/` (outside the fork). Recorded G1 in §3.4 and D5 in `02-decisions.md`.

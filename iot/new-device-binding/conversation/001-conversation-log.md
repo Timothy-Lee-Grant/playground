@@ -94,3 +94,13 @@ report: [`lectures/001-the-bmp3xx-binding-end-to-end.md`](../lectures/001-the-bm
 Written before Steps 12/15 (plan Stage 6 assumed after); covers the plan's spec plus the hardware test ladder and
 §9 "what only hardware can tell us" (biggest risk: `CommandReady` idle value → constructor would throw).
 
+## #6 · 2026-10-18 · 📍 PR opened: dotnet/iot#2627
+
+Between #5 and here: Pi set up (32-bit userland → `-r linux-arm`), BMP390 verified on hardware (`sample/evidence/000–006`),
+a hardware-found bug fixed (mode write ignored mid-measurement → `SetPowerMode` waits), lectures 002 (sample + one I2C
+call) and 003 (YouTube run sheet), video recorded and reviewed from its transcript (teach-back 004, G3 pass; one
+public correction suggested: `I2cDevice.Create` opens `/dev/i2c-1`, it doesn't detect the Pi or OS). Desktop checked the
+code against `Devices-conventions.md`: one deviation (`GetMeasurementDuration()` returns `int` ms, as `Bmxx80`), added to
+the description. Fork merged with upstream (`fc7d7b57`), 79/79, pushed. Timothy opened **#2627** himself.
+Next: review comments → plan Stage 8.
+

@@ -768,6 +768,8 @@ Raspberry Pi <model>, <OS>, <BMP390 breakout>; .NET SDK <version>; tests <n>/<n>
 AI-assisted; I've reviewed all of it and can explain every part.
 ```
 
+[Desktop — 2026_10_18] **Step 19 done: PR opened by Timothy, dotnet/iot#2627** (`Timothy-Lee-Grant:feature/bmp3xx-binding` @ `fc7d7b57` → `dotnet:main`). No proposal issue (desktop judged it unnecessary: Cap1208 merged without one), so no `Fixes` line. Description = `pr/001-pr-description-draft.md` + a design-choice line for `GetMeasurementDuration()` returning `int` ms (matches `Bmxx80`, the only deviation from `Documentation/Devices-conventions.md` found in the desktop check) + demo video https://www.youtube.com/watch?v=p0bjJdOGpkM (TB 004: G3 pass; correction note suggested for the `I2cDevice.Create` remark). Next: Stage 8, one entry per review comment. CI/bot results not yet checked from desktop (no GitHub API access for dotnet/iot in that session).
+
 ---
 
 # Stage 8 (Review)

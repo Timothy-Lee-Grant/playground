@@ -10,14 +10,14 @@
 
 | Folder (in `iot_project/`) | What | Upstream ref | Branch | Base | Remote push | Status (date) |
 |---|---|---|---|---|---|---|
-| `new-device-binding` | New binding: Bosch BMP390/BMP388 (`src/devices/Bmp3xx/`) | none yet (proposal issue = plan Step 17) | `feature/bmp3xx-binding` | `upstream/main` | `origin` (Timothy's fork) only, with his OK | G1 open; Steps 0–11 done without hardware, 65/65 tests, pushed to origin @ `8d23d3d4`; next Step 12, hardware Steps 2/3/13 wait for the sensor (2026-10-05) |
+| `new-device-binding` | New binding: Bosch BMP390/BMP388 (`src/devices/Bmp3xx/`) | dotnet/iot PR 2627 (opened 2026-10-18; no proposal issue) | `feature/bmp3xx-binding` | `upstream/main` | `origin` (Timothy's fork) only, with his OK | **PR open** @ `fc7d7b57` (79/79 tests, hardware checks pass). In review: CLI may commit review fixes on this branch; pushes on Timothy's word; Timothy posts every reply (2026-10-18) |
 
 ## Protected (never check out, commit, rebase, reset or push from this project)
 
 | Branch | Why |
 |---|---|
 | `main` | Mirrors `upstream/main` only when Timothy asks. Never commit on it |
-| `fix/2328-gpiobutton-initial-state` | dotnet/iot#2328, **PR #2611 open**. Worked only from `~/Desktop/projects/oss-work/iot-2328/` (the old layout, left intact on purpose) |
+| `fix/2328-gpiobutton-initial-state` | dotnet/iot#2328, PR #2611 **merged** (upstream `c8e4589f`). Worked only from `~/Desktop/projects/oss-work/iot-2328/` (the old layout, left intact on purpose) |
 | anything not listed under "Active" | Ask Timothy |
 
 ## Adding an issue (desktop)

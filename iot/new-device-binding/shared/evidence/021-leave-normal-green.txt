@@ -1,0 +1,14 @@
+# 021 — leaving normal mode GREEN: SetPowerMode waits for the running measurement
+Date: 2026-10-17 19:43:23 PDT
+dotnet --version: 10.0.302
+Fork commit: 73b2880a on feature/bmp3xx-binding (+ uncommitted changes)
+Commands (from iot/): dotnet build src/devices/Bmp3xx/tests/ --no-incremental ; dotnet test src/devices/Bmp3xx/tests/ --no-build
+=================== BUILD
+    0 Error(s)
+    0 Warning(s)
+build exit: 0
+=================== TEST
+Test run for /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+Passed!  - Failed:     0, Passed:    79, Skipped:     0, Total:    79, Duration: 211 ms - Bmp3xx.Tests.dll (net8.0)
+test exit: 0

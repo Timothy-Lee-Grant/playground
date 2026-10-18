@@ -1,0 +1,27 @@
+# 004 — conf-diag on the Pi (raw I2C; run by Timothy, recorded by CLI)
+Date: 2026-10-17 (Pi clock 17:34:55 -09:00) · same setup as 003 · build: sample/conf-diag, System.Device.Gpio 4.2.0, -r linux-arm
+Command (Pi): ./conf-diag 0x77 | tee conf.txt
+Full output: as pasted by Timothy in CLI session 003 (summarized rows below are verbatim)
+
+Part 1 (x32/x32 @ 5 ms, normal written at t=0):
+  t=0.34 ms PWR_CTRL 0x03 ERR 0x04 STATUS 0x70 ; every later read (13 ms .. 500 ms): PWR_CTRL 0x03 ERR 0x00
+Part 2: PWR_CTRL 0x03 ERR 0x04 (ERR read once, 500 ms after the write)
+Part 3: 87 combinations near the boundary (ODR 5/10/20/40/80 ms). 84 agree with the binding's rule.
+  Every combination the formula rejects: PWR_CTRL 0x03, ERR 0x04 (conf_err), 100%.
+  Every combination the formula accepts: PWR_CTRL 0x33, ERR 0x00 — except 3:
+    x4  x4   20 | 16949 us | fits | 0x03 0x00 -> not accepted
+    x16 x2   40 | 37149 us | fits | 0x03 0x00 -> not accepted
+    x8  x2   80 | 20989 us | fits (26% of the period) | 0x03 0x00 -> not accepted
+
+## CLI reading
+- conf_err IS set immediately (0.34 ms) and the chip drops to sleep immediately. Clears on read (Part 1). VERIFIED.
+- The binding's duration formula matches the chip's conf_err rule on all 84 conf_err-relevant rows. VERIFIED.
+- So the earlier explanation of hw-check (b) ("conf_err set late") is WRONG.
+- The 3 mismatches have a different signature (sleep, ERR 0x00), and each trial directly followed an accepted trial that
+  left the chip measuring in normal mode (12.9 / 35.1 / 73.5 ms measurements); conf-diag waited only 5 ms after writing
+  sleep. x8/x2 @ 80 ms can't be a timing-rule rejection. Hypothesis (UNVERIFIED): leaving normal mode mid-measurement,
+  the sleep takes effect only when the measurement ends, and writes in that window are lost.
+- hw-check (b) fits the same pattern: (a) left the chip in normal at 5 ms x1/x1 (measuring ~97% of the time), then
+  SetPowerMode(Sleep), OSR writes, SetPowerMode(Normal) followed within microseconds.
+- Bosch's driver waits a fixed 5 ms after putting the chip to sleep ("give some time"), which conf-diag shows is
+  not always enough. -> sleep-diag to test the hypothesis.

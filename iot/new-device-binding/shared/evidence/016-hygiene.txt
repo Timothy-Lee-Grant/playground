@@ -1,0 +1,22 @@
+# 016 — Step 12 hygiene (+ Iot.Device.Bindings build)
+Date: 2026-10-17 19:18:47 PDT · dotnet 10.0.302 · fork @ 17779fa9, clean: yes
+=== 1. dotnet build src/devices/Bmp3xx/samples/ --no-incremental
+    0 Warning(s)
+    0 Error(s)
+exit 0
+=== 2. dotnet test src/devices/Bmp3xx/tests/ --no-build, 5 times
+Passed!  - Failed:     0, Passed:    66, Skipped:     0, Total:    66, Duration: 210 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    66, Skipped:     0, Total:    66, Duration: 203 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    66, Skipped:     0, Total:    66, Duration: 200 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    66, Skipped:     0, Total:    66, Duration: 206 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    66, Skipped:     0, Total:    66, Duration: 204 ms - Bmp3xx.Tests.dll (net8.0)
+=== 3. diff scope: git diff --name-only upstream/main outside src/devices/Bmp3xx/
+(none)
+=== 4-6. clean-room / TODO / pragma
+clean-room: none
+TODO: none
+pragma: none
+=== Extra: dotnet build src/Iot.Device.Bindings/ (whole bindings package, includes Bmp3xx)
+    0 Error(s)
+    0 Warning(s)
+exit 0

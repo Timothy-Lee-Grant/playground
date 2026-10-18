@@ -1,0 +1,34 @@
+# 014 — Build BLOCKED by the environment (not a code result)
+Date: 2026-10-17 17:17:37 PDT · fork @ 0107c2a5 (+ uncommitted D7 test change)
+Cause: ~/.zshrc sets NUGET_PACKAGES=/Volumes/T7/nuget-packages; the T7 drive is not mounted. The merge of upstream/main
+(aa847648, arcade update) needs a new Microsoft.DotNet.Arcade.Sdk, which NuGet can't download there.
+So the D7 red run did not happen; D7 code went in without a red/green pair. Re-run once T7 is mounted.
+
+Step 12 checks that don't need a build (run 2026-10-17, @ 0107c2a5 + D7):
+  clean-room grep: no matches · TODO/NotImplementedException: none · #pragma warning disable: none
+  git diff --name-only upstream/main: only src/devices/Bmp3xx/** (24 files, +2466 before D7)
+
+Raw build output of the failed attempt:
+# 014 — D7 (U4 option b) RED: tests changed, code not yet
+Date: 2026-10-17 17:16:10 PDT
+dotnet --version: 10.0.302
+Fork commit: 0107c2a5 on feature/bmp3xx-binding (+ uncommitted changes)
+Commands (from iot/): dotnet build src/devices/Bmp3xx/tests/ --no-incremental ; dotnet test src/devices/Bmp3xx/tests/ --no-build
+=================== BUILD
+    0 Warning(s)
+    2 Error(s)
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error :   SDK resolver "Microsoft.DotNet.MSBuildWorkloadSdkResolver" returned null.
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error :   System.AggregateException: One or more errors occurred. (Access to the path '/Volumes/T7' is denied.)
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error :  ---> System.IO.IOException: Permission denied
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error :  ---> System.UnauthorizedAccessException: Access to the path '/Volumes/T7' is denied.
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error : Could not resolve SDK "Microsoft.DotNet.Arcade.Sdk". Exactly one of the probing messages below indicates why we could not resolve the SDK. Investigate and resolve that message to correctly specify the SDK.
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,31): error MSB4236: The SDK 'Microsoft.DotNet.Arcade.Sdk' specified could not be found. [/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xx.Tests.csproj]
+build exit: 1
+=================== TEST
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error : Could not resolve SDK "Microsoft.DotNet.Arcade.Sdk". Exactly one of the probing messages below indicates why we could not resolve the SDK. Investigate and resolve that message to correctly specify the SDK.
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error :   SDK resolver "Microsoft.DotNet.MSBuildWorkloadSdkResolver" returned null.
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error :   System.AggregateException: One or more errors occurred. (Access to the path '/Volumes/T7' is denied.)
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error :  ---> System.UnauthorizedAccessException: Access to the path '/Volumes/T7' is denied.
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,3): error :  ---> System.IO.IOException: Permission denied
+/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/Directory.Build.props(5,31): error MSB4236: The SDK 'Microsoft.DotNet.Arcade.Sdk' specified could not be found. [/Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xx.Tests.csproj]
+test exit: 1

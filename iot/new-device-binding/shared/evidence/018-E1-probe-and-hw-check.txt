@@ -1,0 +1,53 @@
+# 003 — E1 probe (plan Step 3) and hardware checks (work order item 2); run by Timothy, recorded by CLI
+Date: 2026-10-17 (Pi clock shows 17:29 -09:00; Mac time ~19:25 PDT: the Pi's timezone/clock is off, harmless)
+Pi: Raspberry Pi 4, 32-bit userland · Adafruit BMP390 @ 0x77, bus 1
+Builds (Mac): dotnet publish sample/{E1-probe,hw-check} -c Release -r linux-arm --self-contained -o scratch/new-device-binding/publish/<name>
+  E1-probe: System.Device.Gpio 4.2.0 (NuGet) only · hw-check: the binding @ 17779fa9
+Commands (Pi): ./E1-probe 0x77 | tee e1.txt ; ./hw-check | tee hw.txt
+Room temperature / reference pressure: not recorded
+
+## E1-probe
+Date: 2026-10-17 17:29:04 -09:00, bus 1, address 0x77
+Chip ID (0x00): 0x60
+ERR     (0x02): 0x00
+STATUS  (0x03): 0x10
+Calibration (0x31, 21 bytes): 4B 6B 03 4C F9 15 1E 68 17 06 01 21 48 0D 5A 03 FA 53 10 08 F5
+Reading 1: STATUS 0x70, data 00 7E 5F 00 26 7D, raw P 6258176, raw T 8201728
+Reading 2: STATUS 0x70, data 00 7D 5F 00 25 7D, raw P 6257920, raw T 8201472
+Reading 3: STATUS 0x70, data 00 7C 5F 00 27 7D, raw P 6257664, raw T 8201984
+Reading 4: STATUS 0x70, data 00 7E 5F 00 27 7D, raw P 6258176, raw T 8201984
+Reading 5: STATUS 0x70, data 00 7B 5F 00 26 7D, raw P 6257408, raw T 8201728
+After normal:            PWR_CTRL 0x33, ERR 0x00
+After forced (direct):   PWR_CTRL 0x33
+After sleep:             PWR_CTRL 0x00
+
+## hw-check
+Date: 2026-10-17 17:29:19 -09:00
+(a) Normal mode with the defaults
+    P X1, T X1, filter Off, ODR Period5Milliseconds, measurement 5 ms
+    Pressure: 1014.98 hPa
+    Pressure: 1014.97 hPa
+    Pressure: 1014.95 hPa
+    Pressure: 1015.04 hPa
+    Pressure: 1014.99 hPa
+    Pressure: 1015.04 hPa
+    Pressure: 1014.93 hPa
+    Pressure: 1014.94 hPa
+    Pressure: 1015.00 hPa
+    Pressure: 1015.03 hPa
+    Mode now: Normal, errors: None
+(a) PASS
+(b) Normal mode with x32/x32 at 5 ms
+    ODR Period5Milliseconds, measurement 131 ms
+    Did not throw. Mode now: Sleep
+(b) FAIL
+
+## CLI reading
+- Chip ID 0x60 (BMP390); 5 forced readings stable (raw P spread 768 counts, raw T 512) -> Step 3 done.
+- Oracles on these bytes (both, scratch/.../bmp3-oracle): V1 21.172585163 °C / 101499.0577 Pa ... V5 101505.6099 Pa;
+  Bosch vs formulas.py |dP| <= 2.3e-5 Pa. ~1015.0 hPa matches hw-check (a)'s 1014.93-1015.04 hPa.
+- VERIFIED: a direct normal -> forced write is IGNORED (PWR_CTRL stays 0x33). SetPowerMode's detour through sleep is required.
+- VERIFIED: normal mode at the default 5 ms with x1/x1 works -> default ODR stays (no O5 change).
+- BUG: with x32/x32 at 5 ms the chip ends in sleep, but ERR.conf_err was not set when SetPowerMode read it
+  right after the write -> no exception, silent failure. The simulated chip sets conf_err immediately (guessed).
+  Timing unknown -> conf-diag program.

@@ -1,0 +1,16 @@
+# 005 — sleep-diag on the Pi (raw I2C; run by Timothy, recorded by CLI)
+Date: 2026-10-17 (Pi clock 17:39:24 -09:00) · same setup as 003 · build: sample/sleep-diag, System.Device.Gpio 4.2.0, -r linux-arm
+Setup per part: sleep, 150 ms, clear ERR, OSR 0x05 (x32 P, x1 T = 67.4 ms), ODR 0x04 (80 ms), normal (0x33)
+
+A: sleep written 10 ms into the measurement: PWR_CTRL reads 0x00 at +1.4 ms and at every read up to +90 ms; STATUS 0x70.
+B: OSR = 0x00 written right after sleep: reads 0x00 at once and 100 ms later (the write sticks).
+C: sleep, OSR 0x00, normal (0x33) written back to back, sleep at +5/+17/+29/+41/+53 ms:
+   5/5: PWR_CTRL 0x03 ERR 0x00 OSR 0x00 (200 ms later) -> the normal-mode write was IGNORED, no error.
+D: as C but 70 ms between the sleep write and the rest: 5/5 PWR_CTRL 0x33 ERR 0x00 OSR 0x00 -> accepted.
+
+## CLI reading (VERIFIED on this chip)
+- After leaving normal mode mid-measurement, a new mode written before the running measurement ends is ignored,
+  silently (no ERR bit). Waiting longer than the measurement fixes it.
+- PWR_CTRL reads sleep immediately, so it can't be used to detect the window. Settings registers (OSR) are not
+  affected. Not tested: the same for leaving forced mode mid-measurement (assumed alike; the fix covers it).
+- Explains hw-check (b) of 003 and the 3 conf-diag mismatches of 004.

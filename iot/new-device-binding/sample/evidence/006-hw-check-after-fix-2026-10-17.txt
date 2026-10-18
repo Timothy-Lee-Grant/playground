@@ -1,0 +1,15 @@
+# 006 — hw-check (a)-(e) with the fixed binding (run by Timothy, recorded by CLI)
+Date: 2026-10-17 (Pi clock 17:47:35 -09:00) · same setup as 003 · binding @ 69009f1a · -r linux-arm
+Command (Pi): ./hw-check | tee hw2.txt
+
+(a) normal mode at the defaults, valid pressure readings: 10/10 PASS
+(b) too-fast settings after normal mode throw and leave the sensor asleep: 10/10 PASS
+(c) normal -> forced, x1/x1 at 5 ms (slowest SetPowerMode + Read: 17 ms): 30/30 PASS
+(d) normal -> sleep -> normal ends in normal: 10/10 PASS
+(e) normal -> forced, worst case x32/x32 at 160 ms (slowest SetPowerMode + Read: 280 ms): 15/15 PASS
+ALL PASS
+
+## CLI reading
+- VERIFIED on hardware @ 69009f1a: the leaving-normal fix works at random phases, including the worst case
+  (x32/x32, 131 ms measurement: wait 145 ms + forced measurement ~131 ms = ~280 ms, as expected). The 10% + 1 ms margin held 15/15.
+- (b) was the original failure of 003: now 10/10.

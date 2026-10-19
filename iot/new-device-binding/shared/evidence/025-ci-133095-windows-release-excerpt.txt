@@ -1,0 +1,71 @@
+# Excerpt from the replayed binlog of Azure build 133095, job 'Windows Build Build_Release' (PR 2627)
+# Source: artifact BuildLogs-Windows-Release/Build.binlog, replayed on Timothy's Mac 2026-10-18 with:
+#   dotnet msbuild Build.binlog -noconlog -flp:"v=diag;logfile=replay-diag.log"  (2.0 GB; not kept in the repo)
+# Search: every '-- FAILED' / 'returned false' line in the whole log. Bmp3xx appears in none of them.
+
+25276267:                     The "VSTestTask" task returned false but did not log an error. (TaskId:15090)
+25276268:                   Done executing task "VSTestTask" -- FAILED. (TaskId:15090)
+25276269:21:47:43.357 354:5>Done building target "_VSTestConsole" in project "D:\a\1\s\src\devices\Tca955x\tests\Tca955x.Tests.csproj" -- FAILED.: (TargetId:19038)
+25276270:                   Done executing task "CallTarget" -- FAILED. (TaskId:13565)
+25276271:21:47:43.357 354:5>Done building target "VSTest" in project "D:\a\1\s\src\devices\Tca955x\tests\Tca955x.Tests.csproj" -- FAILED.: (TargetId:19037)
+25276272:21:47:43.357 354:5>Done Building Project "D:\a\1\s\src\devices\Tca955x\tests\Tca955x.Tests.csproj" (VSTest target(s)) -- FAILED.
+26317517:21:48:47.744   3:7>Done executing task "MSBuild" -- FAILED. (TaskId:12727)
+26317518:21:48:47.745   3:7>Done building target "Build" in project "D:\a\1\s\build.proj" -- FAILED.: (TargetId:1840)
+26317519:21:48:47.745   3:7>Done Building Project "D:\a\1\s\build.proj" (Build target(s)) -- FAILED.
+26317520:21:48:47.772     1>Done executing task "MSBuild" -- FAILED. (TaskId:10039)
+26317521:21:48:47.772     1>Done building target "Execute" in project "D:\a\1\s\.packages\microsoft.dotnet.arcade.sdk\9.0.0-beta.26507.8\tools\Build.proj" -- FAILED.: (TargetId:2)
+26317522:21:48:47.790     1>Done Building Project "D:\a\1\s\.packages\microsoft.dotnet.arcade.sdk\9.0.0-beta.26507.8\tools\Build.proj" (default targets) -- FAILED.
+26330962:Build FAILED.
+
+# Context: the Tca955x.Tests VSTest call (lines 25276170-25276272)
+                     Task Parameter:Text=Calling task Microsoft.TestPlatform.Build.Tasks.VSTestTask with following parameter... (TaskId:15072)
+                     Calling task Microsoft.TestPlatform.Build.Tasks.VSTestTask with following parameter... (TaskId:15072)
+                     Task Parameter:Text=TestFileFullPath = D:\a\1\s\artifacts\bin\Tca955x.Tests\Release\net8.0\Tca955x.Tests.dll (TaskId:15073)
+                     TestFileFullPath = D:\a\1\s\artifacts\bin\Tca955x.Tests\Release\net8.0\Tca955x.Tests.dll (TaskId:15073)
+                     Task Parameter:Text=VSTestSetting =  (TaskId:15074)
+                     VSTestSetting =  (TaskId:15074)
+                     Task Parameter:Text=VSTestTestAdapterPath =  (TaskId:15075)
+                     VSTestTestAdapterPath =  (TaskId:15075)
+                     Task Parameter:Text=VSTestFramework = .NETCoreApp,Version=v8.0 (TaskId:15076)
+                     VSTestFramework = .NETCoreApp,Version=v8.0 (TaskId:15076)
+                     Task Parameter:Text=VSTestPlatform =  (TaskId:15077)
+                     VSTestPlatform =  (TaskId:15077)
+                     Task Parameter:Text=VSTestTestCaseFilter =  (TaskId:15078)
+                     VSTestTestCaseFilter =  (TaskId:15078)
+                     Task Parameter:Text=VSTestLogger =  (TaskId:15079)
+                     VSTestLogger =  (TaskId:15079)
+                     Task Parameter:Text=VSTestListTests =  (TaskId:15080)
+                     VSTestListTests =  (TaskId:15080)
+                     Task Parameter:Text=VSTestDiag =  (TaskId:15081)
+                     VSTestDiag =  (TaskId:15081)
+                     Task Parameter:Text=VSTestCLIRunSettings =  (TaskId:15082)
+                     VSTestCLIRunSettings =  (TaskId:15082)
+                     Task Parameter:Text=VSTestResultsDirectory =  (TaskId:15083)
+                     VSTestResultsDirectory =  (TaskId:15083)
+                     Task Parameter:Text=VSTestConsolePath = D:\a\1\s\.dotnet\sdk\9.0.306\vstest.console.dll (TaskId:15084)
+                     VSTestConsolePath = D:\a\1\s\.dotnet\sdk\9.0.306\vstest.console.dll (TaskId:15084)
+                     Task Parameter:Text=VSTestVerbosity =  (TaskId:15085)
+                     VSTestVerbosity =  (TaskId:15085)
+                     Task Parameter:Text=VSTestCollect =  (TaskId:15086)
+                     VSTestCollect =  (TaskId:15086)
+                     Task Parameter:Text=VSTestBlame =  (TaskId:15087)
+                     VSTestBlame =  (TaskId:15087)
+                     Task Parameter:Text=VSTestTraceDataCollectorDirectoryPath = D:\a\1\s\.packages\microsoft.codecoverage\17.13.0\build\netstandard2.0\ (TaskId:15088)
+                     VSTestTraceDataCollectorDirectoryPath = D:\a\1\s\.packages\microsoft.codecoverage\17.13.0\build\netstandard2.0\ (TaskId:15088)
+                     Task Parameter:Text=VSTestNoLogo =  (TaskId:15089)
+                     VSTestNoLogo =  (TaskId:15089)
+21:47:37.887 354:5>Done building target "ShowCallOfVSTestTaskWithParameter" in project "D:\a\1\s\src\devices\Tca955x\tests\Tca955x.Tests.csproj".: (TargetId:20622)
+                   Using "VSTestTask" task from assembly "D:\a\1\s\.dotnet\sdk\9.0.306\Microsoft.TestPlatform.Build.dll".
+                   Task "VSTestTask" (TaskId:15090)
+                     Task Parameter:VSTestFramework=.NETCoreApp,Version=v8.0 (TaskId:15090)
+                     Task Parameter:TestFileFullPath=D:\a\1\s\artifacts\bin\Tca955x.Tests\Release\net8.0\Tca955x.Tests.dll (TaskId:15090)
+                     Task Parameter:VSTestConsolePath=D:\a\1\s\.dotnet\sdk\9.0.306\vstest.console.dll (TaskId:15090)
+                     Task Parameter:VSTestTraceDataCollectorDirectoryPath=D:\a\1\s\.packages\microsoft.codecoverage\17.13.0\build\netstandard2.0\ (TaskId:15090)
+                     The "VSTestTask" task returned false but did not log an error. (TaskId:15090)
+                   Done executing task "VSTestTask" -- FAILED. (TaskId:15090)
+21:47:43.357 354:5>Done building target "_VSTestConsole" in project "D:\a\1\s\src\devices\Tca955x\tests\Tca955x.Tests.csproj" -- FAILED.: (TargetId:19038)
+21:47:43.357 354:5>Done building target "VSTest" in project "D:\a\1\s\src\devices\Tca955x\tests\Tca955x.Tests.csproj" -- FAILED.: (TargetId:19037)
+21:47:43.357 354:5>Done Building Project "D:\a\1\s\src\devices\Tca955x\tests\Tca955x.Tests.csproj" (VSTest target(s)) -- FAILED.
+
+# Any FAILED line mentioning Bmp3xx:
+0

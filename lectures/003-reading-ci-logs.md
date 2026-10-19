@@ -1,7 +1,10 @@
-# Lecture 4: Reading CI logs — how to find out why a check went red
+# Lecture 3: Reading CI logs — how to find out why a check went red
 
-> Written 2026-10-18 for PR #2627 (dotnet/iot), after the first CI run showed "2 failing, 8 successful".
-> Case study: Azure Pipelines build **133095** (`20261018.4`). Everything quoted below is real output from that build.
+> Cross-cutting: the method applies to any repo's CI (Azure Pipelines, GitHub Actions, others).
+> Written 2026-10-18; updated the same day with the binlog result (§6.3), the "one failure, many red marks"
+> section (§2.1) and the large-file warning (§6.2).
+> Case study: dotnet/iot PR 2627, Azure Pipelines build **133095** (`20261018.4`), where the first CI run
+> showed "2 failing, 8 successful". Everything quoted below is real output from that build.
 
 ---
 
@@ -82,6 +85,26 @@ a failure (so logs still get uploaded), and they fail loudly because their input
 
 **Rule:** when an error says "not found" or "does not exist" about an *output* folder, ask "which earlier
 step was supposed to create this?" and go look at *that* step.
+
+### 2.1 One failure, many red marks
+
+In this case the GitHub page showed **two red checks** and **two error lines**, and the Azure job showed
+**three red steps**. It was all **one** failure, spreading downwards:
+
+```
+Tca955x.Tests test run fails silently              (the cause, found in §6.3)
+  → step "Build" fails: no NuGet packages made      7m 35s   no error line printed
+      → step "CopyFiles" fails: nothing to copy     <1s      "Not found SourceFolder …"     ← GitHub error 1
+          → step "Publish Build Artifacts" fails    <1s      "Path does not exist …"        ← GitHub error 2
+  → job "Windows Build Build_Release" red                                                   ← GitHub check 1
+      → pipeline "dotnet.iot" red                                                           ← GitHub check 2
+```
+
+**How to tell symptom from cause, by eye:**
+- **Order:** the cause is the *first* red step. Later red steps usually fail *because of* it.
+- **Duration:** a step that fails in **under a second** almost never did real work. It found its input missing.
+  The cause is the long-running step before it (here: Build, 7m 35s).
+- **Wording:** "not found", "does not exist", "no files matched" about an *output* folder point backwards.
 
 Why only these two lines made it to GitHub: Azure turns lines that a step marks as errors into
 "annotations" (`##[error]…`). Step 3 printed no error line at all (see §4), so it had nothing to annotate.
@@ -196,10 +219,12 @@ A **binlog** (`.binlog`, binary log) is MSBuild's complete recording of a build:
 task, property, and the result of each. Unlike the console log, it shows **which task returned false**, even
 when nothing was printed.
 
-### Getting it
+### 6.1 Getting it
 
-1. Build summary page → **Artifacts** (or "N published") → **BuildLogs-Windows-Release** → download (a zip).
-2. Unzip it. Look for `Build.binlog`.
+1. Build summary page → **Artifacts** (or "N published"); or, in the job's log view, the line
+   "**2 artifacts produced**" under the job summary. Pick **BuildLogs-Windows-Release** → download (a zip).
+2. Unzip it. In this case it held `Build.binlog` (25 MB, the main build) and `ToolsetRestore.binlog`
+   (8 KB, only the SDK download at the start; ignore it).
 
 ### Reading it: two ways
 
@@ -216,10 +241,59 @@ dotnet msbuild Build.binlog -noconlog -flp:"v=diag;logfile=replay-diag.log"
 grep -n -i -E "error|failed|exited with code|crash" replay-diag.log | head -50
 ```
 
-`v=diag` means diagnostic verbosity: everything is in the text file. It's large (tens or hundreds of MB);
-search it, don't read it.
+`-noconlog` means "no console output", so **the command prints nothing** and simply returns after a while.
+That's success, not a hang. Check with `ls -lh` that `replay-diag.log` appeared.
 
-What you're looking for, in order of likelihood:
+### 6.2 Size warning
+
+`v=diag` means diagnostic verbosity: everything is in the text file. In this case the **25 MB binlog became a
+2.0 GB text log** (about 26 million lines). Search it, don't open it in an editor. And **never put it inside a git
+repo**: GitHub rejects files over 100 MB, so a commit containing it breaks your next push. Keep it in Downloads
+and save a small excerpt of the lines that matter as your evidence.
+
+### 6.3 Searching it: what this case found
+
+MSBuild writes a line for every target and task it finishes. Failed ones end in `-- FAILED`. So search for
+those, plus the special message MSBuild uses for a task that failed silently:
+
+```sh
+grep -n -E "returned false but did not log|-- FAILED|^Build FAILED" replay-diag.log | cut -c1-300
+```
+
+(`grep` took about 9 seconds on 2 GB. `cut` shortens very long lines.)
+
+Result in build 133095, in order:
+
+```
+The "VSTestTask" task returned false but did not log an error.
+Done executing task "VSTestTask" -- FAILED.
+Done building target "_VSTestConsole" in project "…\src\devices\Tca955x\tests\Tca955x.Tests.csproj" -- FAILED.
+Done building target "VSTest" in project "…\Tca955x.Tests.csproj" -- FAILED.
+Done Building Project "…\Tca955x.Tests.csproj" (VSTest target(s)) -- FAILED.
+Done executing task "MSBuild" -- FAILED.
+Done building target "Build" in project "D:\a\1\s\build.proj" -- FAILED.
+… (the Arcade wrapper project) -- FAILED.
+Build FAILED.
+```
+
+**Read it bottom-up as a call stack and top-down as the cause.** The first `-- FAILED` is the leaf: the
+`VSTestTask` (the task that runs a test project's tests) for **Tca955x.Tests**, a different binding.
+Every line below it is a parent passing the failure up. Its timestamps (21:47:37.9 → 21:47:43.4) show the test run
+died about 6 s after it started, without printing a result.
+
+Then **check your own code explicitly**, so you can say so with evidence:
+
+```sh
+grep -c -E "Bmp3xx.*FAILED|FAILED.*Bmp3xx" replay-diag.log      # → 0
+```
+
+So the answer to "was it my code?" went from "probably not" (§5) to **"no: the only failing task is another
+project's test run"**. The excerpt kept as evidence is 71 lines.
+
+Note what the binlog could *not* tell us: **why** the Tca955x test host died. It printed nothing. That's for
+the maintainers (or a re-run) to find out; it isn't your PR's problem to solve.
+
+Other things to look for in a binlog, in order of likelihood:
 - `MSB4166: Child node … exited prematurely` → a crashed MSBuild node (flake);
 - a test task (`VSTest`, `Exec` running `dotnet test`) with `exited with code` → a test host problem;
 - anything that names `Bmp3xx` near a failure → would mean it **is** ours; then read that part closely.
@@ -244,7 +318,10 @@ What you're looking for, in order of likelihood:
 - **Looks like a flake** → don't push a dummy commit. Post a short comment with the evidence and ask a
   maintainer to re-run. (`/azp run` comments trigger Azure Pipelines but only work for people with write
   access.)
-- **Flake that happens twice** → get the binlog (§6), find the failing task, and mention it in the comment.
+- **Flake** (any time) → get the binlog (§6), find the failing task, and name it in the comment. A comment
+  that says *which* project's task failed is far more useful to maintainers than "looks flaky". That's what
+  the PR 2627 comment did.
+- **Flake that happens twice** → also check whether the failing project is the same each time.
   The maintainers may already know about it, and a binlog finding helps them fix their CI.
 - **Unsure** → run the exact CI command locally (`./build.sh -ci -configuration Release /p:BuildPackages=true -bl`).
   It runs on macOS, so it can only show problems that aren't Windows-specific, but it rules out the obvious ones.
@@ -267,3 +344,5 @@ What you're looking for, in order of likelihood:
 3. What does `0 Error(s)` *not* tell you?
 4. Which single fact from §5 most strongly says "not your code"?
 5. If a re-run fails again with `0 Error(s)`, what do you download, and what's the first thing you search for?
+6. Two steps failed in under a second, one after 7 minutes. Which one do you open first, and why?
+7. The replay command printed nothing. How do you know whether it worked?

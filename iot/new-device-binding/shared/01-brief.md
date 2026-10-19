@@ -62,7 +62,7 @@ Source: Bosch reference driver `bmp3_defs.h` / `bmp3.c` @ `db4cf8e`. Datasheet: 
 - **Build rules:** `TreatWarningsAsErrors`, StyleCop (copyright header on every file), XML docs required on every
   public member of non-test projects (CS1591), `Nullable` enabled, `net8.0`.
 - **Test projects** must be named `*.Tests.csproj` under `src/devices/**` (that's how `build.proj` finds them for CI).
-- **AI disclosure:** dotnet/iot has no written policy; Timothy discloses briefly in the PR description (as on #2611).
+- **AI disclosure:** dotnet/iot has no written policy, so no AI-use statements in the PR, comments, commits or video (root `CLAUDE.md` §5; changed 2026-10-19).
   No AI co-author trailers in commits unless he asks.
 - **Competing work:** none found as of 2026-10-04 (no `Bmp3`/`BMP388`/`BMP390` folder or PR #2300–#2616).
   Upstream *issues* were not searched; Step 0 re-checks PRs, Timothy checks issues before G2.

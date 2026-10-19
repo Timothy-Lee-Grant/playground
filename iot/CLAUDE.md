@@ -103,7 +103,7 @@ Timothy's machine is a MacBook Air, so anything needing real GPIO needs a Raspbe
 - **AI:** no explicit AI-disclosure rule found in `CONTRIBUTING.md` or the PR template (checked 2026-09-27).
   `.github/copilot-instructions.md` tells AI agents: treat public APIs as "experimental but stable-in-spirit",
   prefer additive changes, **don't introduce breaking API changes without maintainer direction**, and add unit
-  tests for logic that can be isolated from hardware. Our own rule: disclose AI assistance briefly anyway.
+  tests for logic that can be isolated from hardware. No disclosure required, so no AI-use statements in public posts unless the upstream project's written policy requires one (root `CLAUDE.md` §5, "AI use in public posts").
 - **Breaking changes:** the maintainers batch these into major releases. #2341 tracked the planned breaking changes
   for v4.0. Pre-announced breaking removals have also landed in a minor (#2421 removed `PinNumberingScheme`
   between v4.0.0 and v4.1.0, after it was marked obsolete in #2358).

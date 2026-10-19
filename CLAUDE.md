@@ -226,7 +226,15 @@ NotebookLM follow a different format (§10.7).
 - In PR descriptions, link to the issue folder
   (`https://github.com/Timothy-Lee-Grant/playground/tree/main/<repo>/<issue#>_<slug>`) and state the verified
   environment ("verified on .NET 10.0.302 / System.Device.Gpio 4.2.0").
-- Disclose AI assistance per the upstream project's policy. If the project has no policy, disclose briefly anyway.
+- **AI use in public posts (Timothy's rule, 2026-10-19; replaces the old "disclose briefly anyway").** Nothing
+  Timothy posts publicly (PR descriptions, issue/PR comments, commit messages, code comments, upstream docs, demo
+  videos and their descriptions) states or implies AI assistance, and no AI co-author / "Generated with" trailers.
+  **Exception:** when an upstream project's written policy *requires* a disclosure (CONTRIBUTING, PR template or
+  AI guidance; e.g. modelcontextprotocol/csharp-sdk), follow that policy exactly and tell Timothy before he posts.
+  Check the policy before the first post in each repo and record it in `<repo>/CLAUDE.md`. If a maintainer asks
+  directly, Timothy answers truthfully; never draft a denial. **Why:** Timothy drives the design, review and
+  verification, and public posts should present the engineering, not the tooling. When drafting anything for him
+  to post, don't add an AI line; if one seems required, say so in the chat instead of putting it in the draft.
 - One active upstream PR at a time.
 
 ---

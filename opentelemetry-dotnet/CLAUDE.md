@@ -46,7 +46,7 @@ Not middleware: a subscriber. Not a backend: it stops at the wire (OTLP).
 - **CLA:** CNCF/Linux Foundation, via the bot on the first PR (separate from the .NET Foundation CLA signed for iot).
 - **CHANGELOG** line under `## Unreleased` in each affected component, linking the **PR**; `**Breaking Change**:` prefix when relevant. None for infra/test-only changes.
 - Approval from an approver/maintainer; open ≥ 1 working day (trivial docs exempt). Small focused PRs; benchmarks for perf changes.
-- AI-assisted PRs are accepted (`CONTRIBUTING.md`); spammy/incorrect ones are closed. Disclose briefly anyway (root `CLAUDE.md` §5).
+- AI-assisted PRs are accepted (`CONTRIBUTING.md`); spammy/incorrect ones are closed. Disclosure isn't required, so no AI-use statements in public posts unless the upstream project's written policy requires one (root `CLAUDE.md` §5, "AI use in public posts").
 - Default workflow: mode P (`../ai-workflow/default-workflow.md`).
 
 ## 5. Issue folders

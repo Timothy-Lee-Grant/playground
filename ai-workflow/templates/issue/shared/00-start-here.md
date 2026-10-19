@@ -48,7 +48,7 @@ How to explain things to him:
 6. **Save evidence:** every test/build run that matters goes to `shared/evidence/NNN-short-name.txt` with the exact
    command, date, `dotnet --version`, and the fork's commit hash at the top.
 7. **Commits** (only when Timothy agrees; settings ask first): small, one concern each, imperative subject line.
-   No AI co-author trailers unless Timothy asks; he discloses AI use in the PR description himself.
+   No AI co-author trailers, and no AI-use statements in anything public (root `CLAUDE.md` §5).
 8. Stay inside the current work order (`03`). If you think the order is wrong, say so; don't silently expand it.
 
 ## 4. Every session

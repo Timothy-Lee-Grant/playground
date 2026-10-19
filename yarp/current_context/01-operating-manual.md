@@ -102,7 +102,7 @@ plan without asking for a go-ahead at each step.** He doesn't want to sit at the
 | **When** | On your own, at the plan's commit points. Small, one concern each; tests and fix may be separate commits if the plan says so |
 | **Message** | Imperative subject ≤ 72 characters ("Construct ForwarderMiddleware directly in tests"), blank line, a short body with the *why* if it isn't obvious |
 | **Never in a message without Timothy's explicit OK** | Issue or PR numbers (`#275`, `dotnet/yarp#275`, `GH-275`), GitHub URLs, `@mentions`, `Co-authored-by:` lines. Once pushed, these can appear on the upstream issue's timeline or notify people. Links belong in the PR description, which Timothy writes. The `commit-msg` hook blocks them; if he approves one, **he** makes that commit (the hook can only be bypassed by him) |
-| **No AI attribution trailers** | Timothy discloses AI use in the PR description himself |
+| **No AI attribution trailers** | No `Co-authored-by:` / "Generated with" lines, and no AI-use statements in anything public (exercises root `CLAUDE.md` §5, "AI use in public posts") |
 | **Push** | Only `git -C yarp push -u origin <the active issue's branch>`, and only when the plan or Timothy calls for it (settings ask him every time). Never `upstream`, never `--force`, never a protected branch. Pushing to his fork notifies nobody upstream, but the branch is visible to anyone browsing the fork |
 
 ## 7. What is always Timothy's (the gates)

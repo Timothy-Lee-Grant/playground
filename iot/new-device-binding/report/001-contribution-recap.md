@@ -164,9 +164,9 @@ macOS, copied over `scp`.
 
 - **Plan first.** A written implementation plan (steps, "done when" criteria, risks, decisions log) was approved
   before any code was written; deviations were recorded with reasons.
-- **AI-assisted, human-verified.** The code was written with an AI coding assistant (Claude Code CLI) working from that plan. I
-  directed the work and reviewed it, learned it through written lectures until I could explain it, ran all hardware
-  verification myself, and presented it on video. The PR states the AI assistance openly.
+- **Review gates.** Work moved through explicit gates: plan approved → every change reviewed and understood (checked
+  by explaining it back) → hardware verified → only then anything public. I directed the work, ran all hardware
+  verification myself, and presented it on video.
 - **Guardrails on a public repo:** git hooks (`commit-msg`, `pre-push`) that block commit messages from
   notifying upstream issues/people and only allow pushes to my fork, with protected branches. That kept
   experimentation private until I chose to announce.
@@ -201,8 +201,8 @@ Posted the evidence on the PR and asked maintainers for a re-run.
 | Testing | Datasheet-modelled test double, differential testing against two independent oracles, regression test for a hardware-found bug |
 | Cross-platform / Linux | Cross-compiling for ARM32 from macOS, Linux I2C (`/dev/i2c-N`, `ioctl`), Pi setup |
 | CI / build systems | Azure Pipelines job tree, MSBuild binlogs, root-causing a silent build failure to another project |
-| Open source practice | Self-directed proposal, convention review, transparent PR description, demo video, evidence logs |
-| AI-assisted development | Plan-driven agent workflow with human review gates, hooks as guardrails, disclosed AI use |
+| Open source practice | Self-directed proposal, convention review, clear PR description with design trade-offs for reviewers, demo video, evidence logs |
+| Engineering process | Written plan with "done when" criteria, decisions log, review gates, git hooks as guardrails |
 
 ---
 
@@ -218,8 +218,7 @@ Status-safe while the PR is open:
 - *Root-caused a silent Windows CI failure (`Build FAILED`, 0 errors) to an unrelated test project by replaying
   the MSBuild binary log from Azure Pipelines.*
 
-After merge, change "Contributed" to "Authored a merged ..." only if that matches how you describe AI assistance
-elsewhere. A safe, true wording: *"Designed, verified and shipped (AI-assisted) ..."*.
+After merge, change "Contributed" to "Contributed a merged ..." and add the outcome.
 
 Interview story outline (STAR): **S** a library missing support for current-generation sensors → **T** add a
 driver that maintainers will accept and that works on real hardware → **A** plan, convention review,

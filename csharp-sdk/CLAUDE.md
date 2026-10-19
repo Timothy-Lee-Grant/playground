@@ -34,7 +34,7 @@ the MCP spec itself (modelcontextprotocol/modelcontextprotocol).
 - `good first issue` / `help wanted` / `ready for work`. No tracked issue → open one first. Non-trivial → post the
   approach on the issue before coding. Assign yourself.
 - PR: tests for every fix/feature, all tests passing locally, docs updated, `.editorconfig` style.
-- AI disclosure: visible note on anything posted with AI help (repo's own AI instructions).
+- AI disclosure: visible note on anything posted with AI help (repo's own AI instructions). **This repo requires it**, so it's the exception to root `CLAUDE.md` §5: re-check the current wording before the first post and tell Timothy before he decides to contribute here.
 - Test rules: never `WithStdioServerTransport()` in unit tests; `await using` providers holding a server; no
   `Task.Delay` for sync; no short hard-coded timeouts.
 - Apache 2.0. Releases are cut by maintainers with AI agent skills (`.github/skills/`).

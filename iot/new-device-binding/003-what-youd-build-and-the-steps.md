@@ -152,7 +152,7 @@ ends with something you can see.
 | 3 | **Check for duplicates**, then **post the proposal issue** (draft in §6). This is the first public step: by now you know it works on your hardware | Upstream issue | No "someone's already doing this" | 1 hour, then wait a few days (keep building) |
 | 4 | **Scaffold the issue folder** with `ai-workflow/new-issue.sh` (it becomes `iot/<issue#>_bmp390-binding/`), plan, CLI builds the binding in the fork | Branch in the fork with binding + sample + tests | Builds; tests pass; sample runs on the Pi | 2–3 weekends |
 | 5 | **Lecture + teach-back** on the built binding (API choices, calibration, tests) | `lectures/001-…` + teach-back | You can explain every design choice | 1–2 weeks of evenings |
-| 6 | **You open the PR**: "Fixes #N" first line, scope, what's not implemented, hardware tested, AI disclosure | PR | — | 1 session |
+| 6 | **You open the PR**: "Fixes #N" first line, scope, what's not implemented, hardware tested | PR | — | 1 session |
 | 7 | **Review rounds**: answer within 48 h; one polite ping after ~2 weeks of silence | Merged binding | — | weeks (their pace) |
 | 8 | **Follow-ups** (separate PRs): SPI, data-ready interrupt as a .NET event, FIFO | More PRs | v1 merged | optional |
 

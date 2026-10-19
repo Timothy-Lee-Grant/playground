@@ -44,4 +44,3 @@ Raspberry Pi 4, Raspberry Pi OS (32-bit), Adafruit BMP390 (#4816) at 0x77 on I2C
 Raw logs: https://github.com/Timothy-Lee-Grant/playground/tree/main/iot/new-device-binding/sample/evidence
 Demo video (sample walkthrough, hardware run, testing approach): <link>
 
-AI-assisted: I worked with an AI coding assistant. I reviewed every line, can explain all of it, and ran the hardware verification myself.

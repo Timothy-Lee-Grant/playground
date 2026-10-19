@@ -42,7 +42,7 @@ changed: see conversation #1 §10.
 - PR description starts with `Fixes #2600` (or `Contributes to #2600` if #2601 closes the issue first); avoid
   force-pushing during review.
 - Unit tests for anything testable without hardware; `.github/copilot-instructions.md` asks for that too.
-- No explicit AI-disclosure rule upstream; disclose briefly anyway.
+- No explicit AI-disclosure rule upstream, so no AI-use statements in public posts unless the upstream project's written policy requires one (root `CLAUDE.md` §5, "AI use in public posts").
 
 ## Where things are
 

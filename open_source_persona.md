@@ -115,7 +115,7 @@ For 📖 **Learn** items, the write-up should focus on **what the issue was, wha
 2. **Small, focused PRs, with tests.** One concern per PR. Bug fixes come with a test that fails before the fix.
 3. **Reproduce first.** State environment, versions, and hardware in every issue comment and PR.
 4. **Finish what I start.** Respond to review within 48 hours. If I can't continue, say so on the issue and hand it back.
-5. **Transparent AI use.** Follow each repo's AI-disclosure policy. I don't submit code I can't explain line by line, and I never let an agent open PRs or post comments for me.
+5. **I own what I submit.** I don't submit code I can't explain line by line, and I never let an agent open PRs or post comments for me. My public posts are about the engineering; I follow a repo's AI-disclosure policy where it has one that requires disclosure, and answer truthfully if asked.
 6. **Clean-room separation from my employer.** Personal hardware, personal time, personal accounts. No employer code, designs, or internal details in any contribution.
 7. **One active PR at a time** until a repo's review rhythm is familiar. Questions and design comments can run in parallel.
 

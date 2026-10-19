@@ -64,8 +64,8 @@ names Timothy knows: Clerk, Dispatcher, Courier, Pump, Watchdog…) and `link/ya
 - **CLA**: the .NET Foundation CLA. Timothy already signed it (2026-10-02, for dotnet/iot); it covers all .NET
   Foundation projects.
 - The PR must build and pass all tests. Expect thorough review; the team may retarget the merge branch.
-- No PR template in `.github/` and no AI-use policy file found in the repo (2026-10-07). Timothy discloses AI use
-  in his PR description anyway.
+- No PR template in `.github/` and no AI-use policy file found in the repo (2026-10-07). Nothing requires
+  disclosure, so no AI-use statements in public posts (exercises root `CLAUDE.md` §5).
 - Security issues go to MSRC by email, never to a public issue.
 
 ## 5. People seen so far

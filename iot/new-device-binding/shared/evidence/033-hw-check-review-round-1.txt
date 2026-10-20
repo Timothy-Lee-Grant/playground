@@ -1,0 +1,39 @@
+# 007 — hw-check (a)-(g0) after review round 1 (run by Timothy, recorded by CLI)
+Date: 2026-10-19 (Pi clock 17:51:42 -09:00) · same setup as 003 (Pi 4, 32-bit userland, BMP390 @ 0x77 bus 1) · binding @ 9ac45d2f · -r linux-arm --self-contained
+Command (Pi): cd ~/hw-check && chmod +x hw-check && ./hw-check | tee hw3.txt
+
+(a) normal mode at the defaults, valid pressure readings: 10/10 PASS
+(b) too-fast settings after normal mode throw and leave the sensor asleep: 10/10 PASS
+(c) normal -> forced, x1/x1 at 5 ms (slowest SetPowerMode + Read: 25 ms): 30/30 PASS
+(d) normal -> sleep -> normal ends in normal: 10/10 PASS
+(e) normal -> forced, worst case x32/x32 at 160 ms (slowest SetPowerMode + Read: 427 ms): 15/15 PASS
+    (f) try 1: STATUS before DATA read 0x70, after 0x10
+    (f) try 2: STATUS before DATA read 0x70, after 0x10
+    (f) try 3: STATUS before DATA read 0x70, after 0x10
+    (f) try 4: STATUS before DATA read 0x70, after 0x10
+    (f) try 5: STATUS before DATA read 0x70, after 0x10
+    (f) try 6: STATUS before DATA read 0x70, after 0x10
+    (f) try 7: STATUS before DATA read 0x70, after 0x10
+    (f) try 8: STATUS before DATA read 0x70, after 0x10
+    (f) try 9: STATUS before DATA read 0x70, after 0x10
+    (f) try 10: STATUS before DATA read 0x70, after 0x10
+(f) unread forced measurement: drdy set, cleared by reading DATA: 10/10 PASS
+(g) pressure x1 -> x32 -> x1 in normal mode, then sleep and Read (slowest SetPowerMode(Sleep) + Read: 85 ms): 30/30 PASS
+(g) temperature x1 -> x32 -> x1 in normal mode, then sleep and Read (slowest SetPowerMode(Sleep) + Read: 85 ms): 15/15 PASS
+(g0) informational, raw writes with the old 6 ms wait: forced measurement lost 3/30
+ALL PASS
+
+## CLI reading
+- VERIFIED (f): table 29 on our chip. An unread forced measurement leaves drdy_press|drdy_temp (0x60) set (+ cmd_rdy 0x10);
+  one burst read of DATA clears both. Basis of R3 confirmed.
+- VERIFIED (g0): R2 happens on real hardware. With the pre-fix 6 ms wait, 3/30 forced writes after an x32 -> x1 change in
+  normal mode were lost. Fewer than a worst-case estimate (~1/3 of tries have an x32 conversion running at the switch-back),
+  so the chip may not always finish the old-settings conversion; why: unverified.
+- VERIFIED (g): with the fix, 45/45 forced measurements after the same sequence; slowest 85 ms = wait for x32 pressure
+  (69 ms + 10% + 1 ms ≈ 76 ms) + the x1/x1 forced read. As designed.
+- (a)-(d) unchanged. (c) slowest 25 ms (was 17 ms) and (e) slowest 427 ms (was 280 ms): NEW COST from RW1.1, see below.
+- (e) 427 ms explained: hw-check calls SetPowerMode(Forced) then Read(). Read() now goes to sleep first (RW1.1); the chip is
+  still in the forced measurement SetPowerMode started, so SetPowerMode(Sleep) is "leaving forced mode" and waits
+  145 ms; then the stale read; then Read's own forced measurement (131 ms + polling). 145 + 145 + 131 ≈ 421 ms.
+  Before RW1.1, Read() re-wrote forced (same mode, no wait) and returned the measurement SetPowerMode had started.
+  Consequence: SetPowerMode(Forced) followed by Read() now takes two measurements. Read() alone is unaffected.

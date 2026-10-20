@@ -1,0 +1,30 @@
+# 032 — RW1.4 Step 12 hygiene at the RW1 HEAD
+Date: 2026-10-19 19:43:08 PDT · dotnet 10.0.302 · fork @ 9ac45d2f, clean: yes
+=== build tests + samples --no-incremental
+    0 Warning(s)     0 Error(s) (tests)
+    0 Warning(s)     0 Error(s) (samples)
+=== tests x5
+Passed!  - Failed:     0, Passed:    89, Skipped:     0, Total:    89, Duration: 473 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    89, Skipped:     0, Total:    89, Duration: 452 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    89, Skipped:     0, Total:    89, Duration: 444 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    89, Skipped:     0, Total:    89, Duration: 465 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    89, Skipped:     0, Total:    89, Duration: 444 ms - Bmp3xx.Tests.dll (net8.0)
+=== diff scope outside src/devices/Bmp3xx/ (fc7d7b57..HEAD and upstream/main...HEAD)
+(none)
+(none)
+=== clean-room / TODO / pragma
+clean-room: none
+TODO: none
+pragma: none
+=== dotnet build src/Iot.Device.Bindings/
+    0 Warning(s)     0 Error(s) 
+=== git log --oneline fc7d7b57..HEAD (RW1 commits)
+9ac45d2f Track whether a measurement exists instead of a reset-value sentinel
+574026e0 Wait for the longest conversion that can still be running
+32d75c35 Clear stale data-ready flags before a forced measurement
+=== diffstat fc7d7b57..HEAD
+ src/devices/Bmp3xx/Bmp3xxBase.cs                 |  70 +++++++----
+ src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs      | 152 ++++++++++++++++++++++-
+ src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs      |  17 ++-
+ src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs |  16 +++
+ 4 files changed, 226 insertions(+), 29 deletions(-)

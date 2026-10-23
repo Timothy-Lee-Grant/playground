@@ -5,6 +5,12 @@
 > committed to anything"). Desktop Claude follows this without being asked. The steering modes (M0–M4 in
 > [`interaction-modes.md`](interaction-modes.md)) are used only when **Timothy** asks for one.
 >
+> **Revised 2026-10-22 (Timothy):** "I want the priority to be creating high-quality PRs that conform to the
+> standards and etiquette of the repo and normal procedure." The confidence rules written before his first
+> contributions are retired: understanding/teach-back no longer gates the comment or the PR, and comment timing
+> follows the repo's own process. Root `CLAUDE.md` §5 has the PR quality bar. Lectures and teach-backs stay as
+> learning tools.
+>
 > **Reference run:** [`../iot/2328_gpiobutton-ispressed-not-initialized/`](../iot/2328_gpiobutton-ispressed-not-initialized/)
 > (plan, lecture 001, teach-back 002, comment). When in doubt, do what was done there.
 
@@ -14,12 +20,11 @@
 
 1. **The AI drives:** desktop Claude plans, the CLI checks the plan against the code and builds the whole change
    locally, recording the *why* of every step.
-2. **Timothy watches, then learns the finished change** through one lecture ("the change, end to end") and a
-   teach-back. Understanding comes **before** anything public.
-3. **The public actions stay his:** posting the comment, running the final tests, pushing, opening the PR,
-   answering review. Nothing is posted or pushed that he can't explain line by line.
-4. **Three gates, only Timothy opens them:** **G1** plan approved → code may start · **G2** before anything is
-   posted upstream · **G3** after his teach-back → PR may be opened.
+2. **Timothy learns the finished change** through lectures (on request) and teach-backs when he wants them. These
+   are for learning; they don't gate public actions (2026-10-22).
+3. **The public actions stay his:** posting the comment, pushing, opening the PR, answering review.
+4. **Three gates, only Timothy opens them:** **G1** plan approved → code may start · **G2** he posts anything
+   upstream himself · **G3** the CLI's pre-PR check passes and he says go → he pushes and opens the PR.
 
 ## 2. The sequence
 
@@ -34,7 +39,7 @@
 | 7 | **Implementation summary + diff**: every line by purpose, each why and rejected alternative, what each test proves and doesn't | CLI | — | Stage 5 entry, `evidence/NNN-diff.patch` |
 | 8 | **Review + lecture 1, "The change, end to end"** (spec in the plan template, Stage 6), incl. the comment sentence by sentence; audio version only if he asks | desktop | **reads it**, asks questions | `lectures/001-…md` |
 | 9 | **Comment** drafted by desktop; Timothy edits it into his own words and posts (**G2**) | **Timothy** | posts | `[Timothy]` entry with the link |
-| 10 | **Teach-back** (voice on a walk is fine); analyzed per root `CLAUDE.md` §10.4 (**G3**) | **Timothy** talks; desktop analyzes | talks | `private/teachbacks/` |
+| 10 | **Teach-back** (optional, for learning; voice on a walk is fine); analyzed per root `CLAUDE.md` §10.4 | **Timothy** talks; desktop analyzes | talks | `private/teachbacks/` |
 | 11 | **PR**: CLI drafts the description, desktop reviews; Timothy runs the final tests, pushes, opens the PR | **Timothy** acts | acts | PR link |
 | 12 | **Review loop**: each review comment becomes a plan step; AI drafts code and replies; Timothy posts (G2 per reply) | all | posts | Stage 8 entries |
 | 13 | **Reflect** (root `CLAUDE.md` §9.3) | desktop | — | persona, pattern catalog, learner model |
@@ -44,10 +49,9 @@ plan revision (the tests' structure stays; the expected behavior changes).
 
 ## 3. Rules that make it work (learned on iot#2328)
 
-- **Build first, comment after understanding.** He won't publicly commit to work he can't yet explain or deliver.
-  Code is cheap to redo; a public commitment isn't. (This overrides the generic "comment before substantial work"
-  in root `CLAUDE.md` §5 for mode-P issues; if someone else may be about to take the issue, tell Timothy so he can
-  decide whether to post a short "looking into this" note early.)
+- **Follow the repo's process for comments and PRs** (2026-10-22; replaces "build first, comment after
+  understanding"). If the repo wants agreement in the issue first, comment early; if it's "help wanted" or a small
+  fix, a PR can follow the comment without waiting for a reply. Before any push: the pre-PR check.
 - **Build on the most likely upstream answer**, and tag every decision *ours* or *upstream*. The CLI never decides
   an upstream one; it builds the proposed default so switching later is cheap.
 - **The CLI's "why" entries are the lecture's raw material.** Without them the lecture can only describe *what*

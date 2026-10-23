@@ -64,8 +64,10 @@ names Timothy knows: Clerk, Dispatcher, Courier, Pump, Watchdog…) and `link/ya
 - **CLA**: the .NET Foundation CLA. Timothy already signed it (2026-10-02, for dotnet/iot); it covers all .NET
   Foundation projects.
 - The PR must build and pass all tests. Expect thorough review; the team may retarget the merge branch.
-- No PR template in `.github/` and no AI-use policy file found in the repo (2026-10-07). Nothing requires
-  disclosure, so no AI-use statements in public posts (exercises root `CLAUDE.md` §5).
+- No PR template in `.github/` and no AI-use policy (re-checked 2026-10-22). Nothing requires disclosure, so no
+  AI-use statements in public posts (exercises root `CLAUDE.md` §5).
+- Style of merged PRs (checked 2026-10-22): short imperative titles ("Remove FluentAssertions", #2828, the closest
+  precedent to #275); short factual bodies; squash-merged. `CODEOWNERS` auto-requests @MihaZupan.
 - Security issues go to MSRC by email, never to a public issue.
 
 ## 5. People seen so far

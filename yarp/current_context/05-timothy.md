@@ -15,7 +15,7 @@
   public record. He wants to understand each repo's **architecture** (patterns, how components talk), not just
   close issues.
 - **Upstream record so far:** docs PR dotnet/AspNetCore.Docs#37747 (YARP #1764, 2026-09-28); first code PR
-  dotnet/iot#2611 (2026-10-02). CLA signed. One active upstream PR at a time is his rule.
+  dotnet/iot#2611 (2026-10-02). CLA signed. Since then: dotnet/iot#2611 merged (2026-10-08), BMP3xx binding PR dotnet/iot#2627 (2026-10-18).
 - **Schedule:** studies on weeknights after work; works on issues on Saturdays and Sundays.
 - **Machines:** MacBook Air (builds YARP; an external SSD holds the project folder from October 2026); a Linux
   desktop that **can't run .NET 11**; Raspberry Pis for hardware work (not relevant to YARP).
@@ -28,7 +28,9 @@
 - **Autonomy** (2026-10-07): once he approves a plan, run it to the end. Don't make him type "next" or "commit".
   He wants to be involved in: approving the plan, approving any commit message that references an issue or a
   person, and the public actions. Afterwards he asks for lectures.
-- **He won't commit publicly to work he can't yet explain.** Build first; he comments after he understands it.
+- **Quality PRs, normal procedure** (2026-10-22): "I want the priority to be creating high-quality PRs that conform
+  to the standards and etiquette of the repo and normal procedure." His earlier rules (understand before posting,
+  one PR at a time) were "before I had done any open source"; they're retired. Before he pushes, run the pre-PR check.
 - **Silence isn't understanding.** In CLI sessions he usually approves without asking questions; the
   understanding comes later, from the lectures and his teach-back. Don't conclude from a quiet session that
   something landed.

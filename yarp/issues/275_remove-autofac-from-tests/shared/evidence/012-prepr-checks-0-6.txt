@@ -1,0 +1,42 @@
+# Pre-PR checks 0-6 (procedures/pre-pr.md) for remove-autofac-275
+# Date: 2026-10-22 19:06 PDT  Machine: Apple M2 / macOS 26.3
+# SDK: 11.0.100-rc.1.26420.103  HEAD: 1665ced5
+
+## 0. git status --short
+?? .DS_Store
+
+## 1. git fetch upstream (done); rev-list --left-right --count upstream/main...HEAD (behind ahead)
+0	4
+upstream/main = 2aa3d835 Mon Oct 5 15:38:55 2026 +0000 [main] Update dependencies from dotnet/arcade (#3053)
+   origin/remove-autofac-275 = 1665ced5 (pushed 2026-10-08; same as HEAD)
+
+## 2. Thread (WebFetch, 2026-10-22)
+   api.github.com/repos/dotnet/yarp/issues/275/comments: 1 comment, Timothy-Lee-Grant, 2026-10-09T03:17:16Z, id 6073544881. No maintainer reply.
+   api.github.com/search/issues?q=repo:dotnet/yarp+is:pr+275: total_count 0 (no competing PR).
+
+## 3. git diff --stat upstream/main...HEAD
+ eng/Versions.props                                 |  2 -
+ .../Delegation/HttpSysDelegatorMiddlewareTests.cs  | 23 +++--
+ .../Delegation/HttpSysDelegatorTests.cs            | 36 ++++----
+ .../Forwarder/ForwarderHttpClientFactoryTests.cs   | 27 +++---
+ .../Forwarder/ForwarderMiddlewareTests.cs          | 29 +++++--
+ .../Forwarder/StreamCopierTests.cs                 |  2 +-
+ .../LoadBalancing/LoadBalancingPoliciesTests.cs    | 16 ++--
+ .../ProxyPipelineInitializerMiddlewareTests.cs     | 34 ++++----
+ .../Yarp.ReverseProxy.Tests.csproj                 |  2 -
+ test/Tests.Common/TestAutoMockBase.cs              | 99 ----------------------
+ test/Tests.Common/Yarp.Tests.Common.csproj         |  2 -
+ 11 files changed, 96 insertions(+), 176 deletions(-)
+
+## 4. git diff --check upstream/main...HEAD
+exit=0
+
+## 5. git log --format='%h %an <%ae> | %s' upstream/main..HEAD
+1665ced5 Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Remove TestAutoMockBase and the Autofac test dependencies
+f5f16fef Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Build HttpSysDelegator and its mock graph explicitly in tests
+4526c6a5 Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Construct middleware under test directly instead of via AutoMock
+9db5c959 Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Construct simple test subjects directly instead of via AutoMock
+   trailers/refs: 0 matches
+
+## 6. dotnet format whitespace --verify-no-changes --include <7 changed .cs> (ReverseProxy.Tests; Tests.Common has only a deletion + csproj)
+exit=0

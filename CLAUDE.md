@@ -211,21 +211,23 @@ NotebookLM follow a different format (§10.7).
 | **4. Learn** | Turn concepts Timothy is missing into lectures. | `<repo>_concepts/`, linked from the conversation. |
 | **5. Experiment** | Reproduce the issue or prove a fix with the smallest running system. | `sample/` + `sample/evidence/`; 📍 entries in the conversation. |
 | **6. Report** | Write up the results. | `report/`; update the issue `README.md`. |
-| **7. Contribute** | Comment on the issue before substantial work (say what you plan and ask if it's wanted). Implement in a **fork cloned outside this repo**. Open the PR. | Links and outcomes go to the conversation, the issue `CLAUDE.md` status, the root `README.md` table, and the scouting tracker. |
+| **7. Contribute** | Follow the upstream repo's normal procedure (§5 rules below): comment or claim first where its CONTRIBUTING asks for it; implement in a **fork cloned outside this repo**; run the pre-PR check; open the PR. | Links and outcomes go to the conversation, the issue `CLAUDE.md` status, the root `README.md` table, and the scouting tracker. |
 | **8. Reflect** *(after studying or finishing an issue)* | Close the loop (§9.3). | `open_source_persona.md` §7.2 exposure map, §10.1 record, §10.2 study log; `lectures/000-pattern-catalog.md`; `private/001-observations.md`. |
 
 > **Default for coding issues: mode P** ([`ai-workflow/default-workflow.md`](ai-workflow/default-workflow.md),
-> Timothy, 2026-10-01). The AI plans and builds the change locally; Timothy learns it through lecture 1 and a
-> teach-back; then *he* posts the comment, pushes and opens the PR. That reorders stages 3–7 above: the upstream
-> comment comes **after** he understands the built change, not before the work. Use another mode only when he asks.
+> Timothy, 2026-10-01; revised 2026-10-22). The AI plans and builds the change locally; *he* posts, pushes and
+> opens the PR. **Since 2026-10-22 the priority is high-quality PRs that follow each repo's standards and
+> etiquette**, not the confidence rules from before his first contributions: no waiting for a teach-back before a
+> PR, no one-PR-at-a-time limit, and comment timing follows the repo's own process. Lectures and teach-backs stay,
+> for learning, but no longer gate public actions. Use another mode only when he asks.
 
 **Contribution rules that apply everywhere:**
 
 - Read the upstream `CONTRIBUTING.md`, PR template and any AI-assistant guidance before the first comment, and
   record the relevant rules in `<repo>/CLAUDE.md`.
-- In PR descriptions, link to the issue folder
-  (`https://github.com/Timothy-Lee-Grant/playground/tree/main/<repo>/<issue#>_<slug>`) and state the verified
-  environment ("verified on .NET 10.0.302 / System.Device.Gpio 4.2.0").
+- In PR descriptions, state how it was verified and the environment ("verified on .NET 10.0.302 /
+  System.Device.Gpio 4.2.0"). **Don't link the playground issue folder by default** (2026-10-22): it holds AI
+  session reports and lectures, which conflicts with the AI-use rule below. Link it only if Timothy asks.
 - **AI use in public posts (Timothy's rule, 2026-10-19; replaces the old "disclose briefly anyway").** Nothing
   Timothy posts publicly (PR descriptions, issue/PR comments, commit messages, code comments, upstream docs, demo
   videos and their descriptions) states or implies AI assistance, and no AI co-author / "Generated with" trailers.
@@ -235,7 +237,20 @@ NotebookLM follow a different format (§10.7).
   directly, Timothy answers truthfully; never draft a denial. **Why:** Timothy drives the design, review and
   verification, and public posts should present the engineering, not the tooling. When drafting anything for him
   to post, don't add an AI line; if one seems required, say so in the chat instead of putting it in the draft.
-- One active upstream PR at a time.
+- **PR quality bar (Timothy, 2026-10-22; replaces "one active upstream PR at a time").** Every PR follows the
+  repo's standards and normal etiquette:
+  - Right moment, per the repo's process: issues marked "help wanted" / "up for grabs" with a comment from him, or
+    small uncontroversial fixes, can go straight to a PR; features and design changes get agreement in the issue
+    first. Don't wait indefinitely on an unanswered "is this wanted?" when the repo's process doesn't require an answer.
+  - Builds with the repo's own build script, **0 warnings**, all tests pass, test counts accounted for.
+  - Minimal, focused diff; matches surrounding code and the repo's formatting; no stray files.
+  - Commits and title in the repo's style (check its recent merged PRs); correct linking keyword (`Fixes #n` only if
+    the PR resolves the whole issue, otherwise `Contributes to #n`).
+  - A short, factual description: what, why, scope, how verified, follow-ups. Reviewer-friendly notes on anything
+    surprising.
+  - Respectful follow-up: one polite ping after a few weeks of silence; answer review promptly.
+  - Before every push: the CLI's pre-PR check (`yarp/current_context/procedures/pre-pr.md` for YARP; copy it per
+    project as needed).
 
 ---
 

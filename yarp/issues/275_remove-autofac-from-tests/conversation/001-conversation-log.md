@@ -9,10 +9,10 @@
 
 | | |
 |---|---|
-| **Stage** | Mode P, Stage 6 (understanding). Change built and verified locally on `remove-autofac-275` (4 commits, not pushed). Lectures 001 and 002 written, not yet read |
-| **Last entry** | #5 (2026-10-08) |
+| **Stage** | PR next (D7, 2026-10-22). Built and verified locally; comment posted 2026-10-09, no reply |
+| **Last entry** | #6 (2026-10-22) |
 | **Open decisions** | Mention the vacuous `Verify()` in `ForwarderMiddlewareTests.NoDestinations_503`? (lecture 001 §8, Timothy). Upstream: still wanted? Autofac-only phase 1? (asked in the G2 comment) |
-| **Next step** | Timothy reads lecture 001 (fast path ~20 min) → teach-back → edits and posts the §7 comment (G2). Push only after the maintainers answer (G3) |
+| **Next step** | CLI: `/issue 275_remove-autofac-from-tests` → pre-PR check → Timothy pushes and opens the PR (draft text in `shared/pr-description.md`) |
 
 ## Index
 
@@ -23,6 +23,7 @@
 | 3 | 2026-10-07 | 📍 | Moved into the YARP project setup |
 | 4 | 2026-10-08 | 📍 | Change built and verified (CLI session 002); lectures written |
 | 5 | 2026-10-08 | ❓💬 | Review of the G2 comment draft; Moq left out although the issue names both |
+| 6 | 2026-10-22 | 🧭 | New rules: quality PRs per repo etiquette; open the PR now; pre-PR check |
 
 ---
 
@@ -79,4 +80,18 @@ defensible scope choice (Autofac is fully gone in 11 files; Moq is in ~25 files 
 should make), not a gap, as long as it's stated. The PR then says "Contributes to #275", not "Fixes #275", so the
 issue stays open. The `Verify()` note, the `HttpSysDelegator` detail and the AI disclosure go in the PR description,
 not the comment.
+
+## #6 · 2026-10-22 · 🧭 Decision: open the PR now, after a pre-PR check
+
+- The comment (posted 2026-10-09, https://github.com/dotnet/yarp/issues/275#issuecomment-6073544881) had no reply
+  after two weeks. YARP is slow in general: even its automated dependency PRs wait about 3 weeks to be merged.
+- Timothy retired the rules he set before his first contributions (understand before posting, one PR at a time,
+  wait for maintainers): "I want the priority to be creating high-quality PRs that conform to the standards and
+  etiquette of the repo and normal procedure."
+- Opening the PR now is normal etiquette: #275 is "help wanted", YARP's CONTRIBUTING lets such work go to a PR
+  after a comment, and the change is small and test-only. Closest precedent: MihaZupan's #2828 "Remove
+  FluentAssertions".
+- Set up: `current_context/procedures/pre-pr.md` (+ `/pre-pr`), the PR text draft `shared/pr-description.md`, D7,
+  plan Steps 12–15 replaced. Rules changed in root `CLAUDE.md` §5, `ai-workflow/default-workflow.md`, the YARP
+  operating manual §7 and `05-timothy.md`.
 

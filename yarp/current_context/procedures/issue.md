@@ -32,6 +32,8 @@
    - **G1 not granted:** offer to walk him through the plan, or answer questions. No code.
    - **G1 granted, steps remaining:** say "Ready to run Steps N–M autonomously" and **wait for his go**.
    - **Run finished:** offer `/lecture change`, `/lecture testing`, or `/handoff`.
+   - **`02-decisions.md` or `STATUS.md` says the PR is next:** say so and offer the pre-PR check
+     (`/pre-pr`, or follow `link/current_context/procedures/pre-pr.md` if he says "go").
 6. From here, the issue's `plan.md` is your source of work and the manual §5 governs the run.
 
 One issue per session. To change issue: `/handoff` for this one, then `/issue <other>`.

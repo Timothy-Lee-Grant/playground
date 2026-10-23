@@ -1,0 +1,175 @@
+# Pre-PR check 7: Release rebuild + all tests on remove-autofac-275
+# Date: 2026-10-22 19:06 PDT  Machine: Apple M2 / macOS 26.3
+# SDK: 11.0.100-rc.1.26420.103  HEAD: 1665ced5  upstream/main: 2aa3d835
+# Command: ./build.sh --configuration Release --rebuild --test
+
+  Determining projects to restore...
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/toolset/12.0.0-beta.26502.2/AfterSigning.proj (in 126 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/toolset/12.0.0-beta.26502.2/Tools.proj (in 126 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/toolset/12.0.0-beta.26502.2/AfterSolutionBuild.proj (in 126 ms).
+    Runtime toolset 'dotnet/ v8.0.13' already installed.
+    Runtime toolset 'dotnet/ v9.0.2' already installed.
+    Runtime toolset 'aspnetcore/ v8.0.13' already installed.
+    Runtime toolset 'aspnetcore/ v9.0.2' already installed.
+  Determining projects to restore...
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.HttpSysDelegation.Sample/SampleHttpSysServer/SampleHttpSysServer.csproj (in 3.82 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.HttpSysDelegation.Sample/ReverseProxy/ReverseProxy.HttpSysDelegation.Sample.csproj (in 6 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.ConfigFilter.Sample/ReverseProxy.ConfigFilter.Sample.csproj (in 3.85 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.Direct.Sample/ReverseProxy.Direct.Sample.csproj (in 3 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/Prometheus/ReverseProxy.Metrics-Prometheus.Sample/ReverseProxy.Metrics.Prometheus.Sample.csproj (in 4.6 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/KubernetesIngress.Sample/Combined/Yarp.Kubernetes.IngressController.csproj (in 6.73 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/SampleServer/SampleServer.csproj (in 3 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.Transforms.Sample/ReverseProxy.Transforms.Sample.csproj (in 4 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.Metrics.Sample/ReverseProxy.Metrics.Sample.csproj (in 8 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/testassets/ReverseProxy.Config/ReverseProxy.Config.csproj (in 3.19 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/testassets/ReverseProxy.Code/ReverseProxy.Code.csproj (in 3.18 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/testassets/BenchmarkApp/BenchmarkApp.csproj (in 2.43 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/test/Tests.Common/Yarp.Tests.Common.csproj (in 7.04 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.Config.Sample/ReverseProxy.Config.Sample.csproj (in 4 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.Code.Sample/ReverseProxy.Code.Sample.csproj (in 3 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.Auth.Sample/ReverseProxy.Auth.Sample.csproj (in 4 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/KubernetesIngress.Sample/backend/backend.csproj (in 2 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/Prometheus/HttpLoadApp/HttpLoadApp.csproj (in 3 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/KubernetesIngress.Sample/Monitor/Yarp.Kubernetes.Monitor.csproj (in 4 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/KubernetesIngress.Sample/Ingress/Yarp.Kubernetes.Ingress.csproj (in 6 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/eng/yarpapppack/yarpapppack-linux-x64.csproj (in 2 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/eng/yarpapppack/yarpapppack-linux-arm64.csproj (in 2 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/BasicYarpSample/BasicYarpSample.csproj (in 3 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/testassets/TestClient/TestClient.csproj (in 3 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/testassets/TestServer/TestServer.csproj (in 3 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/testassets/ReverseProxy.Direct/ReverseProxy.Direct.csproj (in 5 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/src/Kubernetes.Controller/Yarp.Kubernetes.Controller.csproj (in 5 ms).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/src/ReverseProxy/Yarp.ReverseProxy.csproj (in 1.29 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/src/TelemetryConsumption/Yarp.Telemetry.Consumption.csproj (in 1.29 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/samples/ReverseProxy.LetsEncrypt.Sample/ReverseProxy.LetsEncrypt.Sample.csproj (in 4.82 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj (in 4.71 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/test/Kubernetes.Tests/Yarp.Kubernetes.Tests.csproj (in 11.77 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.FunctionalTests/Yarp.ReverseProxy.FunctionalTests.csproj (in 11.77 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/test/Application.Tests/Yarp.Application.Tests.csproj (in 12.27 sec).
+  Restored /Volumes/T7/open_source_projects/yarp_project/yarp/src/Application/Yarp.Application.csproj (in 18.17 sec).
+  TestClient -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/TestClient/Release/net9.0/TestClient.dll
+  HttpLoadApp -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/HttpLoadApp/Release/net8.0/HttpLoadApp.dll
+  SampleHttpSysServer -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/SampleHttpSysServer/Release/net8.0/SampleHttpSysServer.dll
+  backend -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/backend/Release/net8.0/backend.dll
+  SampleServer -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/SampleServer/Release/net8.0/SampleServer.dll
+  TestServer -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/TestServer/Release/net9.0/TestServer.dll
+  Yarp.Application -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application/Release/net9.0/yarp.dll
+  Yarp.Application -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application/Release/net9.0/linux-arm64/yarp.dll
+  Yarp.Application -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application/Release/net9.0/linux-arm64/publish/
+  a .
+  a ./HealthChecks.ApplicationStatus.dll
+  a ./Microsoft.Extensions.ServiceDiscovery.Abstractions.dll
+  a ./Microsoft.Extensions.ServiceDiscovery.dll
+  a ./Microsoft.Extensions.ServiceDiscovery.Yarp.dll
+  Yarp.Application -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application/Release/net9.0/linux-x64/yarp.dll
+  a ./OpenTelemetry.Api.dll
+  a ./OpenTelemetry.Api.ProviderBuilderExtensions.dll
+  a ./OpenTelemetry.dll
+  a ./OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
+  a ./OpenTelemetry.Extensions.Hosting.dll
+  Yarp.Application -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application/Release/net9.0/linux-x64/publish/
+  a ./OpenTelemetry.Instrumentation.AspNetCore.dll
+  a ./OpenTelemetry.Instrumentation.Http.dll
+  a ./OpenTelemetry.Instrumentation.Runtime.dll
+  a ./System.IO.Hashing.dll
+  a ./yarp
+  a ./yarp.deps.json
+  a ./yarp.dll
+  a ./Yarp.ReverseProxy.dll
+  a .
+  a ./yarp.runtimeconfig.json
+  a ./HealthChecks.ApplicationStatus.dll
+  a ./yarp.xml
+  a ./Microsoft.Extensions.ServiceDiscovery.Abstractions.dll
+  a ./Microsoft.Extensions.ServiceDiscovery.dll
+  Generating checksum for '/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/YarpAppArtifacts/Release/linux-arm64/reverse-proxy-linux-arm64.tar.gz' into '/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/YarpAppArtifacts/Release/linux-arm64/reverse-proxy-linux-arm64.tar.gz.sha512'...
+  a ./Microsoft.Extensions.ServiceDiscovery.Yarp.dll
+  a ./OpenTelemetry.Api.dll
+  a ./OpenTelemetry.Api.ProviderBuilderExtensions.dll
+  a ./OpenTelemetry.dll
+  a ./OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
+  a ./OpenTelemetry.Extensions.Hosting.dll
+  a ./OpenTelemetry.Instrumentation.AspNetCore.dll
+  a ./OpenTelemetry.Instrumentation.Http.dll
+  a ./OpenTelemetry.Instrumentation.Runtime.dll
+  a ./System.IO.Hashing.dll
+  a ./yarp
+  a ./yarp.deps.json
+  a ./yarp.dll
+  a ./Yarp.ReverseProxy.dll
+  a ./yarp.runtimeconfig.json
+  a ./yarp.xml
+  Generating checksum for '/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/YarpAppArtifacts/Release/linux-x64/reverse-proxy-linux-x64.tar.gz' into '/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/YarpAppArtifacts/Release/linux-x64/reverse-proxy-linux-x64.tar.gz.sha512'...
+  The package Yarp.Application.linux-arm64.3.0.0-dev is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  The package Yarp.Application.linux-x64.3.0.0-dev is missing a readme. Go to https://aka.ms/nuget/authoring-best-practices/readme to learn why package readmes are important.
+  Successfully created package '/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/packages/Release/Shipping/Yarp.Application.linux-arm64.3.0.0-dev.nupkg'.
+  Successfully created package '/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/packages/Release/Shipping/Yarp.Application.linux-x64.3.0.0-dev.nupkg'.
+  Successfully created package '/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/packages/Release/Shipping/Yarp.Application.linux-arm64.3.0.0-dev.symbols.nupkg'.
+  Successfully created package '/Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/packages/Release/Shipping/Yarp.Application.linux-x64.3.0.0-dev.symbols.nupkg'.
+  Yarp.Application.Tests -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application.Tests/Release/net9.0/Yarp.Application.Tests.dll
+  Running tests: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application.Tests/Release/net9.0/Yarp.Application.Tests.dll [net9.0|arm64]
+  Yarp.ReverseProxy -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy/Release/net8.0/Yarp.ReverseProxy.dll
+  ReverseProxy.Config.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Config.Sample/Release/net8.0/ReverseProxy.Config.Sample.dll
+  ReverseProxy.HttpSysDelegation.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.HttpSysDelegation.Sample/Release/net8.0/ReverseProxy.HttpSysDelegation.Sample.dll
+  ReverseProxy.Code.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Code.Sample/Release/net8.0/ReverseProxy.Code.Sample.dll
+  Yarp.Telemetry.Consumption -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Telemetry.Consumption/Release/net8.0/Yarp.Telemetry.Consumption.dll
+  Yarp.Kubernetes.Controller -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Controller/Release/net8.0/Yarp.Kubernetes.Controller.dll
+  ReverseProxy.Metrics.Prometheus.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Metrics.Prometheus.Sample/Release/net8.0/ReverseProxy.Metrics.Prometheus.Sample.dll
+  BasicYarpSample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/BasicYarpSample/Release/net8.0/BasicYarpSample.dll
+  Yarp.Kubernetes.Ingress -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Ingress/Release/net8.0/Yarp.Kubernetes.Ingress.dll
+  Yarp.Kubernetes.Monitor -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Monitor/Release/net8.0/Yarp.Kubernetes.Monitor.dll
+  ReverseProxy.ConfigFilter.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.ConfigFilter.Sample/Release/net8.0/ReverseProxy.ConfigFilter.Sample.dll
+  ReverseProxy.LetsEncrypt.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.LetsEncrypt.Sample/Release/net8.0/ReverseProxy.LetsEncrypt.Sample.dll
+  ReverseProxy.Transforms.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Transforms.Sample/Release/net8.0/ReverseProxy.Transforms.Sample.dll
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application.Tests/Release/net9.0/Yarp.Application.Tests.dll [net9.0|arm64]
+  ReverseProxy.Metrics.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Metrics.Sample/Release/net8.0/ReverseProxy.Metrics.Sample.dll
+  ReverseProxy.Auth.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Auth.Sample/Release/net8.0/ReverseProxy.Auth.Sample.dll
+  Yarp.Kubernetes.IngressController -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.IngressController/Release/net8.0/Yarp.Kubernetes.IngressController.dll
+  Yarp.Tests.Common -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Tests.Common/Release/net8.0/Yarp.Tests.Common.dll
+  Yarp.Tests.Common -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Tests.Common/Release/net9.0/Yarp.Tests.Common.dll
+  BenchmarkApp -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/BenchmarkApp/Release/net8.0/BenchmarkApp.dll
+  ReverseProxy.Direct.Sample -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Direct.Sample/Release/net8.0/ReverseProxy.Direct.Sample.dll
+  Yarp.ReverseProxy.FunctionalTests -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.FunctionalTests/Release/net8.0/Yarp.ReverseProxy.FunctionalTests.dll
+  BenchmarkApp -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/BenchmarkApp/Release/net9.0/BenchmarkApp.dll
+  ReverseProxy.Code -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Code/Release/net9.0/ReverseProxy.Code.dll
+  ReverseProxy.Code -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Code/Release/net8.0/ReverseProxy.Code.dll
+  ReverseProxy.Config -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Config/Release/net9.0/ReverseProxy.Config.dll
+  ReverseProxy.Config -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Config/Release/net8.0/ReverseProxy.Config.dll
+  Yarp.ReverseProxy.FunctionalTests -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.FunctionalTests/Release/net9.0/Yarp.ReverseProxy.FunctionalTests.dll
+  ReverseProxy.Direct -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Direct/Release/net9.0/ReverseProxy.Direct.dll
+  Yarp.ReverseProxy.Tests -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Release/net8.0/Yarp.ReverseProxy.Tests.dll
+  Yarp.Kubernetes.Tests -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Tests/Release/net8.0/Yarp.Kubernetes.Tests.dll
+  Yarp.ReverseProxy.Tests -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Release/net9.0/Yarp.ReverseProxy.Tests.dll
+  Running tests: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Release/net8.0/Yarp.ReverseProxy.Tests.dll [net8.0|arm64]
+  Running tests: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.FunctionalTests/Release/net9.0/Yarp.ReverseProxy.FunctionalTests.dll [net9.0|arm64]
+  Running tests: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.FunctionalTests/Release/net8.0/Yarp.ReverseProxy.FunctionalTests.dll [net8.0|arm64]
+  Yarp.Kubernetes.Tests -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Tests/Release/net9.0/Yarp.Kubernetes.Tests.dll
+  ReverseProxy.Direct -> /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/ReverseProxy.Direct/Release/net8.0/ReverseProxy.Direct.dll
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Release/net8.0/Yarp.ReverseProxy.Tests.dll [net8.0|arm64]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.FunctionalTests/Release/net9.0/Yarp.ReverseProxy.FunctionalTests.dll [net9.0|arm64]
+  Running tests: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Tests/Release/net9.0/Yarp.Kubernetes.Tests.dll [net9.0|arm64]
+  Running tests: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Tests/Release/net8.0/Yarp.Kubernetes.Tests.dll [net8.0|arm64]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.FunctionalTests/Release/net8.0/Yarp.ReverseProxy.FunctionalTests.dll [net8.0|arm64]
+  Running tests: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Release/net9.0/Yarp.ReverseProxy.Tests.dll [net9.0|arm64]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.Tests/Release/net9.0/Yarp.ReverseProxy.Tests.dll [net9.0|arm64]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Tests/Release/net9.0/Yarp.Kubernetes.Tests.dll [net9.0|arm64]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Tests/Release/net8.0/Yarp.Kubernetes.Tests.dll [net8.0|arm64]
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:56.85
+EXIT=0
+
+## Per-project totals (from artifacts/TestResults/Release/*.trx, this run)
+Yarp.Application.Tests_net9.0_arm64 ::  total: 27  failed: 0  succeeded: 27  skipped: 0 
+Yarp.Kubernetes.Tests_net8.0_arm64 ::  total: 93  failed: 0  succeeded: 91  skipped: 2 
+Yarp.Kubernetes.Tests_net9.0_arm64 ::  total: 93  failed: 0  succeeded: 91  skipped: 2 
+Yarp.ReverseProxy.FunctionalTests_net8.0_arm64 ::  total: 269  failed: 0  succeeded: 235  skipped: 34 
+Yarp.ReverseProxy.FunctionalTests_net9.0_arm64 ::  total: 269  failed: 0  succeeded: 235  skipped: 34 
+Yarp.ReverseProxy.Tests_net8.0_arm64 ::  total: 1989  failed: 0  succeeded: 1989  skipped: 0 
+Yarp.ReverseProxy.Tests_net9.0_arm64 ::  total: 1989  failed: 0  succeeded: 1989  skipped: 0 
+
+## Compared with baseline (evidence/011, upstream/main 2aa3d835 = today's upstream/main): identical in all 7 project/framework rows.
+## Reviewer read-through (check 8): ForwarderMiddlewareTests.cs:13 'using Yarp.Tests.Common;' is now unused (namespace only holds TestRandom, TestRandomFactory, TestTimeProvider; none used in that file). Not a build warning.

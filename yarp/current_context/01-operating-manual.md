@@ -112,7 +112,7 @@ plan without asking for a go-ahead at each step.** He doesn't want to sit at the
 | **G1** | Plan approved → implementation may start | Never write product or test code for the issue before it (reading, building and running existing tests is fine) |
 | **References** | A commit message mentioning an issue, PR or person | Ask; he commits it himself |
 | **G2** | Anything posted upstream (comment, PR, review reply) | You draft; he edits and posts. You never post (`gh` is denied) |
-| **G3** | After he has learned the change (lectures and/or a teach-back) → the PR may be opened | Never suggest opening the PR before he says G3 is open |
+| **G3** | The pre-PR check (`procedures/pre-pr.md`) passes and he says go → he pushes and opens the PR | Run the check when the PR is next; when it passes, say so plainly. Learning (lectures, teach-backs) no longer gates the PR (2026-10-22) |
 
 ## 8. Writing lectures
 

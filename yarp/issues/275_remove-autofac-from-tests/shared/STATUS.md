@@ -1,5 +1,9 @@
 # STATUS
 
+> **Desktop note, 2026-10-22 (overrides the rows below until the next `/handoff`):** the PR is next (decision D7).
+> Run the pre-PR check: `/pre-pr`, or `link/current_context/procedures/pre-pr.md`. PR text draft:
+> [`pr-description.md`](pr-description.md). The teach-back no longer gates the PR.
+
 > Owner: CLI. Rewritten in place by `/handoff` every session. Desktop reads this first.
 
 | | |

@@ -507,3 +507,29 @@ No CHANGE REQUESTs.
 # Stage 8 (Review)
 
 *(One entry per review comment and its resolution.)*
+
+[Desktop — 2026_10_22] **Steps 12–15 replaced (D7).** Timothy retired the rules that tied the PR to a maintainer reply and
+his teach-back; the priority is a high-quality PR per YARP's standards. New order: **12** pre-PR check
+(`link/current_context/procedures/pre-pr.md`; includes rebase if upstream moved, thread re-check, Release build +
+all tests, diff read-through, `pr-description.md`) → **13** Timothy pushes (`git -C yarp push -u origin
+remove-autofac-275`) → **14** he opens the PR from the compare page with the drafted title/body → **15** review loop.
+Upstream `main` was still `2aa3d835` on 2026-10-22, so no rebase was needed then. The `Verify()` note is in the draft
+as optional.
+
+**[CLI — 2026_10_22_19_20] Step 12: pre-PR check run. One finding (unused `using`); everything else passes**
+
+- *Changed:* nothing in the fork. `pr-description.md`: filled the verification slots (macOS 26.3 / Apple M2, SDK
+  `11.0.100-rc.1.26420.103`, 1,989 per framework).
+- *Evidence (verified):* `evidence/012-prepr-checks-0-6.txt` (status, upstream unchanged at `2aa3d835` so no rebase,
+  thread has only Timothy's 2026-10-09 comment and no competing PR, scope = the 11 planned files, `diff --check`
+  clean, 4 commits with his GitHub email and no references, `dotnet format whitespace` clean on the 7 changed files);
+  `evidence/013-prepr-release-build-test.txt` (Release rebuild + all tests: 0 warnings, 0 errors, all 7
+  project/framework totals identical to `011`).
+- *Found:* `ForwarderMiddlewareTests.cs` still has `using Yarp.Tests.Common;`, which only `TestAutoMockBase` needed
+  there. The build doesn't warn (IDE0005 isn't enforced), but a reviewer reading the diff would see a leftover.
+  Proposed: a fifth small commit removing it, then re-run checks 4–7. Waiting for Timothy's OK.
+- *Also found:* the branch was already pushed to `origin` on 2026-10-08 (same commit, `1665ced5`, tracks
+  `origin/remove-autofac-275`); the registry row and STATUS still say "not pushed". Fix at `/handoff`. A fifth
+  commit would be a plain fast-forward push, no force.
+- *Why the check didn't rerun `main`:* upstream hasn't moved since `011` took the `main` baseline on the same SDK and
+  machine, so `011`'s `main` numbers are still the right comparison.

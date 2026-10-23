@@ -1,0 +1,75 @@
+# 012 deterministic clock — RW2 steps 2–3 (green)
+date: 2026-10-22 22:30 PDT
+dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ d9a90af6 + uncommitted RW2 change (2 test files)
+status --porcelain:
+ M src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs
+ M src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
+
+## A. Immune to a slow machine: 80 ms real stall injected after each clock.Advance (3 lines, own line each; reverted)
+$ dotnet test src/devices/Bmp3xx/tests/
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 593 ms - Bmp3xx.Tests.dll (net8.0)
+(first attempt put the stall on the same line: StyleCop SA1107 build error, not a test result)
+
+## B. Still catches the bug: F1 fix undone in the simulator ('if (previousMode != 0b11)' -> 'if (true)'; reverted)
+$ dotnet test src/devices/Bmp3xx/tests/
+[xUnit.net 00:00:00.17]     Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterRepeatedNormalModeWrite_StillWaitsForTheLongerMeasurement [FAIL]
+Expected: 3
+Actual:   51
+     at Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterRepeatedNormalModeWrite_StillWaitsForTheLongerMeasurement() in src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs:line 134
+Failed!  - Failed:     1, Passed:    94, Skipped:     0, Total:    95, Duration: 598 ms - Bmp3xx.Tests.dll (net8.0)
+=> deterministic red with the manual clock: same message as CI, no sleep involved
+
+## C. 30 runs under load (8x 'yes'), after a clean rebuild of the real change
+$ dotnet build src/devices/Bmp3xx/tests/ --no-incremental
+    0 Warning(s)
+    0 Error(s)
+$ (30x) dotnet test src/devices/Bmp3xx/tests/ --no-build
+passed runs: 30  failed runs: 0
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 634 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 640 ms - Bmp3xx.Tests.dll (net8.0)
+...
+load processes after cleanup: 0
+
+## D. Hygiene (Step 5 / pre-PR list)
+$ dotnet build src/devices/Bmp3xx/tests/ --no-incremental
+    0 Error(s)
+    0 Warning(s)
+$ dotnet build src/devices/Bmp3xx/samples/ --no-incremental
+    0 Error(s)
+    0 Warning(s)
+tests x5:
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 597 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 616 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 614 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 613 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 612 ms - Bmp3xx.Tests.dll (net8.0)
+$ dotnet build src/devices/Bmp3xx/tests/ -c Release --no-incremental
+    0 Error(s)
+    0 Warning(s)
+$ dotnet test src/devices/Bmp3xx/tests/ -c Release --no-build
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 633 ms - Bmp3xx.Tests.dll (net8.0)
+$ dotnet format whitespace src/devices/Bmp3xx/Bmp3xx.csproj --verify-no-changes --include src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
+exit: 0
+$ dotnet format whitespace src/devices/Bmp3xx/tests/Bmp3xx.Tests.csproj --verify-no-changes --include src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
+exit: 0
+$ git diff --stat upstream/main   (working tree vs upstream/main)
+ src/devices/Bmp3xx/Bmp3xxBase.cs                 | 16 +++++--
+ src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs      | 16 +++++++
+ src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs      | 18 ++++++++
+ src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs      | 30 +++++++++++--
+ src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs | 56 +++++++++++++++++++++---
+ 5 files changed, 123 insertions(+), 13 deletions(-)
+$ git diff --stat   (this change only)
+ src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs      |  8 ++++---
+ src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs | 28 +++++++++++++++++-------
+ 2 files changed, 25 insertions(+), 11 deletions(-)
+$ git diff --check: ''
+Bmp3xxBase.cs changed by RW2: 0 (0 = binding untouched)
+TODO/NotImplementedException/pragma in the 2 changed files: grep exit 1 (1 = no match)
+$ dotnet build src/Iot.Device.Bindings/ --no-incremental
+    0 Error(s)
+    0 Warning(s)
+
+(note: build exit codes were not captured by the script under zsh; '0 Error(s)' lines above are the result.
+ TODO grep re-run separately with the file list split correctly.)

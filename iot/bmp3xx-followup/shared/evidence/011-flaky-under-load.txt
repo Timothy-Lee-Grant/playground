@@ -1,0 +1,39 @@
+# 011 flaky under load — RW2 step 1 (red)
+date: 2026-10-22 22:26 PDT
+dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ d9a90af6
+machine: 8 cores (MacBook Air)
+
+## A. 30 runs, every core busy (8x 'yes > /dev/null'), script: load-loop.sh 30
+$ dotnet build src/devices/Bmp3xx/tests/ --no-incremental   -> 0 Warning(s), 0 Error(s)
+$ (30x) dotnet test src/devices/Bmp3xx/tests/ --no-build
+Passed runs: 30   Failed runs: 0
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 700 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 727 ms - Bmp3xx.Tests.dll (net8.0)
+...
+load processes after cleanup: 0
+
+## B. 30 runs, 4x oversubscribed (32x 'yes')
+Passed runs: 30   Failed runs: 0
+load processes after cleanup: 0
+
+=> NOT reproduced locally: a CPU-bound load on a fast 8-core Mac doesn't stretch Thread.Sleep(20) past ~67 ms.
+
+## C. Mechanism shown by injection: what an overshoot does
+Temporary edit (reverted right after, status --porcelain empty): SimulatedBmp3xxTests.cs, Thread.Sleep(20) -> Thread.Sleep(80) (x3)
+$ dotnet test src/devices/Bmp3xx/tests/
+[xUnit.net 00:00:00.26]     Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterRepeatedNormalModeWrite_StillWaitsForTheLongerMeasurement [FAIL]
+Expected: 3
+Actual:   51
+     at Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterRepeatedNormalModeWrite_StillWaitsForTheLongerMeasurement() in src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs:line 132
+[xUnit.net 00:00:00.42]     Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterOversamplingWasRaisedAndLowered_WaitsForTheLongerMeasurement [FAIL]
+Expected: 3
+Actual:   51
+     at Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterOversamplingWasRaisedAndLowered_WaitsForTheLongerMeasurement() in src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs:line 115
+Failed!  - Failed:     2, Passed:    93, Skipped:     0, Total:    95, Duration: 607 ms - Bmp3xx.Tests.dll (net8.0)
+
+=> The two 'still busy' tests fail with CI's exact message and lines (Azure build 133266 log 24: line 132;
+   main build 133239: line 115). Their result depends on how long the sleep really took.
+   ModeWrite_AfterTheRunningMeasurement_IsAccepted passes with a longer sleep (it asserts 'no longer busy').
+   ModeWrite_RightAfterLeavingNormalMode_IsIgnored has no sleep but is wall-clock too: it needs the two writes
+   within 10.9 ms of each other (same class of flake, smaller odds).

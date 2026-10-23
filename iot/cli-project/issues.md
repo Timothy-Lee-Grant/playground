@@ -10,7 +10,7 @@
 
 | Folder (in `iot_project/`) | What | Upstream ref | Branch | Base | Remote push | Status (date) |
 |---|---|---|---|---|---|---|
-| `bmp3xx-followup` | Follow-up to the merged Bmp3xx binding: fix F1–F3 from the second review (simulator busy window, pending time on a repeated Normal request, stale conf_err) | PR 2627 (merged); no issue | `fix/bmp3xx-normal-mode-followup` | `upstream/main` (≥ `4108607`) | `origin` (Timothy's fork) only, with his OK | Set up 2026-10-22; branch not created yet (plan Step 1, after G1) |
+| `bmp3xx-followup` | Follow-up to the merged Bmp3xx binding: fix F1–F3 from the second review (simulator busy window, pending time on a repeated Normal request, stale conf_err) | PR 2627 (merged); no issue | `fix/bmp3xx-normal-mode-followup` | `upstream/main` (≥ `4108607`) | `origin` (Timothy's fork) only, with his OK | **PR 2631 open** (2026-10-23); CI macOS red = our flaky simulator test (also red on main) → work order RW2 in plan.md |
 
 ## Protected (never check out, commit, rebase, reset or push from this project)
 

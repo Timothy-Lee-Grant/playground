@@ -2,14 +2,14 @@
 
 | | |
 |---|---|
-| Date | 2026-10-22 (CLI session 001) |
-| Mode | P · G1 given ("go") · G2 given ("push") · no G3 (D3) |
-| Plan step | Steps 1–7 done (all "done when" met); Step 8: pushed, **PR not opened yet** (Timothy) |
-| Branch / last commit | `fix/bmp3xx-normal-mode-followup` @ `d9a90af6 Say which simulated configuration check was verified on hardware` (5 commits on `upstream/main` `41086078`) |
-| Pushed | **Yes**, to `origin` (Timothy's fork); `git status -sb` in sync with `origin/fix/bmp3xx-normal-mode-followup`. Clone clean |
-| Tests | 95/95 (89 + 6 new), Debug ×5 and Release, 0 warnings; `Iot.Device.Bindings` 0/0 (`evidence/010-prepr-checks.txt`) |
-| Hardware | Pi 4 + BMP390: ALL PASS incl. (h0) conf_err on OSR change 10/10, (h) F3 10/10, (i) F2 45/45 (`evidence/009-hw-check-followup.txt`) |
-| Upstream | PR 2627 merged (`4108607`). Follow-up PR **not opened**. Open PR #2630 (Copilot, GPIO) doesn't touch Bmp3xx |
+| Date | 2026-10-22 (CLI session 002) |
+| Mode | P · RW2 G1 given ("go") · push not given yet |
+| Plan step | Work order **RW2**: steps 1–6 done (step 1 red by injection, the load loop didn't reproduce); step 7 (push, post comment, edit description) waits for Timothy |
+| Branch / last commit | `fix/bmp3xx-normal-mode-followup` @ `96fd4f61 Use a controllable clock in the simulator's busy-window tests` (6 commits on `upstream/main` `41086078`) |
+| Pushed | **No**: `status -sb` = ahead 1 of `origin/fix/bmp3xx-normal-mode-followup`. Clone clean |
+| Tests | 95/95 Debug ×5 and Release, 0 warnings; 80 ms stall injected → 95/95; F1 undone → new test fails; 30× under load 30/30; `Iot.Device.Bindings` 0/0 (`evidence/012-deterministic-clock-green.txt`; red: `011-flaky-under-load.txt`) |
+| Hardware | unchanged (session 001, `evidence/009`); RW2 is test-only, no Pi run needed |
+| Upstream | PR 2631 open; macOS leg red on `d9a90af6` (our flaky test, also on `main`). Fix not on the PR yet |
 | Blockers | none |
-| Needs Timothy / desktop | **Timothy:** open the PR from the compare link with `pr/001-pr-description.md` (pick a title), watch CI, send the link to desktop. **Desktop:** record the PR number (`02`), update the `ISSUES.md` row, write the lecture (D3); consider an allow rule for `git -C iot switch -c fix/*`, re-run setup.sh (missing `bmp3xx-followup` link), and plan Pi copies as Timothy's step. No open CHANGE REQUESTs |
-| Report | [`sessions/001-2026-10-22.md`](sessions/001-2026-10-22.md) |
+| Needs Timothy / desktop | **Timothy:** "push"; post `pr/002-ci-macos-flaky-comment.md` (check hash `96fd4f61`); paste the "Also" paragraph from `pr/001-pr-description.md` v2 into the PR description; watch macOS CI. **Desktop:** optional choice: keep hand-written `ManualTimeProvider` or use `FakeTimeProvider` (package already used by Button tests); lecture on clock injection and proving flaky fixes; check the 2026-10-22/23 date mismatch in `02` D4 / `ISSUES.md`; re-run setup.sh. No open CHANGE REQUESTs |
+| Report | [`sessions/002-2026-10-22.md`](sessions/002-2026-10-22.md) |

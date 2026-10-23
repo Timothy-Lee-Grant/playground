@@ -11,6 +11,13 @@
 //     conversion is sometimes running), then sleep and Read(): the forced measurement must not be lost.
 // (g0) R2 informational: the same sequence by raw register writes, waiting only the 6 ms the binding waited before
 //     the fix. Lost forced writes here mean the chip shows the problem the fix addresses.
+// Follow-up (2026-10-22):
+// (h0) F3 informational: normal x1/x1 at 5 ms, pressure raised to x32 (too slow for 5 ms) by a raw write. Prints
+//     PWR_CTRL and ERR: does the chip set conf_err and drop to sleep on a settings change in normal mode?
+// (h) F3: the same change through the binding, ERR never read, then a 160 ms rate and SetPowerMode(Normal): it must
+//     not throw on the stale flag and must end in normal mode.
+// (i) F2: as (g), plus a redundant SetPowerMode(Normal) after lowering the oversampling: the forced measurement of
+//     Read must still not be lost.
 using System.Diagnostics;
 using System.Device.I2c;
 using Iot.Device.Bmp3xx;
@@ -146,7 +153,7 @@ for (int i = 0; i < 10; i++)
 Report("(f) unread forced measurement: drdy set, cleared by reading DATA", ok, 10);
 
 // (g)
-void RaiseAndLower(string name, Action<Bmp3xxOversampling> setSampling, int tries)
+void RaiseAndLower(string name, Action<Bmp3xxOversampling> setSampling, int tries, bool requestNormalAgain = false)
 {
     int passed = 0;
     long slowest = 0;
@@ -158,6 +165,11 @@ void RaiseAndLower(string name, Action<Bmp3xxOversampling> setSampling, int trie
         setSampling(Bmp3xxOversampling.X32);
         Thread.Sleep(random.Next(0, 160));
         setSampling(Bmp3xxOversampling.X1);
+        if (requestNormalAgain)
+        {
+            sensor.SetPowerMode(Bmp3xxPowerMode.Normal);
+        }
+
         var sw = Stopwatch.StartNew();
         sensor.SetPowerMode(Bmp3xxPowerMode.Sleep);
         var result = sensor.Read();
@@ -198,6 +210,55 @@ for (int i = 0; i < 30; i++)
 }
 
 Console.WriteLine($"(g0) informational, raw writes with the old 6 ms wait: forced measurement lost {lost}/30");
+
+// (h0)
+int confErrors = 0;
+for (int i = 0; i < 10; i++)
+{
+    Settings(Bmp3xxOversampling.X1, Bmp3xxOversampling.X1, Bmp3xxOutputDataRate.Period5Milliseconds);
+    sensor.SetPowerMode(Bmp3xxPowerMode.Normal);
+    Thread.Sleep(random.Next(1, 20));
+    WriteRaw(0x1C, 0x05); // x32 pressure, x1 temperature: about 68 ms, too slow for 5 ms
+    Thread.Sleep(5);
+    byte powerControl = ReadRaw(0x1B);
+    byte error = ReadRaw(0x02);
+    Console.WriteLine($"    (h0) try {i + 1}: PWR_CTRL 0x{powerControl:X2} ERR 0x{error:X2}");
+    confErrors += (error & 0x04) != 0 && (powerControl & 0x30) == 0 ? 1 : 0;
+    WriteRaw(0x1C, 0x00); // x1/x1 again; the binding didn't see the raw write
+    WriteRaw(0x1B, 0x03); // sleep, if the chip stayed in normal mode
+    Thread.Sleep(100); // let a still-running x32 conversion end, so it can't swallow the next try's writes
+}
+
+Console.WriteLine($"(h0) informational, x32 written in normal mode at 5 ms: conf_err and sleep {confErrors}/10");
+
+// (h)
+ok = 0;
+int droppedToSleep = 0;
+for (int i = 0; i < 10; i++)
+{
+    Settings(Bmp3xxOversampling.X1, Bmp3xxOversampling.X1, Bmp3xxOutputDataRate.Period5Milliseconds);
+    sensor.SetPowerMode(Bmp3xxPowerMode.Normal);
+    Thread.Sleep(random.Next(1, 20));
+    sensor.PressureSampling = Bmp3xxOversampling.X32;
+    Thread.Sleep(5);
+    droppedToSleep += (ReadRaw(0x1B) & 0x30) == 0 ? 1 : 0; // PWR_CTRL only: reading ERR would clear the flag
+    sensor.OutputDataRate = Bmp3xxOutputDataRate.Period160Milliseconds;
+    try
+    {
+        sensor.SetPowerMode(Bmp3xxPowerMode.Normal);
+        ok += sensor.ReadPowerMode() == Bmp3xxPowerMode.Normal ? 1 : 0;
+    }
+    catch (InvalidOperationException e)
+    {
+        Console.WriteLine($"    (h) try {i + 1}: threw: {e.Message}");
+    }
+}
+
+Report($"(h) corrected settings after an unread conf_err enter normal (chip had dropped to sleep {droppedToSleep}/10)", ok, 10);
+
+// (i)
+RaiseAndLower("(i) pressure x1 -> x32 -> x1, normal requested again, then sleep and Read", value => sensor.PressureSampling = value, 30, requestNormalAgain: true);
+RaiseAndLower("(i) temperature x1 -> x32 -> x1, normal requested again, then sleep and Read", value => sensor.TemperatureSampling = value, 15, requestNormalAgain: true);
 
 sensor.SetPowerMode(Bmp3xxPowerMode.Sleep);
 Console.WriteLine(failures == 0 ? "ALL PASS" : $"{failures} FAILURE(S)");

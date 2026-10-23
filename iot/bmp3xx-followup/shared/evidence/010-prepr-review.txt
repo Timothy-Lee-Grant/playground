@@ -1,0 +1,23 @@
+# 010 pre-PR checks 2, 8, 9 — Step 7
+date: 2026-10-22 20:27 PDT · branch: fix/bmp3xx-normal-mode-followup @ d9a90af6 · behind/ahead upstream/main: 0 5 · status: ''
+
+## 2. Nobody else's open PR on Bmp3xx (no issue for this work)
+WebFetch https://api.github.com/search/issues?q=repo:dotnet/iot+is:pr+is:open+Bmp3xx -> total_count 1:
+  #2630 "Fix GPIO single-event cleanup and Raspberry Pi async wait lifetimes" (Copilot, 2026-10-22, open)
+  WebFetch https://api.github.com/repos/dotnet/iot/pulls/2630/files -> 4 files, none under src/devices/Bmp3xx
+  (WaitForEventLifetimeTests.cs, LibGpiodV2Driver.cs, LibGpiodV2EventObserver.cs, RaspberryPi3LinuxDriver.cs)
+WebFetch …q=repo:dotnet/iot+is:pr+is:open+BMP390 -> total_count 0
+-> ✅ no overlap
+
+## 8. Reviewer read-through of git diff upstream/main...HEAD
+One finding: the new simulator comment (commit aefb18cc) said "a settings change in normal mode" was verified, but
+hardware (h0) only tested an oversampling change; the ODR trigger was never run on the chip. Fixed in d9a90af6
+"Say which simulated configuration check was verified on hardware" (OSR verified, ODR unverified). After the fix:
+build 0/0, 95/95, dotnet format whitespace --verify-no-changes exit 0, diff --check empty.
+Otherwise: no TODOs/dead code/unused usings; test names follow the neighbours (Method_Condition_Result); no behaviour
+change beyond F1–F3; no public API change.
+
+## 9. PR text: ../pr/001-pr-description.md
+Title options short, like upstream's (no "(#n)": GitHub adds it on merge). No "Fixes" line (no issue). Body: one
+paragraph per finding (what, fix, test names), scope line, verified numbers from this run (95 tests; Pi 4 h/i).
+No AI statement, no playground link. PR template re-read: nothing else required.

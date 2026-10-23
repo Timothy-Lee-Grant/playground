@@ -1,0 +1,54 @@
+# hw-check follow-up on the Pi (run by Timothy, recorded by CLI)
+Date: 2026-10-22 (Pi clock 18:22:30 -09:00) · Raspberry Pi 4, 32-bit userland · BMP390 @ 0x77, I2C bus 1
+Build: ../hw-check (checks a–i), dotnet publish -c Release -r linux-arm --self-contained, against the binding on
+fix/bmp3xx-normal-mode-followup @ a197ab8d (SDK 10.0.302)
+Copied by Timothy: scp -r …/scratch/bmp3xx-followup/publish/hw-check pi@raspberrypi.local:~/hw-check-followup
+  (the CLI's scp failed twice: "scp: Connection closed", exit 255)
+Command (Pi): cd ~/hw-check-followup && ./hw-check | tee hw4.txt
+Output (verbatim as pasted):
+
+Date: 2026-10-22 18:22:30 -09:00
+(a) normal mode at the defaults, valid pressure readings: 10/10 PASS
+(b) too-fast settings after normal mode throw and leave the sensor asleep: 10/10 PASS
+(c) normal -> forced, x1/x1 at 5 ms (slowest SetPowerMode + Read: 25 ms): 30/30 PASS
+(d) normal -> sleep -> normal ends in normal: 10/10 PASS
+(e) normal -> forced, worst case x32/x32 at 160 ms (slowest SetPowerMode + Read: 426 ms): 15/15 PASS
+    (f) try 1: STATUS before DATA read 0x70, after 0x10
+    (f) try 2: STATUS before DATA read 0x70, after 0x10
+    (f) try 3: STATUS before DATA read 0x70, after 0x10
+    (f) try 4: STATUS before DATA read 0x70, after 0x10
+    (f) try 5: STATUS before DATA read 0x70, after 0x10
+    (f) try 6: STATUS before DATA read 0x70, after 0x10
+    (f) try 7: STATUS before DATA read 0x70, after 0x10
+    (f) try 8: STATUS before DATA read 0x70, after 0x10
+    (f) try 9: STATUS before DATA read 0x70, after 0x10
+    (f) try 10: STATUS before DATA read 0x70, after 0x10
+(f) unread forced measurement: drdy set, cleared by reading DATA: 10/10 PASS
+(g) pressure x1 -> x32 -> x1 in normal mode, then sleep and Read (slowest SetPowerMode(Sleep) + Read: 88 ms): 30/30 PASS
+(g) temperature x1 -> x32 -> x1 in normal mode, then sleep and Read (slowest SetPowerMode(Sleep) + Read: 85 ms): 15/15 PASS
+(g0) informational, raw writes with the old 6 ms wait: forced measurement lost 3/30
+    (h0) try 1: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 2: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 3: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 4: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 5: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 6: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 7: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 8: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 9: PWR_CTRL 0x03 ERR 0x04
+    (h0) try 10: PWR_CTRL 0x03 ERR 0x04
+(h0) informational, x32 written in normal mode at 5 ms: conf_err and sleep 10/10
+(h) corrected settings after an unread conf_err enter normal (chip had dropped to sleep 10/10): 10/10 PASS
+(i) pressure x1 -> x32 -> x1, normal requested again, then sleep and Read (slowest SetPowerMode(Sleep) + Read: 85 ms): 30/30 PASS
+(i) temperature x1 -> x32 -> x1, normal requested again, then sleep and Read (slowest SetPowerMode(Sleep) + Read: 85 ms): 15/15 PASS
+ALL PASS
+
+## CLI reading
+- (h0) VERIFIED: an OSR change to x32 while in normal mode at 5 ms sets conf_err (ERR 0x04) and drops the chip to
+  sleep (PWR_CTRL 0x03, sensors still enabled) within 5 ms, 10/10. The Step 4 simulator assumption holds.
+- (h) VERIFIED: after that unread conf_err, ODR 160 ms + SetPowerMode(Normal) enters normal 10/10 (F3 fix). Before
+  the fix the stale ERR 0x04 shown in (h0) would have made it throw.
+- (i) VERIFIED: with the redundant SetPowerMode(Normal), 45/45 Reads returned values (F2 fix); slowest 85 ms ≈ the
+  x32 wait (68 ms + 10% + 1) + a x1 forced measurement.
+- (a)–(g) unchanged vs hw3 (2026-10-19): all pass, (g0) still 3/30 lost with the old 6 ms wait (the chip shows the
+  problem the waits address).

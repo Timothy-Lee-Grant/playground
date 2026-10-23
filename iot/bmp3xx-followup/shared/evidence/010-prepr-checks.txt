@@ -1,0 +1,77 @@
+# 010 pre-PR checks 0,1,3–7 — Step 7 (YARP pre-pr.md adapted to dotnet/iot)
+date: 2026-10-22 20:25 PDT · machine: MacBook Air (macOS 26.3) · dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ aefb18cc
+
+## 0. ready: git status --short
+''
+## 1. up to date
+upstream/main: 41086078
+rev-list --left-right --count upstream/main...HEAD (behind ahead): 0	4
+origin/fix/bmp3xx-normal-mode-followup exists: no
+## 3. scope: git diff --stat upstream/main...HEAD
+ src/devices/Bmp3xx/Bmp3xxBase.cs                 | 16 +++++++++---
+ src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs      | 16 ++++++++++++
+ src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs      | 18 +++++++++++++
+ src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs      | 21 +++++++++++++++-
+ src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs | 32 ++++++++++++++++++++++++
+ 5 files changed, 99 insertions(+), 4 deletions(-)
+## 4. whitespace: git diff --check upstream/main...HEAD
+''
+## 5. commits: git log --format='%h %an <%ae>%n  %s%n%b' upstream/main..HEAD
+aefb18cc Timothy-Lee-Grant <timothyleegrant1995@gmail.com>
+  Mark the simulated configuration check on a settings change as verified
+
+a197ab8d Timothy-Lee-Grant <timothyleegrant1995@gmail.com>
+  Clear a stale configuration error before entering normal mode
+
+949dd535 Timothy-Lee-Grant <timothyleegrant1995@gmail.com>
+  Keep the pending measurement time on a repeated power-mode request
+
+005ae214 Timothy-Lee-Grant <timothyleegrant1995@gmail.com>
+  Keep the simulated busy window on a repeated normal-mode write
+
+upstream style: git log upstream/main --no-merges -15 --format=%s
+New binding: Bmp3xx (Bosch BMP390 / BMP388 pressure and temperature sensor) (#2627)
+Various LibgpiodV2 fixes (#2610)
+New binding: Cap1208 capacitive touch sensor (#2616)
+Fix DCMotor and ExplorerHat disposal with a shared GpioController (#2613)
+[main] Update dependencies from dotnet/arcade (#2621)
+Bump the dotnet-runtime group with 7 updates (#2622)
+Bump the skiasharp group with 2 updates (#2623)
+Fix signed readings and shunt ADC setting in Ina219 (#2612)
+Initialize GpioButton.IsPressed from the pin level at startup (#2611)
+Bump the skiasharp group with 2 updates (#2618)
+[main] Update dependencies from dotnet/arcade (#2563)
+The button tests are still flaky (#2608)
+Fix libgpiod V1 edge events on 32-bit platforms with 64-bit time_t (#2605)
+Make OneWire sysfs paths instance-level and configurable via constructors (#2603)
+Add non-blocking read mode to SocketCan CanRaw (#2557)
+## 6. formatting: dotnet format whitespace --verify-no-changes --include <changed files>
+$ dotnet format whitespace src/devices/Bmp3xx/Bmp3xx.csproj --verify-no-changes --include src/devices/Bmp3xx/Bmp3xxBase.cs src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs 
+exit: 0
+$ dotnet format whitespace src/devices/Bmp3xx/tests/Bmp3xx.Tests.csproj --verify-no-changes --include src/devices/Bmp3xx/Bmp3xxBase.cs src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs 
+exit: 0
+## 7. builds + tests (Step 5 commands + Iot.Device.Bindings)
+$ dotnet build src/devices/Bmp3xx/tests/ --no-incremental
+    0 Warning(s)
+    0 Error(s)
+exit: 0
+$ dotnet build src/devices/Bmp3xx/samples/ --no-incremental
+    0 Warning(s)
+    0 Error(s)
+exit: 0
+$ dotnet build src/devices/Bmp3xx/tests/ -c Release --no-incremental
+    0 Warning(s)
+    0 Error(s)
+exit: 0
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 602 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 591 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 597 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 594 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 592 ms - Bmp3xx.Tests.dll (net8.0)
+$ dotnet test src/devices/Bmp3xx/tests/ -c Release --no-build
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 604 ms - Bmp3xx.Tests.dll (net8.0)
+$ dotnet build src/Iot.Device.Bindings/ --no-incremental
+    0 Warning(s)
+    0 Error(s)
+exit: 0

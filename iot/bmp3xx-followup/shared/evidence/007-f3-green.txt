@@ -1,0 +1,131 @@
+# 007 F3 green — Step 4 (binding fix)
+date: 2026-10-22 20:09 PDT
+dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ 949dd535 + uncommitted
+## git diff
+diff --git a/src/devices/Bmp3xx/Bmp3xxBase.cs b/src/devices/Bmp3xx/Bmp3xxBase.cs
+index 23e509bb..8c68d0f2 100644
+--- a/src/devices/Bmp3xx/Bmp3xxBase.cs
++++ b/src/devices/Bmp3xx/Bmp3xxBase.cs
+@@ -271,6 +271,13 @@ namespace Iot.Device.Bmp3xx
+ 
+             if (powerMode != Bmp3xxPowerMode.Sleep)
+             {
++                if (powerMode == Bmp3xxPowerMode.Normal)
++                {
++                    // A configuration error stays set until the error register is read (table 28). Clear one left by an
++                    // earlier request or settings change, so the check below only sees errors caused by this request.
++                    ReadErrors();
++                }
++
+                 // Requesting the mode that is already active doesn't end a running measurement, so the longest is kept.
+                 _longestPendingMeasurementMilliseconds = currentMode == powerMode
+                     ? Math.Max(_longestPendingMeasurementMilliseconds, GetMeasurementDuration())
+diff --git a/src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs b/src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs
+index 53c3fdea..c9583567 100644
+--- a/src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs
++++ b/src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs
+@@ -229,6 +229,22 @@ namespace Iot.Device.Bmp3xx.Tests
+             Assert.Equal(0x03, chip.GetRegister(PowerControl)); // sensors still enabled
+         }
+ 
++        [Fact]
++        public void SetPowerMode_Normal_AfterAnUnreadConfigurationErrorWasCorrected_EntersNormalMode()
++        {
++            using var chip = new SimulatedBmp3xx(Bmp390ChipId, Calibration);
++            using var sensor = new Bmp390(chip);
++            sensor.SetPowerMode(Bmp3xxPowerMode.Normal);
++            chip.ConfigurationErrorOnNormalMode = true;
++            sensor.PressureSampling = Bmp3xxOversampling.X32; // too slow for 5 ms: conf_err, back to sleep
++            sensor.OutputDataRate = Bmp3xxOutputDataRate.Period160Milliseconds;
++            chip.ConfigurationErrorOnNormalMode = false;
++
++            sensor.SetPowerMode(Bmp3xxPowerMode.Normal);
++
++            Assert.Equal(Bmp3xxPowerMode.Normal, sensor.ReadPowerMode());
++        }
++
+         [Fact]
+         public void GetMeasurementDuration_X1X1_Is5ms()
+         {
+diff --git a/src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs b/src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs
+index 309d6968..234e3c60 100644
+--- a/src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs
++++ b/src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs
+@@ -193,8 +193,12 @@ namespace Iot.Device.Bmp3xx.Tests
+                         _longestNormalModeMeasurementMicroseconds = Math.Max(_longestNormalModeMeasurementMicroseconds, MeasurementMicroseconds());
+                     }
+ 
++                    ReportConfigurationErrorIfNormalMode();
+                     break;
+                 case OutputDataRateAddress:
++                    SetByte(address, value);
++                    ReportConfigurationErrorIfNormalMode();
++                    break;
+                 case ConfigurationAddress:
+                     SetByte(address, value);
+                     break;
+@@ -277,6 +281,17 @@ namespace Iot.Device.Bmp3xx.Tests
+             }
+         }
+ 
++        private void ReportConfigurationErrorIfNormalMode()
++        {
++            // Verified on a BMP390 when normal mode is entered (see OnPowerControlWritten). That a settings change in
++            // normal mode is checked the same way is unverified.
++            if (((GetRegister(PowerControlAddress) >> 4) & 0b11) == 0b11 && ConfigurationErrorOnNormalMode)
++            {
++                SetByte(ErrorAddress, (byte)(GetRegister(ErrorAddress) | ConfigurationError));
++                SetByte(PowerControlAddress, (byte)(GetRegister(PowerControlAddress) & ~0b0011_0000));
++            }
++        }
++
+         private void MeasureIfNormalMode()
+         {
+             // Normal mode measures continuously; the simulation measures whenever the scripted values change.
+diff --git a/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs b/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
+index a2ca5eff..6040af8e 100644
+--- a/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
++++ b/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
+@@ -143,6 +143,21 @@ namespace Iot.Device.Bmp3xx.Tests
+             Assert.Equal(0x04, chip.GetRegister(0x02));
+         }
+ 
++        [Theory]
++        [InlineData(0x1C, 0x05)] // x32 pressure
++        [InlineData(0x1D, 0x00)] // 5 ms output data rate
++        public void SettingsChangeInNormalMode_WithConfigurationError_ReturnsToSleep(byte register, byte value)
++        {
++            using var chip = new SimulatedBmp3xx(0x60, Calibration);
++            chip.Write(new byte[] { 0x1B, 0x33 }); // normal mode, valid settings
++            chip.ConfigurationErrorOnNormalMode = true;
++
++            chip.Write(new byte[] { register, value });
++
++            Assert.Equal(0x03, chip.GetRegister(0x1B));
++            Assert.Equal(0x04, chip.GetRegister(0x02));
++        }
++
+         [Fact]
+         public void ReadingErrorRegister_ClearsCommandAndConfigurationErrors()
+         {
+
+## $ dotnet build src/devices/Bmp3xx/tests/ --no-incremental
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.59
+exit: 0
+## $ dotnet build src/devices/Bmp3xx/samples/ --no-incremental
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.48
+exit: 0
+## $ dotnet test src/devices/Bmp3xx/tests/ --no-build
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 596 ms - Bmp3xx.Tests.dll (net8.0)
+exit: 0

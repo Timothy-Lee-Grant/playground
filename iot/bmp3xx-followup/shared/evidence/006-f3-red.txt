@@ -1,0 +1,27 @@
+# 006 F3 red — Step 4 (simulator models conf_err on a settings change in normal mode; new tests; binding unchanged)
+date: 2026-10-22 20:08 PDT
+dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ 949dd535 + uncommitted
+## git diff --stat
+ src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs      | 16 ++++++++++++++++
+ src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs      | 15 +++++++++++++++
+ src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs | 15 +++++++++++++++
+ 3 files changed, 46 insertions(+)
+
+## $ dotnet build src/devices/Bmp3xx/tests/ --no-incremental
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.77
+exit: 0
+## $ dotnet test src/devices/Bmp3xx/tests/ --no-build
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.21]     Iot.Device.Bmp3xx.Tests.Bmp3xxBaseTests.SetPowerMode_Normal_AfterAnUnreadConfigurationErrorWasCorrected_EntersNormalMode [FAIL]
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxBaseTests.SetPowerMode_Normal_AfterAnUnreadConfigurationErrorWasCorrected_EntersNormalMode [3 ms]
+  Error Message:
+   System.InvalidOperationException : The sensor rejected normal mode: the output data rate is too fast for the oversampling settings. Choose an OutputDataRate period longer than 68 ms.
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Bmp3xxBase.SetPowerMode(Bmp3xxPowerMode powerMode) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/Bmp3xxBase.cs:line 289
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxBaseTests.SetPowerMode_Normal_AfterAnUnreadConfigurationErrorWasCorrected_EntersNormalMode() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs:line 243
+Failed!  - Failed:     1, Passed:    94, Skipped:     0, Total:    95, Duration: 600 ms - Bmp3xx.Tests.dll (net8.0)
+exit: 1

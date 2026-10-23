@@ -1,0 +1,55 @@
+# 008 hygiene — Step 5 (round-1 Step 12 items 1–7 + Iot.Device.Bindings)
+date: 2026-10-22 20:12 PDT
+dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ a197ab8d
+status --porcelain: ''
+
+## 1. builds
+$ dotnet build src/devices/Bmp3xx/tests/ --no-incremental
+    0 Warning(s)
+    0 Error(s)
+exit: 0
+$ dotnet build src/devices/Bmp3xx/samples/ --no-incremental
+    0 Warning(s)
+    0 Error(s)
+exit: 0
+
+## 2. tests x5
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 604 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 602 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 600 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 622 ms - Bmp3xx.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:    95, Skipped:     0, Total:    95, Duration: 605 ms - Bmp3xx.Tests.dll (net8.0)
+
+## 3. $ git diff --stat upstream/main...HEAD
+ src/devices/Bmp3xx/Bmp3xxBase.cs                 | 16 +++++++++---
+ src/devices/Bmp3xx/tests/Bmp3xxBaseTests.cs      | 16 ++++++++++++
+ src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs      | 18 +++++++++++++
+ src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs      | 21 +++++++++++++++-
+ src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs | 32 ++++++++++++++++++++++++
+ 5 files changed, 99 insertions(+), 4 deletions(-)
+files outside src/devices/Bmp3xx/: ''
+$ git diff --check upstream/main...HEAD: ''
+$ git log --format='%h %ae %s' upstream/main..HEAD
+a197ab8d timothyleegrant1995@gmail.com Clear a stale configuration error before entering normal mode
+949dd535 timothyleegrant1995@gmail.com Keep the pending measurement time on a repeated power-mode request
+005ae214 timothyleegrant1995@gmail.com Keep the simulated busy window on a repeated normal-mode write
+
+## 4. clean-room grep (bosch sensortec|bmp3_|BSD|partial_data|quantized)
+''
+## 5. TODO / NotImplementedException
+''
+## 6. #pragma warning disable
+''
+
+## $ dotnet build src/Iot.Device.Bindings/
+    0 Warning(s)
+    0 Error(s)
+Time Elapsed 00:00:11.83
+exit: 0
+
+## 7. conventions (CLI reading)
+The diff adds no public member, file, folder, namespace or package reference; names follow the existing test naming
+(Method_Condition_Result) and comment style. README checked for the changed behaviour: line 66 ("SetPowerMode(Normal)
+throws ... if the output data rate is too fast") stays accurate, now also after an earlier unread error; lines 63 and
+67 are unaffected. SetPowerMode's XML docs unchanged and still accurate. -> no README/doc change.

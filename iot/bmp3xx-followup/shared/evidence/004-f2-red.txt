@@ -1,0 +1,35 @@
+# 004 F2 red — Step 3 (new binding tests, binding unchanged, simulator from Step 2)
+date: 2026-10-22 20:07 PDT
+dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ 005ae214 + uncommitted tests
+## git diff --stat
+ src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+## $ dotnet test src/devices/Bmp3xx/tests/ --filter FullyQualifiedName~RaisedAndLowered
+Test run for /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.23]     Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.Read_AfterPressureSamplingRaisedAndLoweredAndNormalModeRequestedAgain_StartsAMeasurement [FAIL]
+[xUnit.net 00:00:00.35]     Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.Read_AfterTemperatureSamplingRaisedAndLoweredAndNormalModeRequestedAgain_StartsAMeasurement [FAIL]
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.Read_AfterPressureSamplingRaisedAndLoweredAndNormalModeRequestedAgain_StartsAMeasurement [60 ms]
+  Error Message:
+   Assert.NotNull() Failure: Value of type 'Nullable<Temperature>' does not have a value
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.AssertTemperature(Double expectedCelsius, Nullable`1 actual) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs:line 404
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.AssertReadStartsMeasurementAfterOversamplingChange(Action`1 changeOversampling) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs:line 396
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.Read_AfterPressureSamplingRaisedAndLoweredAndNormalModeRequestedAgain_StartsAMeasurement() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs:line 148
+  Failed Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.Read_AfterTemperatureSamplingRaisedAndLoweredAndNormalModeRequestedAgain_StartsAMeasurement [31 ms]
+  Error Message:
+   Assert.NotNull() Failure: Value of type 'Nullable<Temperature>' does not have a value
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.AssertTemperature(Double expectedCelsius, Nullable`1 actual) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs:line 404
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.AssertReadStartsMeasurementAfterOversamplingChange(Action`1 changeOversampling) in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs:line 396
+   at Iot.Device.Bmp3xx.Tests.Bmp3xxReadTests.Read_AfterTemperatureSamplingRaisedAndLoweredAndNormalModeRequestedAgain_StartsAMeasurement() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/Bmp3xxReadTests.cs:line 157
+Failed!  - Failed:     2, Passed:     3, Skipped:     0, Total:     5, Duration: 282 ms - Bmp3xx.Tests.dll (net8.0)
+exit: 1
+
+## Note (CLI): why "null" is the predicted failure
+Read() doesn't throw on a timeout: it returns (null, null) when "the measurement didn't finish in time" (its XML doc;
+the stopwatch branch in Read). Each failing test ran 31–60 ms ≈ the 5 ms measurement + TimeoutMarginMilliseconds,
+consistent with the forced write being ignored by the simulator's busy window (Step 2) → Read timed out. The three
+round-1 RaisedAndLowered tests (no redundant Normal request) still pass.

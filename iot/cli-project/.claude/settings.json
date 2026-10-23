@@ -2,7 +2,11 @@
   "permissions": {
     "additionalDirectories": [
       "/Users/timothygrant/Desktop/projects/exercises/iot/new-device-binding/shared",
-      "/Users/timothygrant/Desktop/projects/exercises/iot/new-device-binding/sample"
+      "/Users/timothygrant/Desktop/projects/exercises/iot/new-device-binding/sample",
+      "/Users/timothygrant/Desktop/projects/exercises/iot/bmp3xx-followup/shared",
+      "/Users/timothygrant/Desktop/projects/exercises/iot/bmp3xx-followup/sample",
+      "/Users/timothygrant/Desktop/projects/exercises/iot/bmp3xx-followup/pr",
+      "/Users/timothygrant/Desktop/projects/exercises/yarp/current_context/procedures"
     ],
     "deny": [
       "Bash(gh:*)",
@@ -32,7 +36,13 @@
       "Bash(git -c *)",
       "Bash(git -C * -c *)",
       "Bash(git config core.hooksPath*)",
-      "Bash(git -C * config core.hooksPath*)"
+      "Bash(git -C * config core.hooksPath*)",
+      "Bash(git push *feature/bmp3xx-binding*)",
+      "Bash(git -C * push *feature/bmp3xx-binding*)",
+      "Bash(git switch feature/bmp3xx-binding*)",
+      "Bash(git -C * switch feature/bmp3xx-binding*)",
+      "Bash(git checkout feature/bmp3xx-binding*)",
+      "Bash(git -C * checkout feature/bmp3xx-binding*)"
     ],
     "ask": [
       "Bash(git push*)",

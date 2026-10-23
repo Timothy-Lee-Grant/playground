@@ -10,12 +10,13 @@
 
 | Folder (in `iot_project/`) | What | Upstream ref | Branch | Base | Remote push | Status (date) |
 |---|---|---|---|---|---|---|
-| `new-device-binding` | New binding: Bosch BMP390/BMP388 (`src/devices/Bmp3xx/`) | dotnet/iot PR 2627 (opened 2026-10-18; no proposal issue) | `feature/bmp3xx-binding` | `upstream/main` | `origin` (Timothy's fork) only, with his OK | **PR open** @ `fc7d7b57` (79/79 tests, hardware checks pass). In review: CLI may commit review fixes on this branch; pushes on Timothy's word; Timothy posts every reply (2026-10-18) |
+| `bmp3xx-followup` | Follow-up to the merged Bmp3xx binding: fix F1–F3 from the second review (simulator busy window, pending time on a repeated Normal request, stale conf_err) | PR 2627 (merged); no issue | `fix/bmp3xx-normal-mode-followup` | `upstream/main` (≥ `4108607`) | `origin` (Timothy's fork) only, with his OK | Set up 2026-10-22; branch not created yet (plan Step 1, after G1) |
 
 ## Protected (never check out, commit, rebase, reset or push from this project)
 
 | Branch | Why |
 |---|---|
+| `feature/bmp3xx-binding` | dotnet/iot PR 2627 **merged** 2026-10-22 (upstream `4108607`). Done; a follow-up gets its own branch from `upstream/main` |
 | `main` | Mirrors `upstream/main` only when Timothy asks. Never commit on it |
 | `fix/2328-gpiobutton-initial-state` | dotnet/iot#2328, PR #2611 **merged** (upstream `c8e4589f`). Worked only from `~/Desktop/projects/oss-work/iot-2328/` (the old layout, left intact on purpose) |
 | anything not listed under "Active" | Ask Timothy |

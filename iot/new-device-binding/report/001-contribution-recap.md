@@ -1,13 +1,13 @@
 # Contribution recap: Bmp3xx binding for .NET IoT (BMP390 / BMP388)
 
 > Source document for resume lines, interview stories and LinkedIn. Facts as of **2026-10-18**.
-> Status: **PR open, in review** (not merged yet). Update §9 when that changes.
+> Status: **Merged** into dotnet/iot `main` on 2026-10-22 (merge commit `4108607`), approved by two maintainers (raffaeler, pgrawehr).
 
 | | |
 |---|---|
 | Repository | [dotnet/iot](https://github.com/dotnet/iot): Microsoft's .NET library for GPIO, I2C, SPI and 100+ sensor drivers |
 | Pull request | [dotnet/iot#2627](https://github.com/dotnet/iot/pull/2627): *New binding: Bmp3xx (Bosch BMP390 / BMP388 pressure and temperature sensor)* |
-| Size | 24 files, **+2,593 lines**, 11 commits, all in a new folder `src/devices/Bmp3xx` (nothing outside it changed) |
+| Size | 24 files, ~2,800 lines, 15 commits, all in a new folder `src/devices/Bmp3xx` (nothing outside it changed) |
 | Language / stack | C# (.NET 8), xUnit, UnitsNet, System.Device.I2c; Linux I2C on Raspberry Pi |
 | Hardware | Raspberry Pi 4 (Raspberry Pi OS, 32-bit), Adafruit BMP390 breakout (#4816), I2C bus 1, address 0x77 |
 | Demo video | [YouTube walkthrough](https://www.youtube.com/watch?v=p0bjJdOGpkM) (~42 min): sample code, live hardware run, testing approach |
@@ -23,7 +23,7 @@ current-generation barometric pressure and temperature sensors and successors to
 supported. The binding talks to the chip over I2C, reads its factory calibration, converts raw readings into
 temperature, pressure and altitude using the datasheet's floating-point compensation formulas, and exposes every
 measurement setting (oversampling, IIR filter, output data rate, power modes). It ships with a sample app, a
-README and **79 unit tests that run against a simulated chip**, so CI needs no hardware. I verified it on a real
+README and **89 unit tests that run against a simulated chip**, so CI needs no hardware. I verified it on a real
 sensor on a Raspberry Pi, where it **found a bug that the simulated tests couldn't**: the chip silently ignores a mode change
 while a measurement is in progress. The binding now handles that.
 
@@ -111,7 +111,7 @@ Design decisions (all called out in the PR for reviewers):
 
 ## 5. Testing without hardware
 
-- **79 xUnit tests** (53 test methods, several data-driven) in `tests/`, run on any OS.
+- **89 xUnit tests** (data-driven where useful) in `tests/`, run on any OS.
 - **A simulated chip** (`SimulatedBmp3xx`, ~340 lines) built on the repo's `I2cSimulatedDeviceBase`. It models the
   datasheet's behavior, not our implementation:
   - register writes as address/value pairs and auto-incrementing burst reads;
@@ -190,6 +190,21 @@ guess:
 
 Posted the evidence on the PR and asked maintainers for a re-run.
 
+### 7.2 Code review and merge
+
+The maintainers ran an automated code review, which raised three timing and state issues. All three were confirmed
+against the datasheet and fixed, each with a regression test written first and seen failing for the predicted reason:
+
+1. **Stale data-ready flags:** the chip only clears them when the data is read, so `Read()` could return an older
+   sample. Fixed by clearing them before each forced measurement (confirmed on the chip: STATUS `0x70` → `0x10`).
+2. **Lost mode change after oversampling changes in normal mode:** reproduced on hardware with the old logic
+   (3 of 30 lost), 45/45 after the fix. The simulated chip had the same blind spot and was fixed first.
+3. **A reset-value sentinel that a genuine reading can match** (`0x800000` = 23.68 °C / 799 hPa): replaced with
+   state the binding tracks itself.
+
+Replied in each thread with the commit, test names, datasheet reference and hardware numbers. Approved by two
+maintainers (raffaeler, pgrawehr) and merged on 2026-10-22.
+
 ---
 
 ## 8. Skills demonstrated
@@ -208,22 +223,22 @@ Posted the evidence on the PR and asked maintainers for a re-run.
 
 ## 9. Resume line drafts (pick and edit; keep them true)
 
-Status-safe while the PR is open:
+Now that it's merged:
 
-- *Contributed a new device driver for the Bosch BMP390/BMP388 pressure sensors to Microsoft's open-source
-  .NET IoT library (dotnet/iot#2627): I2C register-level C# driver, 79 unit tests against a simulated chip, and
+- *Contributed a merged new device driver for the Bosch BMP390/BMP388 pressure sensors to Microsoft's open-source
+  .NET IoT library (dotnet/iot#2627): I2C register-level C# driver, 89 unit tests against a simulated chip, and
   datasheet math cross-checked against Bosch's reference driver.*
 - *Validated the driver on Raspberry Pi hardware (pressure within the sensor's ±0.5 hPa spec) and found and fixed a
   silent mode-change race that unit tests with a simulated device couldn't catch.*
 - *Root-caused a silent Windows CI failure (`Build FAILED`, 0 errors) to an unrelated test project by replaying
   the MSBuild binary log from Azure Pipelines.*
 
-After merge, change "Contributed" to "Contributed a merged ..." and add the outcome.
+
 
 Interview story outline (STAR): **S** a library missing support for current-generation sensors → **T** add a
 driver that maintainers will accept and that works on real hardware → **A** plan, convention review,
 simulated-chip tests with independent oracles, bench verification, hardware-found bug fixed, video, CI root cause →
-**R** PR #2627 (update with the outcome).
+**R** PR #2627 merged by the maintainers after one review round (three findings fixed with regression tests and re-verified on hardware), approved by two maintainers.
 
 ---
 

@@ -1,0 +1,52 @@
+# 003 F1 green — Step 2 (simulator fix)
+date: 2026-10-22 20:04 PDT
+dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ 41086078 + uncommitted
+## git diff
+diff --git a/src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs b/src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs
+index 45a78322..309d6968 100644
+--- a/src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs
++++ b/src/devices/Bmp3xx/tests/SimulatedBmp3xx.cs
+@@ -258,7 +258,11 @@ namespace Iot.Device.Bmp3xx.Tests
+             }
+             else if (mode == 0b11)
+             {
+-                _longestNormalModeMeasurementMicroseconds = MeasurementMicroseconds();
++                // A repeated normal-mode write doesn't end a running measurement, so it keeps the longest one.
++                if (previousMode != 0b11)
++                {
++                    _longestNormalModeMeasurementMicroseconds = MeasurementMicroseconds();
++                }
+ 
+                 // Normal mode. conf_err is only evaluated in normal mode (table 28). Verified on a BMP390: the sensor
+                 // also goes back to sleep at once.
+diff --git a/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs b/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
+index eb3e6097..a2ca5eff 100644
+--- a/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
++++ b/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs
+@@ -115,6 +115,23 @@ namespace Iot.Device.Bmp3xx.Tests
+             Assert.Equal(0x03, chip.GetRegister(0x1B));
+         }
+ 
++        [Fact]
++        public void ModeWrite_AfterRepeatedNormalModeWrite_StillWaitsForTheLongerMeasurement()
++        {
++            using var chip = new SimulatedBmp3xx(0x60, Calibration);
++            chip.Write(new byte[] { 0x1C, 0x00 }); // x1/x1
++            chip.Write(new byte[] { 0x1B, 0x33 }); // normal mode
++            chip.Write(new byte[] { 0x1C, 0x05 }); // x32 pressure: about 67 ms per measurement
++            chip.Write(new byte[] { 0x1C, 0x00 }); // back to x1/x1 while that measurement may still run
++            chip.Write(new byte[] { 0x1B, 0x33 }); // normal again: doesn't end the running measurement
++            chip.Write(new byte[] { 0x1B, 0x03 }); // sleep
++
++            Thread.Sleep(20); // longer than an x1/x1 measurement (4.8 ms), shorter than the x32 one
++
++            chip.Write(new byte[] { 0x1B, 0x33 });
++            Assert.Equal(0x03, chip.GetRegister(0x1B));
++        }
++
+         [Fact]
+         public void NormalMode_WithConfigurationError_ReturnsToSleep()
+         {
+
+## $ dotnet build src/devices/Bmp3xx/tests/ --no-incremental

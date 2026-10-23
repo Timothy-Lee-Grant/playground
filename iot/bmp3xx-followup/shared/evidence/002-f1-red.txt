@@ -1,0 +1,29 @@
+# 002 F1 red — Step 2 (new simulator test, simulator unchanged)
+date: 2026-10-22 20:03 PDT
+dotnet --version: 10.0.302
+branch: fix/bmp3xx-normal-mode-followup @ 41086078 + uncommitted test
+## git diff --stat
+ src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+## $ dotnet test src/devices/Bmp3xx/tests/ --filter FullyQualifiedName~SimulatedBmp3xxTests
+  All projects are up-to-date for restore.
+  System.Device.Gpio -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Gpio/Debug/net8.0/System.Device.Gpio.dll
+  System.Device.Model -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/System.Device.Model/Debug/net8.0/System.Device.Model.dll
+  Common -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Common/Debug/net8.0/Common.dll
+  Bmp3xx -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx/Debug/net8.0/Bmp3xx.dll
+  Bmp3xx.Tests -> /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll
+Test run for /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/artifacts/bin/Bmp3xx.Tests/Debug/net8.0/Bmp3xx.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.19]     Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterRepeatedNormalModeWrite_StillWaitsForTheLongerMeasurement [FAIL]
+  Failed Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterRepeatedNormalModeWrite_StillWaitsForTheLongerMeasurement [22 ms]
+  Error Message:
+   Assert.Equal() Failure: Values differ
+Expected: 3
+Actual:   51
+  Stack Trace:
+     at Iot.Device.Bmp3xx.Tests.SimulatedBmp3xxTests.ModeWrite_AfterRepeatedNormalModeWrite_StillWaitsForTheLongerMeasurement() in /Users/timothygrant/Desktop/projects/open_source/iot_project/iot/src/devices/Bmp3xx/tests/SimulatedBmp3xxTests.cs:line 132
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Failed!  - Failed:     1, Passed:     9, Skipped:     0, Total:    10, Duration: 100 ms - Bmp3xx.Tests.dll (net8.0)
+exit: 1

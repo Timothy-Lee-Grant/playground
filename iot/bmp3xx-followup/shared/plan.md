@@ -123,3 +123,10 @@ Session report + STATUS with Timothy's next actions, in order:
 "previously missed issues", read in full in the browser) and checked against the datasheet (table 28) and the code
 at `4108607`. Order F1 → F2 → F3 is deliberate: F2's binding test can only fail once the simulator stops hiding the
 problem (F1).
+
+[Timothy — 2026_10_22] G1 approved ("go"), at the start of the first CLI session. Recorded by the CLI.
+
+[CLI — 2026_10_22_20_05] **Step 1 done: branch + baseline.** `upstream/main` fetched (now `41086078`, the PR 2627 merge; `merge-base --is-ancestor 4108607 upstream/main` ✅). Branch `fix/bmp3xx-normal-mode-followup` created from `upstream/main`, tracking unset (`branch -vv` shows no upstream). Baseline: tests + samples build `--no-incremental` **0 warnings, 0 errors**; **89/89** on net8.0, SDK 10.0.302 from `global.json`.
+*Changed:* no files; new branch only. *Evidence:* `001-baseline.txt`.
+*Deviations:* **Timothy created the branch by hand** (`! git -C iot switch -c … && git -C iot branch --unset-upstream`). The CLI's `git -C iot switch -c …` was auto-denied twice with no prompt. No project deny rule matches it, so auto mode's permission checker most likely blocked branch creation. **Desktop:** consider an explicit `allow` for `git -C iot switch -c fix/*` in the project settings so the next follow-up doesn't need it.
+**Why:** the branch starts from `upstream/main` rather than the old `feature/bmp3xx-binding` because the feature branch is merged and protected; upstream's merge commit is the true state the fixes must apply to. Tracking is unset so a bare `git push`/`pull` can't talk to `upstream`. `--no-incremental` because `artifacts/` is shared across branches and was last built from the feature branch.

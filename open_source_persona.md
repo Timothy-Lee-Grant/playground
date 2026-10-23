@@ -268,6 +268,7 @@ Update after each contribution. This is the source for resume lines and intervie
 |---|---|---|---|---|---|
 | 2026-10-08 | dotnet/iot | [#2328](https://github.com/dotnet/iot/issues/2328) / [PR #2611](https://github.com/dotnet/iot/pull/2611) | Bug fix + tests (first code PR) | **Merged** by pgrawehr ("Looks good, thanks. Bonus points for adding tests!") | Edge vs. level state; red → green tests with a mocked `GpioDriver`; reading maintainer replies; coordinating with a parallel PR (#2608: merge simulation, then merging `main`); fork/remote/tracking/PR mechanics; CI on 3 OSes |
 | 2026-10-18 | dotnet/iot | [PR #2627](https://github.com/dotnet/iot/pull/2627) (no issue; self-proposed) | New device binding: Bmp3xx (BMP390/BMP388), +2,593 lines, 79 tests | **Open, in review** | Register-level I2C driver from datasheets; simulated chip + two independent oracles; Pi 4 bench verification found a silent mode-change bug; demo video; CI root cause via MSBuild binlog (other project's test run). Recap: `iot/new-device-binding/report/001-contribution-recap.md` |
+| 2026-10-22 | dotnet/yarp | [#275](https://github.com/dotnet/yarp/issues/275) / [PR #3063](https://github.com/dotnet/yarp/pull/3063) | Test refactor: remove Autofac (AutoMock) from 7 test classes, −80 net lines | **Open, in review** (CI green, CLA ✓) | Constructor injection made explicit; AutoMock silently built a real `sealed` class; behavior-preserving refactor proven by equal test counts + break-it proofs; stale incremental builds hiding breaks; reading a repo's PR etiquette before opening |
 
 ---
 

@@ -717,7 +717,7 @@ Update this table as you go. It's the "status board" for this repo's open-source
 | H | mcp#1781 | ☐ not started | | | | |
 | I | yarp#2847 | ☐ not started | | | | |
 | J | iot#2352 | ☐ not started | | | | Hardware needed |
-| K | yarp#275 | ☐ not started | | | | |
+| K | yarp#275 | ✅ PR #3063 opened 2026-10-22 (phase 1, Autofac only) | | | | |
 | L | yarp#2667 / PR #3031 | ☐ not started | | | | Study + predict-the-review; no competing PR |
 | M | yarp#3008 / PR #3024 → #3033 | ☐ not started | | | | Study; research comment on #3033 |
 | N | otel-dotnet#7449 | ☐ not started | | | | Study + AsyncLocal experiment |

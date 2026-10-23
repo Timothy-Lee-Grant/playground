@@ -9,10 +9,10 @@
 
 | | |
 |---|---|
-| **Stage** | PR next (D7, 2026-10-22). Built and verified locally; comment posted 2026-10-09, no reply |
-| **Last entry** | #6 (2026-10-22) |
-| **Open decisions** | Mention the vacuous `Verify()` in `ForwarderMiddlewareTests.NoDestinations_503`? (lecture 001 §8, Timothy). Upstream: still wanted? Autofac-only phase 1? (asked in the G2 comment) |
-| **Next step** | CLI: `/issue 275_remove-autofac-from-tests` → pre-PR check → Timothy pushes and opens the PR (draft text in `shared/pr-description.md`) |
+| **Stage** | **PR #3063 open** (2026-10-22), in review. CI green, CLA ✓ |
+| **Last entry** | #7 (2026-10-22) |
+| **Open decisions** | Maintainers: still wanted? Autofac-only first step OK? (the PR asks in practice) |
+| **Next step** | Wait for review from @MihaZupan. One polite ping if nothing after ~3–4 weeks (around 2026-11-19). Review comments → plan Step 15 |
 
 ## Index
 
@@ -24,6 +24,7 @@
 | 4 | 2026-10-08 | 📍 | Change built and verified (CLI session 002); lectures written |
 | 5 | 2026-10-08 | ❓💬 | Review of the G2 comment draft; Moq left out although the issue names both |
 | 6 | 2026-10-22 | 🧭 | New rules: quality PRs per repo etiquette; open the PR now; pre-PR check |
+| 7 | 2026-10-22 | 📍 | Pre-PR check passed (CLI session 003); PR #3063 opened |
 
 ---
 
@@ -94,4 +95,15 @@ not the comment.
 - Set up: `current_context/procedures/pre-pr.md` (+ `/pre-pr`), the PR text draft `shared/pr-description.md`, D7,
   plan Steps 12–15 replaced. Rules changed in root `CLAUDE.md` §5, `ai-workflow/default-workflow.md`, the YARP
   operating manual §7 and `05-timothy.md`.
+
+## #7 · 2026-10-22 · 📍 Pre-PR check passed; PR #3063 opened
+
+- CLI session 003 ran the pre-PR check (report: `../shared/sessions/003-2026-10-22.md`): up to date with
+  `upstream/main`, thread unchanged, 11 planned files, Release build + all tests equal to `main` with 0 warnings
+  (`013`). One proposed cleanup (an "unused" `using`) broke the build because `Yarp.Tests.Common` spans two projects;
+  it was reverted, and the procedure now says to build before proposing such a commit.
+- Timothy opened **https://github.com/dotnet/yarp/pull/3063** ("Remove Autofac From Tests"). Checked the same
+  evening: CI green on Windows, Linux and macOS (warning counts identical to `main`'s), CLA ✓, @MihaZupan requested
+  by CODEOWNERS.
+- Next: review loop. YARP reviews are slow (bot PRs wait ~3 weeks), so silence for a few weeks is normal.
 

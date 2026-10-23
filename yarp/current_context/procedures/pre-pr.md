@@ -22,7 +22,7 @@ commit, exact command). Number them after the newest file there.
 | 5 | **Commits** | `git -C yarp log --format='%h %an <%ae>%n  %s%n%b' upstream/main..HEAD`; upstream style: `git -C yarp log upstream/main --no-merges -15 --format=%s` | Author email is one on his GitHub account (no `*.local` hostname emails; the CLA bot matches by email). Subjects imperative, ≤ ~72 chars, like upstream's. No WIP/fixup commits, no AI trailers, no issue/person references he hasn't approved |
 | 6 | **Formatting** | For each touched project: `./.dotnet/dotnet format whitespace <csproj> --verify-no-changes --include <changed files>` | No findings **on changed lines** (pre-existing ones elsewhere aren't ours; note them, don't fix) |
 | 7 | **Build + all tests, like CI** | `./build.sh --configuration Release --rebuild --test` on `<b>`. If upstream moved since the last baseline, run the same on detached `upstream/main` (then switch back; `--no-incremental`) | 0 errors, **0 warnings** (it passes `/warnaserror`), 0 failed; per-project, per-framework totals equal the baseline (or differ exactly as the plan says). A failure on both branch and `main` is pre-existing: rerun once, then note it |
-| 8 | **Reviewer read-through** | Read the whole `git -C yarp diff upstream/main...HEAD` as MihaZupan would | No leftover comments/TODOs, dead code, unused usings, naming that differs from the surrounding tests, or quiet behavior changes (e.g. loose vs strict mocks). Trivial fixes: propose a new commit, he OKs it, then redo 4–7 |
+| 8 | **Reviewer read-through** | Read the whole `git -C yarp diff upstream/main...HEAD` as MihaZupan would | No leftover comments/TODOs, dead code, unused usings, naming that differs from the surrounding tests, or quiet behavior changes (e.g. loose vs strict mocks). Trivial fixes: **build first, then propose the commit** (he OKs it), then redo 4–7. "Unused" claims need a whole-repo search: a namespace can span projects (`Yarp.Tests.Common` lives in `test/Tests.Common/` **and** `test/ReverseProxy.Tests/Common/`) |
 | 9 | **PR text** | Check `link/issues/<f>/shared/pr-description.md` against this run's evidence | Title: short, imperative, like upstream's. Body: what changed and why, scope, how it was verified (numbers + environment from **this** run), follow-ups. Linking keyword right: `Fixes #<n>` only if it resolves the whole issue, otherwise `Contributes to #<n>`. No AI statement and no link to the playground repo (exercises root `CLAUDE.md` §5), unless upstream policy requires one: re-check CONTRIBUTING and `.github/` first |
 
 ## Report (go / no-go)
@@ -30,7 +30,9 @@ commit, exact command). Number them after the newest file there.
 A table of checks 0–9 with ✅ / ❌, one line each, and the evidence file. Then:
 
 - **All ✅:** give Timothy the next actions, in order:
-  1. Push: `git -C yarp push -u origin <b>` (run it yourself only when he says so; settings will ask him).
+  1. Push, **unless `origin/<b>` already equals HEAD** (`git -C yarp rev-list --left-right --count origin/<b>...HEAD`
+     = `0 0`; then no push is needed): `git -C yarp push -u origin <b>` (run it yourself only when he says so;
+     settings will ask him).
   2. Open `https://github.com/dotnet/yarp/compare/main...Timothy-Lee-Grant:yarp:<b>?expand=1`, paste the title and
      body from `pr-description.md`, and create the PR (not a draft, unless he wants one).
   3. After it's open: the CLA bot should pass (CLA signed 2026-10-02); CI runs on Windows and Linux too, which we

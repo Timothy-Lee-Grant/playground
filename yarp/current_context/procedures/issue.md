@@ -17,7 +17,9 @@
    7. `link/current_context/03-yarp-project.md` and `06-competency-yarp.md`
 3. **Check the clone** (read-only): `git -C yarp status -sb`, `git -C yarp branch --show-current`,
    `git -C yarp log -1 --oneline`, `git -C yarp remote -v` (upstream push URL must be the disabled placeholder),
-   `git -C yarp config core.hooksPath`.
+   `git -C yarp config core.hooksPath`. If the issue's branch exists, compare it with `origin/<branch>`
+   (`git -C yarp rev-list --left-right --count origin/<branch>...<branch>`) and fix the *On origin?* column in
+   `04-branches.md` if it's wrong (pushes made outside a session don't update it).
 4. **Get onto the right branch** (manual §4). Use the issue's row in `04-branches.md`:
    - on it already → nothing;
    - uncommitted changes anywhere → **stop**, show `git -C yarp status --short`, ask;

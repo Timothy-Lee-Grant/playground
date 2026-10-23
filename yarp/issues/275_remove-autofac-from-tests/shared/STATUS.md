@@ -1,5 +1,10 @@
 # STATUS
 
+> **Desktop note, 2026-10-22 (overrides the rows below until the next `/handoff`):** **PR #3063 is open**
+> (https://github.com/dotnet/yarp/pull/3063, D9). CI green on all 3 OSes, CLA ✓, @MihaZupan requested. Next: the
+> review loop (plan Step 15): each review comment becomes a plan step; draft replies for Timothy to post. The
+> session 002 desktop items (test commands, `switch -c`) were done on 2026-10-08.
+
 > Owner: CLI. Rewritten in place by `/handoff` every session. Desktop reads this first.
 
 | | |

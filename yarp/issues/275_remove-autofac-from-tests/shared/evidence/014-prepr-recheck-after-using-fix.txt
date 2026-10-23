@@ -1,0 +1,67 @@
+# Pre-PR re-check 4-7 after commit removing the unused using
+# Date: 2026-10-22 19:14 PDT  Machine: Apple M2 / macOS 26.3
+# SDK: 11.0.100-rc.1.26420.103  HEAD: cc697fae  upstream/main: 2aa3d835
+
+## status
+?? .DS_Store
+
+## diff --stat
+ eng/Versions.props                                 |  2 -
+ .../Delegation/HttpSysDelegatorMiddlewareTests.cs  | 23 +++--
+ .../Delegation/HttpSysDelegatorTests.cs            | 36 ++++----
+ .../Forwarder/ForwarderHttpClientFactoryTests.cs   | 27 +++---
+ .../Forwarder/ForwarderMiddlewareTests.cs          | 30 +++++--
+ .../Forwarder/StreamCopierTests.cs                 |  2 +-
+ .../LoadBalancing/LoadBalancingPoliciesTests.cs    | 16 ++--
+ .../ProxyPipelineInitializerMiddlewareTests.cs     | 34 ++++----
+ .../Yarp.ReverseProxy.Tests.csproj                 |  2 -
+ test/Tests.Common/TestAutoMockBase.cs              | 99 ----------------------
+ test/Tests.Common/Yarp.Tests.Common.csproj         |  2 -
+ 11 files changed, 96 insertions(+), 177 deletions(-)
+
+## 4. diff --check
+exit=0
+
+## 5. commits
+cc697fae Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Remove unused using from ForwarderMiddlewareTests
+1665ced5 Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Remove TestAutoMockBase and the Autofac test dependencies
+f5f16fef Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Build HttpSysDelegator and its mock graph explicitly in tests
+4526c6a5 Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Construct middleware under test directly instead of via AutoMock
+9db5c959 Timothy-Lee-Grant <timothyleegrant1995@gmail.com> | Construct simple test subjects directly instead of via AutoMock
+
+## 6. format whitespace
+exit=0
+
+## 7. ./build.sh --configuration Release --rebuild --test
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Application.Tests/Release/net9.0/Yarp.Application.Tests.dll [net9.0|arm64]
+/Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs(32,22): error CS0103: The name 'TestEventListener' does not exist in the current context [/Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj::TargetFramework=net8.0]
+/Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs(32,22): error CS0103: The name 'TestEventListener' does not exist in the current context [/Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj::TargetFramework=net9.0]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Tests/Release/net9.0/Yarp.Kubernetes.Tests.dll [net9.0|arm64]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.Kubernetes.Tests/Release/net8.0/Yarp.Kubernetes.Tests.dll [net8.0|arm64]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.FunctionalTests/Release/net9.0/Yarp.ReverseProxy.FunctionalTests.dll [net9.0|arm64]
+  Tests succeeded: /Volumes/T7/open_source_projects/yarp_project/yarp/artifacts/bin/Yarp.ReverseProxy.FunctionalTests/Release/net8.0/Yarp.ReverseProxy.FunctionalTests.dll [net8.0|arm64]
+/Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs(32,22): error CS0103: The name 'TestEventListener' does not exist in the current context [/Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj::TargetFramework=net8.0]
+/Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Forwarder/ForwarderMiddlewareTests.cs(32,22): error CS0103: The name 'TestEventListener' does not exist in the current context [/Volumes/T7/open_source_projects/yarp_project/yarp/test/ReverseProxy.Tests/Yarp.ReverseProxy.Tests.csproj::TargetFramework=net9.0]
+    0 Warning(s)
+    2 Error(s)
+Time Elapsed 00:00:23.60
+Build failed with exit code 1. Check errors above.
+build exit=
+
+## per-project totals (trx)
+Yarp.Application.Tests_net9.0_arm64 :: total: 27  failed: 0  succeeded: 27  skipped: 0
+Yarp.Kubernetes.Tests_net8.0_arm64 :: total: 93  failed: 0  succeeded: 91  skipped: 2
+Yarp.Kubernetes.Tests_net9.0_arm64 :: total: 93  failed: 0  succeeded: 91  skipped: 2
+Yarp.ReverseProxy.FunctionalTests_net8.0_arm64 :: total: 269  failed: 0  succeeded: 235  skipped: 34
+Yarp.ReverseProxy.FunctionalTests_net9.0_arm64 :: total: 269  failed: 0  succeeded: 235  skipped: 34
+Yarp.ReverseProxy.Tests_net8.0_arm64 :: total: 1989  failed: 0  succeeded: 1989  skipped: 0
+Yarp.ReverseProxy.Tests_net9.0_arm64 :: total: 1989  failed: 0  succeeded: 1989  skipped: 0
+
+## CLI note (added after the run)
+- The build FAILED: CS0103 'TestEventListener' does not exist (ForwarderMiddlewareTests.cs:32). The using was NOT unused.
+  TestEventListener is defined in test/ReverseProxy.Tests/Common/TestEventListener.cs, namespace Yarp.Tests.Common
+  (the same namespace as the Tests.Common project, but a different project). My check 8 search only looked in
+  test/Tests.Common/, so it missed it.
+- "build exit=" is empty because PIPESTATUS isn't available in this shell; the log shows "Build failed with exit code 1".
+- The per-project totals above are STALE: they're the .trx files from evidence/013 (ReverseProxy.Tests didn't build, so
+  no new results were written). They prove nothing about cc697fae.

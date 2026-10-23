@@ -11,6 +11,7 @@
 | D5 | 2026-10-02 | **G1 opened**: plan v1 approved; Step 1 run (archive branch `archive/pre-275-2026-10` from the fork's `tgrant/exploration-phase`, PR branch `remove-autofac-275` from `upstream/main`) | Step 0 showed nothing at risk locally; old work is notes only, already on GitHub | CLI |
 | D6 | 2026-10-07 | "There is no unpushed code on my other yarp clone." "Go ahead": recreate `remove-autofac-275` in the new SSD clone from `upstream/main` (`2aa3d835`) and run plan Steps 2–10 autonomously | Step 1 is lossless; the old branch had no commits; the run starts from today's upstream code | CLI |
 | D7 | 2026-10-22 | **Open the PR now; no wait for a maintainer reply.** Timothy retired his pre-contribution rules; priority is a high-quality PR per YARP's standards and etiquette. #275 is "help wanted", his comment (2026-10-09) has had no objection in two weeks, and the change is small and test-only. G3 = the pre-PR check passes + his go. Title/body: `pr-description.md` | YARP's CONTRIBUTING lets help-wanted / uncontroversial work go to a PR; the comment already states scope (Autofac only) | desktop |
+| D8 | 2026-10-22 | Pre-PR check run ("go ahead"). Extra commit removing a supposedly unused `using` approved ("sure, go ahead"); it broke the build, and its removal by `reset --hard HEAD~1` was approved ("yeah"). The branch stays at `1665ced5` = origin | The check's finding was wrong (namespace spans two projects; `evidence/014`); the passing version is already on the fork | CLI |
 
 ## Pending (not decided)
 

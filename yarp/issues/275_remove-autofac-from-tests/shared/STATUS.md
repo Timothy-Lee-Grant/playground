@@ -1,21 +1,17 @@
 # STATUS
 
-> **Desktop note, 2026-10-22 (overrides the rows below until the next `/handoff`):** the PR is next (decision D7).
-> Run the pre-PR check: `/pre-pr`, or `link/current_context/procedures/pre-pr.md`. PR text draft:
-> [`pr-description.md`](pr-description.md). The teach-back no longer gates the PR.
-
 > Owner: CLI. Rewritten in place by `/handoff` every session. Desktop reads this first.
 
 | | |
 |---|---|
-| **Updated** | 2026-10-07 (CLI, `/handoff` of session 002) |
-| **Stage** | Stage 6 (understanding). Implementation is done: plan Steps 2–10 finished in one autonomous run (G1, 2026-10-02). Lectures 001 and 002 are written and not yet read |
-| **Work order** | Step 11 (lecture 1) is written: `lectures/001-the-change-end-to-end.md`, plus `002-testing-it-yourself.md`. The step's done-when needs Timothy to read it, which he hasn't said he has. Next: his reading and teach-back, then the comment (G2) |
+| **Updated** | 2026-10-22 (CLI, `/handoff` of session 003) |
+| **Stage** | Stage 7 (contribution). The pre-PR check (plan Step 12, D7) passed at `1665ced5`, so its done-when is met. Next: Step 14, Timothy opens the PR. Step 13 (push) isn't needed, because the fork already has this commit |
+| **Work order** | Timothy opens the PR from the compare page, with the title and body from [`pr-description.md`](pr-description.md). Then the review loop (Step 15) |
 | **Mode** | P |
-| **Branch / last commit** | `remove-autofac-275` @ `1665ced5 Remove TestAutoMockBase and the Autofac test dependencies`, 4 commits ahead of `upstream/main` (`2aa3d835`). Clean apart from Finder's `.DS_Store` (untracked; never commit it) |
-| **Pushed** | **No.** Local only. The branch tracks `upstream/main`; the first push (Step 14, after G3) must be `git -C yarp push -u origin remove-autofac-275` |
-| **Tests** | Green. ReverseProxy.Tests has 3,978 passing, equal to the baseline (`evidence/007`). In the Release build, all 4 test projects match `main` exactly, with 0 warnings (`evidence/011`). All 8 O2 break-it proofs went red (`004`–`006`). Diff: `evidence/010-diff.patch` |
-| **Upstream** | Nothing posted. The draft comment is in lecture 001 §7 (G2: Timothy edits and posts) |
+| **Branch / last commit** | `remove-autofac-275` @ `1665ced5 Remove TestAutoMockBase and the Autofac test dependencies`. 4 commits on `upstream/main` (`2aa3d835`, unchanged as of 2026-10-22). Clean apart from Finder's `.DS_Store` (untracked; never commit it). `artifacts/` holds a failed build from `014`: the next local build must be `--rebuild` / `--no-incremental` |
+| **Pushed** | **Yes**, since 2026-10-08. `origin/remove-autofac-275` = `1665ced5`; the branch tracks it, 0 ahead / 0 behind |
+| **Tests** | Green. Release `./build.sh --rebuild --test`: 0 warnings, and all 7 project/framework totals equal `main`. ReverseProxy.Tests has 1,989 per framework (`evidence/013`). O2 break-it proofs `004`–`006` |
+| **Upstream** | Timothy's comment on #275 (2026-10-09) has no reply. No PR yet, his or anyone else's (checked 2026-10-22, `012`) |
 | **Blockers** | none |
-| **Needs Timothy / desktop** | **Timothy:**<br>1. Read lecture 001, then do the teach-back (§9 checklist).<br>2. Decide whether to mention the vacuous `Verify()` in `ForwarderMiddlewareTests.NoDestinations_503` (lecture 001 §8).<br>3. Post the comment (G2).<br>**Desktop:**<br>1. Correct the test commands in `03-yarp-project.md` §3 and `02-layout.md` §4 (session report §9).<br>2. Look at the `switch -c` permission denial.<br>No open CHANGE REQUESTs |
-| **Last session report** | [`sessions/002-2026-10-07.md`](sessions/002-2026-10-07.md) |
+| **Needs Timothy / desktop** | **Timothy:**<br>1. Decide whether to keep the optional `Verify()` paragraph.<br>2. Edit the text into his own words.<br>3. Open the PR: https://github.com/dotnet/yarp/compare/main...Timothy-Lee-Grant:yarp:remove-autofac-275?expand=1<br>4. Watch the CLA bot and the Windows/Linux CI checks.<br>5. Send the link.<br>**Desktop:**<br>1. Consider the `pre-pr.md` and `03-yarp-project.md` notes (session report §9).<br>2. The session 002 items are still open: the `switch -c` permission, and the test-command fixes in `02-layout.md` §4.<br>No open CHANGE REQUESTs |
+| **Last session report** | [`sessions/003-2026-10-22.md`](sessions/003-2026-10-22.md) |

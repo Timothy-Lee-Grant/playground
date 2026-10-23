@@ -13,7 +13,7 @@
 
 | Issue folder (`link/issues/…`) | Branch | What it's for | Base | On origin? | Status (date) |
 |---|---|---|---|---|---|
-| `275_remove-autofac-from-tests` | `remove-autofac-275` | dotnet/yarp#275 phase 1: build each test class's subject directly instead of through Autofac's AutoMock (7 test files), then delete `TestAutoMockBase` and the two Autofac packages. Moq stays | `upstream/main` (`2aa3d835`) | no (local only; created 2026-10-07 in this clone) | Implementation done: 4 commits @ `1665ced5`, tests green (2026-10-07). Lectures 001/002 written and not yet read; waiting on teach-back, then G2 (comment). Not pushed |
+| `275_remove-autofac-from-tests` | `remove-autofac-275` | dotnet/yarp#275 phase 1: build each test class's subject directly instead of through Autofac's AutoMock (7 test files), then delete `TestAutoMockBase` and the two Autofac packages. Moq stays | `upstream/main` (`2aa3d835`) | yes (2026-10-08; found 2026-10-22) | Pre-PR check passed @ `1665ced5` (= origin), Release tests equal `main` (2026-10-22). Next: Timothy opens the PR (D7) |
 
 ## Protected (never commit on, rebase, reset or push from this project)
 

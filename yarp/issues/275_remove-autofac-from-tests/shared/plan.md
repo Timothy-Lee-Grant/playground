@@ -533,3 +533,24 @@ as optional.
   commit would be a plain fast-forward push, no force.
 - *Why the check didn't rerun `main`:* upstream hasn't moved since `011` took the `main` baseline on the same SDK and
   machine, so `011`'s `main` numbers are still the right comparison.
+
+**[CLI — 2026_10_22_19_20] Step 12, check 8 finding was wrong: the `using` is needed; commit `cc697fae` breaks the build**
+
+- *Changed:* commit `cc697fae Remove unused using from ForwarderMiddlewareTests` (local only, not pushed), made on
+  Timothy's OK.
+- *Evidence (verified, `evidence/014-prepr-recheck-after-using-fix.txt`):* Release build fails with CS0103:
+  `TestEventListener` is in namespace `Yarp.Tests.Common` but lives in `test/ReverseProxy.Tests/Common/`, not in the
+  Tests.Common project. My read-through only searched `test/Tests.Common/`, so I wrongly called the `using` unused.
+- *Why it slipped:* I checked "which types are in the namespace" by looking at one folder instead of searching the whole
+  repo for the namespace (`git grep "namespace Yarp.Tests.Common"`). The build would have been the real check, and it
+  caught it. Lesson for check 8: verify an "unused using" by building, or by searching the whole repo for the namespace.
+- *Status:* the branch at `1665ced5` (= origin) is still the one that passed checks 0–7 (`012`, `013`). Proposed: drop
+  `cc697fae` with `git reset --hard HEAD~1` (it's local only). Waiting for Timothy's OK, because it's a reset.
+
+**[CLI — 2026_10_22] Step 12 closed: `cc697fae` dropped; pre-PR check passes at `1665ced5`**
+
+- *Changed:* `git -C yarp reset --hard HEAD~1` on Timothy's OK ("yeah"). Branch back at `1665ced5`, identical to
+  `origin/remove-autofac-275` (0/0). Only `.DS_Store` is untracked; nothing else was in the tree.
+- *Result:* checks 0–7 and 9 pass on `1665ced5` (`012`, `013`); check 8 has no findings left. **Go for the PR.** No push
+  needed: the fork already has this commit. `artifacts/` holds the failed build from `014`, so the next local build
+  must be `--rebuild`/`--no-incremental`.

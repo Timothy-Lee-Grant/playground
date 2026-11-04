@@ -13,6 +13,7 @@
 | D7 | 2026-10-22 | **Open the PR now; no wait for a maintainer reply.** Timothy retired his pre-contribution rules; priority is a high-quality PR per YARP's standards and etiquette. #275 is "help wanted", his comment (2026-10-09) has had no objection in two weeks, and the change is small and test-only. G3 = the pre-PR check passes + his go. Title/body: `pr-description.md` | YARP's CONTRIBUTING lets help-wanted / uncontroversial work go to a PR; the comment already states scope (Autofac only) | desktop |
 | D8 | 2026-10-22 | Pre-PR check run ("go ahead"). Extra commit removing a supposedly unused `using` approved ("sure, go ahead"); it broke the build, and its removal by `reset --hard HEAD~1` was approved ("yeah"). The branch stays at `1665ced5` = origin | The check's finding was wrong (namespace spans two projects; `evidence/014`); the passing version is already on the fork | CLI |
 | D9 | 2026-10-22 | **[Timothy] PR opened: https://github.com/dotnet/yarp/pull/3063** ("Remove Autofac From Tests", 4 commits @ `1665ced5`, kept the `Verify()` note). CI green on Windows/Linux/macOS, warnings equal `main`'s; CLA ✓; @MihaZupan auto-requested | Pre-PR check go (session 003) | Timothy |
+| D10 | 2026-11-03 | **Merged.** MihaZupan approved ("Thanks", no inline comments), labeled `Type: Infrastructure`, and squash-merged #3063 on 2026-10-26 as `72f6bdf`. Issue #275 stays open for Moq | PR page, checked 2026-11-03 | desktop |
 
 ## Pending (not decided)
 

@@ -9,10 +9,10 @@
 
 | | |
 |---|---|
-| **Stage** | **PR #3063 open** (2026-10-22), in review. CI green, CLA ✓ |
-| **Last entry** | #7 (2026-10-22) |
-| **Open decisions** | Maintainers: still wanted? Autofac-only first step OK? (the PR asks in practice) |
-| **Next step** | Wait for review from @MihaZupan. One polite ping if nothing after ~3–4 weeks (around 2026-11-19). Review comments → plan Step 15 |
+| **Stage** | **Done: PR #3063 merged 2026-10-26.** Issue #275 open for the Moq part |
+| **Last entry** | #8 (2026-11-03) |
+| **Open decisions** | Whether to take on the Moq follow-up (Timothy) |
+| **Next step** | Reflect (root `CLAUDE.md` §9.3); the recap is in `report/001-contribution-recap.md` |
 
 ## Index
 
@@ -25,6 +25,7 @@
 | 5 | 2026-10-08 | ❓💬 | Review of the G2 comment draft; Moq left out although the issue names both |
 | 6 | 2026-10-22 | 🧭 | New rules: quality PRs per repo etiquette; open the PR now; pre-PR check |
 | 7 | 2026-10-22 | 📍 | Pre-PR check passed (CLI session 003); PR #3063 opened |
+| 8 | 2026-11-03 | 📍 | Merged; contribution recap written |
 
 ---
 
@@ -106,4 +107,12 @@ not the comment.
   evening: CI green on Windows, Linux and macOS (warning counts identical to `main`'s), CLA ✓, @MihaZupan requested
   by CODEOWNERS.
 - Next: review loop. YARP reviews are slow (bot PRs wait ~3 weeks), so silence for a few weeks is normal.
+
+## #8 · 2026-11-03 · 📍 Merged; contribution recap written
+
+- MihaZupan approved ("Thanks", no inline comments), labeled it `Type: Infrastructure`, and squash-merged
+  **dotnet/yarp#3063** on 2026-10-26 as `72f6bdf`: 4 days after it was opened, one review round. (Checked on the PR
+  page 2026-11-03; the REST API was still returning a stale "open" response that day.)
+- Issue #275 stays open for Moq.
+- Resume source document: [`../report/001-contribution-recap.md`](../report/001-contribution-recap.md).
 

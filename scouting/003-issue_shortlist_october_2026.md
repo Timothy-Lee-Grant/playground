@@ -208,7 +208,7 @@ has a claimant, and Agent Framework's tracker is flooded with machine-written re
 
 | Item | State (2026-10-22) | Next action | Done |
 |---|---|---|---|
-| YARP #275 / PR #3063 | in review | answer review promptly | |
+| YARP #275 / PR #3063 | merged 2026-10-26 (updated 2026-11-07) | — | ✅ |
 | runtime #64507 | 🟢 | bench check at 250000 baud, post result | |
 | iot #2615 | 🟢 | comment with fix options, then PR | |
 | runtime #97741 | 🟢 | reproduce on Pi + capture DTR | |

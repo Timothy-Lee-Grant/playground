@@ -1,5 +1,7 @@
 # STATUS (rewritten by the CLI at every /handoff)
 
+> **Desktop note, 2026-11-07:** **PR #2627 was merged on 2026-10-22** (raffaeler, `4108607`). The four commits listed below were pushed before the merge. Follow-up work: `../../bmp3xx-followup/`. The table below is the CLI's last status and is kept as history.
+
 | | |
 |---|---|
 | Date | 2026-10-19 (CLI session 004) |

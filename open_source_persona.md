@@ -2,7 +2,7 @@
 
 > **What this is:** the living reference for my open-source work. It covers why I contribute, what I bring, how issues are chosen, how I work, and the development environment I work in. It's the first thing to read (for me, or for an AI session helping me) before choosing an issue or planning a contribution.
 >
-> **Last updated:** 2026-09-27 · **Update it:** after studying an issue, after every merged PR, after every hardware change, and at each monthly issue-shortlist refresh.
+> **Last updated:** 2026-11-07 (contribution record, exposure map, study log) · **Update it:** after studying an issue, after every merged PR, after every hardware change, and at each monthly issue-shortlist refresh.
 >
 > **Related:** `CLAUDE.md` §9 (the growth loop this file is part of) · `scouting/` (issue shortlists) · `<repo>/<issue#>_<slug>/` (issue workspaces: conversation, sample, report) · `<repo>/<repo>_concepts/` and `lectures/` (concept lectures, including `lectures/000-pattern-catalog.md`) · `private/` (git-ignored candid notes) · `persona.md` (how I learn and how to teach me)
 
@@ -141,15 +141,15 @@ The concept areas I want exposure to, and where I've encountered each one throug
 
 | Concept area | Examples | Encountered via (issue / PR) | Depth |
 |---|---|---|---|
-| Native interop & memory layout | P/Invoke, struct layout across architectures, native asserts, `SafeHandle` | | |
-| Hardware protocols & drivers | I2C/SPI edge cases, register maps, libgpiod | dotnet/iot#2403 (driver event paths, libgpiod v1/v2); **dotnet/iot#2611** (GpioButton initial state, merged) | **Contributed** |
+| Native interop & memory layout | P/Invoke, struct layout across architectures, native asserts, `SafeHandle` | dotnet/iot#2600 (C `unsigned long` vs `ulong` on 32-bit ARM; studied, parked) | Read |
+| Hardware protocols & drivers | I2C/SPI edge cases, register maps, libgpiod | dotnet/iot#2403 (driver event paths, libgpiod v1/v2); **dotnet/iot#2611** (GpioButton initial state, merged); **dotnet/iot#2627** (new Bmp3xx I2C binding from the datasheet, Pi 4 bench-tested, merged); **dotnet/iot#2631** (mode-change timing and `conf_err` fixes, merged) | **Contributed** |
 | Concurrency & event dispatch | Observer threads, locks vs. concurrent collections, event wrappers | dotnet/iot#2403 (`sender`, event accessors, delegate identity) | Read |
 | Error handling & API compatibility | Exception design, fallbacks, behavior changes vs. breaking changes | dotnet/iot#2403 (behavioral break → major release; #2341, #2421 precedent) | Read |
-| Networking & proxies | Reverse proxies, WebSockets, timeouts, keep-alives | dotnet/yarp#1764 (idle WebSocket abort at `ActivityTimeout`, keep-alive fix) | Reproduced |
+| Networking & proxies | Reverse proxies, WebSockets, timeouts, keep-alives | dotnet/yarp#1764 (idle WebSocket abort at `ActivityTimeout`, keep-alive fix); docs PR **AspNetCore.Docs#37747** merged | **Contributed** (docs) |
 | Security & identity | OAuth 2.0 / OIDC, TLS, certificate automation (ACME) | | |
 | Protocols & versioning | Capability negotiation, spec-driven SDKs (MCP), JSON-RPC | | |
-| Testing infrastructure | Flaky tests, CI timing, `WebApplicationFactory`, fakes vs. mocks | dotnet/iot#2611 (Moq + `MockableGpioDriver`, red → green, multi-OS CI) | **Contributed** |
-| Build, packaging & CI | MSBuild, multi-targeting, NuGet packaging, GitHub Actions / Azure Pipelines | | |
+| Testing infrastructure | Flaky tests, CI timing, `WebApplicationFactory`, fakes vs. mocks | dotnet/iot#2611 (Moq + `MockableGpioDriver`, red → green, multi-OS CI); dotnet/iot#2627 (simulated chip, 89 tests); **dotnet/yarp#3063** (explicit constructor injection replaces Autofac `AutoMock`, behavior-preserving refactor); **dotnet/iot#2631** (`TimeProvider` makes a flaky CI test deterministic) | **Contributed** |
+| Build, packaging & CI | MSBuild, multi-targeting, NuGet packaging, GitHub Actions / Azure Pipelines | dotnet/iot#2627 (CI failure traced with an MSBuild binlog); dotnet/yarp#3063 (Arcade build, multi-targeted tests, Azure Pipelines) | Reproduced |
 | Containers & deployment | Device access in containers, minimal/chiseled images | | |
 | Observability | OpenTelemetry, `Activity`, metrics | | |
 | Performance | Benchmarking, allocations, startup (JIT vs. AOT) | | |
@@ -262,13 +262,16 @@ All of this is **personal equipment**, kept separate from anything employer-owne
 
 ### 10.1 Contribution record
 
-Update after each contribution. This is the source for resume lines and interview stories.
+Update after each contribution. This is the source for resume lines and interview stories. Date = merge date.
+The root [`CONTRIBUTIONS.md`](CONTRIBUTIONS.md) is the source of truth for status; keep this table in step with it.
 
 | Date | Repo | Issue / PR | Type | Status | What I learned |
 |---|---|---|---|---|---|
+| 2026-10-07 | dotnet/AspNetCore.Docs | [PR #37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747) (contributes to [yarp#1764](https://github.com/dotnet/yarp/issues/1764)) | Docs, backed by a 3-process reproduction (first PR) | **Merged** by MihaZupan (opened 2026-09-28) | Reverse proxies and WebSockets; idle `ActivityTimeout` vs keep-alive; a .NET client survives by default (Pong every 30 s) but a browser doesn't, which corrected my own first claim; cross-repo docs PRs don't close the issue |
 | 2026-10-08 | dotnet/iot | [#2328](https://github.com/dotnet/iot/issues/2328) / [PR #2611](https://github.com/dotnet/iot/pull/2611) | Bug fix + tests (first code PR) | **Merged** by pgrawehr ("Looks good, thanks. Bonus points for adding tests!") | Edge vs. level state; red → green tests with a mocked `GpioDriver`; reading maintainer replies; coordinating with a parallel PR (#2608: merge simulation, then merging `main`); fork/remote/tracking/PR mechanics; CI on 3 OSes |
-| 2026-10-18 | dotnet/iot | [PR #2627](https://github.com/dotnet/iot/pull/2627) (no issue; self-proposed) | New device binding: Bmp3xx (BMP390/BMP388), 15 commits, 89 tests | **Merged** 2026-10-22 by raffaeler (`4108607`); approved by raffaeler and pgrawehr after one Copilot review round (3 findings fixed with regression tests + hardware checks) | Register-level I2C driver from datasheets; simulated chip + two independent oracles; Pi 4 bench verification found a silent mode-change bug; demo video; CI root cause via MSBuild binlog (other project's test run). Recap: `iot/new-device-binding/report/001-contribution-recap.md` |
-| 2026-10-22 | dotnet/yarp | [#275](https://github.com/dotnet/yarp/issues/275) / [PR #3063](https://github.com/dotnet/yarp/pull/3063) | Test refactor: remove Autofac (AutoMock) from 7 test classes, −80 net lines | **Merged** 2026-10-26 by MihaZupan (4 days, no changes requested). Recap: `yarp/issues/275_remove-autofac-from-tests/report/001-contribution-recap.md` | Constructor injection made explicit; AutoMock silently built a real `sealed` class; behavior-preserving refactor proven by equal test counts + break-it proofs; stale incremental builds hiding breaks; reading a repo's PR etiquette before opening |
+| 2026-10-22 | dotnet/iot | [PR #2627](https://github.com/dotnet/iot/pull/2627) (no issue; self-proposed) | New device binding: Bmp3xx (BMP390/BMP388), 15 commits, 89 tests | **Merged** 2026-10-22 by raffaeler (`4108607`); approved by raffaeler and pgrawehr after one Copilot review round (3 findings fixed with regression tests + hardware checks) | Register-level I2C driver from datasheets; simulated chip + two independent oracles; Pi 4 bench verification found a silent mode-change bug; demo video; CI root cause via MSBuild binlog (other project's test run). Recap: `iot/new-device-binding/report/001-contribution-recap.md` |
+| 2026-10-26 | dotnet/yarp | [#275](https://github.com/dotnet/yarp/issues/275) / [PR #3063](https://github.com/dotnet/yarp/pull/3063) | Test refactor: remove Autofac (AutoMock) from 7 test classes, −80 net lines | **Merged** 2026-10-26 by MihaZupan (4 days, no changes requested). Recap: `yarp/issues/275_remove-autofac-from-tests/report/001-contribution-recap.md` | Constructor injection made explicit; AutoMock silently built a real `sealed` class; behavior-preserving refactor proven by equal test counts + break-it proofs; stale incremental builds hiding breaks; reading a repo's PR etiquette before opening |
+| 2026-11-05 | dotnet/iot | [PR #2631](https://github.com/dotnet/iot/pull/2631) (follow-up to #2627; no issue) | Bug fixes + CI flaky-test fix, 6 commits, +123 / −13 | **Merged** by pgrawehr (opened 2026-10-23) | Following through on review findings after a merge; datasheet-level fixes (pending measurement time, clearing `conf_err`); owning a CI flake I introduced and saying so on the PR; deterministic time with `TimeProvider` |
 
 ---
 
@@ -278,8 +281,13 @@ After studying an issue from a shortlist, add a row, even if I decide not to wor
 
 | Date | Issue | Anchor / Explorer | Interest (1–5) | Useful for growth (1–5) | New concepts met | Decision (pursue / park / skip) and why |
 |---|---|---|---|---|---|---|
-| 2026-09-26 → 09-27 | dotnet/yarp#1764 | 🧭 Explorer | *(rate)* | *(rate)* | WebSocket handshake and framing, proxy byte-pumping, activity/idle timeouts, keep-alive vs. ping/pong, browser heartbeats | Pursue: repro verified, comment drafted |
-| 2026-09-27 | dotnet/iot#2403 | ⚓ Anchor | *(rate)* | *(rate)* | .NET event accessors, delegate identity, driver abstraction, behavioral breaking changes and semver | Studying; route pending (maintainers say it needs a major release) |
+| 2026-09-26 → 09-27 | dotnet/yarp#1764 | 🧭 Explorer | *(rate)* | *(rate)* | WebSocket handshake and framing, proxy byte-pumping, activity/idle timeouts, keep-alive vs. ping/pong, browser heartbeats | Pursue → docs PR #37747 merged 2026-10-07 |
+| 2026-09-27 | dotnet/iot#2403 | ⚓ Anchor | *(rate)* | *(rate)* | .NET event accessors, delegate identity, driver abstraction, behavioral breaking changes and semver | Park (2026-09-29): needs a major release |
+| 2026-09-29 | dotnet/iot#2600 | ⚓ Anchor | *(rate)* | *(rate)* | P/Invoke type sizes across architectures (`nuint` vs `ulong`), libgpiod v2 | Park (2026-09-29): largely handled by others (PR #2601) |
+| 2026-09-30 → 10-08 | dotnet/iot#2328 | ⚓ Anchor | *(rate)* | *(rate)* | Edge vs level state, mocked drivers, red → green, merging `main` around a parallel PR | Pursue → PR #2611 merged 2026-10-08 |
+| 2026-10-04 → 10-22 | dotnet/iot new Bmp3xx binding | ⚓ Anchor | *(rate)* | *(rate)* | Datasheet-driven I2C driver, simulated hardware, bench verification, .NET binding conventions | Pursue → PR #2627 merged 2026-10-22 |
+| 2026-10-01 → 10-26 | dotnet/yarp#275 | 🧭 Explorer | *(rate)* | *(rate)* | DI containers vs explicit constructors, AutoMock, Arcade build, behavior-preserving refactors | Pursue → PR #3063 merged 2026-10-26 (Moq half open) |
+| 2026-10-22 → 11-05 | dotnet/iot Bmp3xx follow-up | ⚓ Anchor | *(rate)* | *(rate)* | Post-merge follow-through, `TimeProvider`, fixing flaky CI | Pursue → PR #2631 merged 2026-11-05 |
 
 ### 10.3 Preference signals
 

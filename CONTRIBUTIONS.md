@@ -114,18 +114,18 @@ Places where another file disagreed with GitHub or with this file. Add a row whe
 
 | Found | File | Says | Reality | Fixed |
 |---|---|---|---|---|
-| 2026-11-07 | `README.md` issues table, `yarp/1764_*/CLAUDE.md`, memory notes | PR #37747 open, awaiting review | Merged 2026-10-07 by MihaZupan | |
-| 2026-11-07 | `README.md`, `open_source_persona.md` §10.1, `iot/CLAUDE.md` | (C5 / PR #2631 absent) | Opened 2026-10-23, merged 2026-11-05 by pgrawehr | |
-| 2026-11-07 | `README.md` issues table | No rows for the Bmp3xx binding (C3) or follow-up (C5) | Both merged | |
-| 2026-11-07 | `README.md` #2328 row, `iot/CLAUDE.md` #2328 row | "merged" *and* "awaiting maintainer reply, PR planned" in the same cell | Merged 2026-10-08 | |
-| 2026-11-07 | `iot/2328_*/CLAUDE.md` Status | "Upstream comment not posted yet. Fork not cloned yet" (2026-09-30) | Done and merged | |
-| 2026-11-07 | `iot/new-device-binding/CLAUDE.md` Status, conversation "Where we are now", `iot/CLAUDE.md` row | Stuck at 2026-10-05 ("waiting for G1") | Merged 2026-10-22 (recap is current) | |
-| 2026-11-07 | `iot/new-device-binding/shared/STATUS.md` | PR in review round 1, 4 commits unpushed (2026-10-19) | Merged; CLI status never rewritten after | |
-| 2026-11-07 | `iot/bmp3xx-followup/shared/STATUS.md`, conversation log (8 lines) | PR #2631 open, CI result unseen (2026-10-22) | Merged 2026-11-05 | |
-| 2026-11-07 | `yarp/issues/275_*/CLAUDE.md` Status | "waiting for G1… PR waits for iot#2328" (2026-10-01) | Merged 2026-10-26 (STATUS.md and recap are current) | |
-| 2026-11-07 | `open_source_persona.md` header, §7.2, §10.2 | Last updated 2026-09-27; exposure map lacks C1/C3/C4/C5; study log has 2 rows | 5 merged PRs | |
-| 2026-11-07 | `open_source_persona.md` §10.1 | C4 dated 2026-10-22 | Opened 2026-10-23 UTC (2026-10-22 Pacific); fine either way, but use one convention | |
-| 2026-11-07 | `scouting/003` §6 tracker | YARP #3063 "in review" (2026-10-22) | Merged | |
+| 2026-11-07 | `README.md` issues table, `yarp/1764_*/CLAUDE.md`, `yarp/current_context/03`, `05`, memory notes | PR #37747 open, awaiting review | Merged 2026-10-07 by MihaZupan || ✅ 2026-11-07 |
+| 2026-11-07 | `README.md`, `open_source_persona.md` §10.1, `iot/CLAUDE.md` | (C5 / PR #2631 absent) | Opened 2026-10-23, merged 2026-11-05 by pgrawehr || ✅ 2026-11-07 |
+| 2026-11-07 | `README.md` issues table | No rows for the Bmp3xx binding (C3) or follow-up (C5) | Both merged || ✅ 2026-11-07 |
+| 2026-11-07 | `README.md` #2328 row, `iot/CLAUDE.md` #2328 row | "merged" *and* "awaiting maintainer reply, PR planned" in the same cell | Merged 2026-10-08 || ✅ 2026-11-07 |
+| 2026-11-07 | `iot/2328_*/CLAUDE.md` Status | "Upstream comment not posted yet. Fork not cloned yet" (2026-09-30) | Done and merged || ✅ 2026-11-07 |
+| 2026-11-07 | `iot/new-device-binding/CLAUDE.md` Status, conversation "Where we are now", `iot/CLAUDE.md` row | Stuck at 2026-10-05 ("waiting for G1") | Merged 2026-10-22 (recap is current) || ✅ 2026-11-07 |
+| 2026-11-07 | `iot/new-device-binding/shared/STATUS.md` | PR in review round 1, 4 commits unpushed (2026-10-19) | Merged; CLI status never rewritten after || ✅ 2026-11-07 |
+| 2026-11-07 | `iot/bmp3xx-followup/shared/STATUS.md`, conversation log (8 lines) | PR #2631 open, CI result unseen (2026-10-22) | Merged 2026-11-05 || ✅ 2026-11-07 |
+| 2026-11-07 | `yarp/issues/275_*/CLAUDE.md` Status | "waiting for G1… PR waits for iot#2328" (2026-10-01) | Merged 2026-10-26 (STATUS.md and recap are current) || ✅ 2026-11-07 |
+| 2026-11-07 | `open_source_persona.md` header, §7.2, §10.2 | Last updated 2026-09-27; exposure map lacks C1/C3/C4/C5; study log has 2 rows | 5 merged PRs || ✅ 2026-11-07 |
+| 2026-11-07 | `open_source_persona.md` §10.1 | C4 dated 2026-10-22 | Opened 2026-10-23 UTC (2026-10-22 Pacific); now one convention: the table uses merge dates || ✅ 2026-11-07 |
+| 2026-11-07 | `scouting/003` §6 tracker | YARP #3063 "in review" (2026-10-22) | Merged || ✅ 2026-11-07 |
 | 2026-11-07 | Repo housekeeping | `yarp/issues/1234_*`, `1235_*` placeholders, `yarp/_to_delete/`, `Claude outputs/` (duplicate of `iot/new-device-binding/001-*`) | Leftovers | |
 
 ---

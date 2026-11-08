@@ -41,7 +41,11 @@ The condensed version the CLI works from is [`shared/01-brief.md`](shared/01-bri
 
 ## Status
 
-Set up 2026-09-30. Upstream comment not posted yet. Fork not cloned yet (run `workspace/setup.sh`).
+- 2026-09-30: set up.
+- 2026-10-01: commented on #2328 (fix offered, two design questions).
+- 2026-10-02: PR #2611 opened; .NET Foundation CLA signed.
+- 2026-10-06: merge conflict with maintainer PR #2608 resolved by merging `main` (25/25 tests).
+- 2026-10-08: **PR #2611 merged** by pgrawehr; #2328 closed by the merge. **Done.**
 
 ## Desktop duties after each CLI session
 

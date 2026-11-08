@@ -32,6 +32,8 @@ named components; ASCII diagrams and tables; running systems before documents), 
 ```
 exercises/  (GitHub: Timothy-Lee-Grant/playground)
 ├── README.md               public index: what this repo is + table of every issue worked on
+├── CONTRIBUTIONS.md        SOURCE OF TRUTH for upstream contributions + status + drift log; check with
+│                           scripts/check-contributions.py. Update it first; other files follow it
 ├── CLAUDE.md               ← you are here: layout, workflow, conventions, templates
 ├── persona.md              public: who Timothy is and how to teach him (living document; read first)
 ├── open_source_persona.md  public: contributor profile: goals, strengths, issue scoring, machines/hardware,

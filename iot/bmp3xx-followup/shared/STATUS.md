@@ -1,5 +1,7 @@
 # STATUS (rewritten by the CLI at every /handoff)
 
+> **Desktop note, 2026-11-07:** **PR #2631 was merged on 2026-11-05** (pgrawehr). The heads-up comment about the macOS CI failure was posted 2026-10-23. Work finished. The table below is the CLI's last status and is kept as history.
+
 | | |
 |---|---|
 | Date | 2026-10-22 (CLI session 002) |

@@ -13,11 +13,11 @@
 |---|---|
 | [`current_context/`](current_context/) | **The living configuration**: operating manual, layout, upstream facts, branch registry, Timothy's profile, his YARP competency, lecture specs, procedures behind the slash commands, git hooks, issue template. Start with its [`README.md`](current_context/README.md) |
 | [`static_files/`](static_files/) | Master copies of the project root's static files (`CLAUDE.md`, `.claude/`) + [`SETUP.md`](static_files/SETUP.md), the commands Timothy runs to build the project folder |
-| [`issues/`](issues/) | One folder per issue. [`275_remove-autofac-from-tests/`](issues/275_remove-autofac-from-tests/): #275, building privately (moved here 2026-10-07). `1234_…`, `1235_…`: Timothy's placeholder examples (empty) |
+| [`issues/`](issues/) | One folder per issue. [`275_remove-autofac-from-tests/`](issues/275_remove-autofac-from-tests/): #275, **PR #3063 merged 2026-10-26** (moved here 2026-10-07). `1234_…`, `1235_…`: Timothy's placeholder examples (empty) |
 | [`shared/`](shared/) | Project-level desktop ↔ CLI mailbox (proposals, questions, setup notes) |
 | [`yarp_scouting/`](yarp_scouting/) | Searches for the next YARP issue |
 | [`yarp_concepts/`](yarp_concepts/) | Long-lived concept lectures (reading + `audio/`) |
-| [`1764_websocket_idle_timeout/`](1764_websocket_idle_timeout/) | #1764 docs PR (legacy v1 layout). **Stays here**: its files are linked from a public docs PR |
+| [`1764_websocket_idle_timeout/`](1764_websocket_idle_timeout/) | #1764 docs PR, **merged 2026-10-07** (legacy v1 layout). **Stays here**: its files are linked from a public docs PR |
 | `_to_delete/` | Leftovers from the 2026-10-07 restructuring (old template pieces). Safe to delete |
 
 ## 2. Desktop duties in this setup

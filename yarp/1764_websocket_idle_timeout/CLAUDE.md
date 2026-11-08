@@ -64,6 +64,9 @@ The public evidence page for this issue is [`README.md`](README.md). Keep it in 
   `yarp/websockets.md`; description starts `Contributes to dotnet/yarp#1764` per the repo's PR template). **Commented
   on #1764** with the PR link and verified numbers. Now waiting for review; #1764 must be closed by a YARP maintainer
   after merge (cross-repo reference doesn't auto-close).
+- 2026-10-07: **PR #37747 merged** by MihaZupan (found 2026-11-07 when checking against GitHub). #1764 is still
+  open, last activity 2026-09-28. Remaining: comment on #1764 that the docs are merged and ask whether it can be
+  closed; Reflect (root `CLAUDE.md` §9.3).
 
 ## Next steps
 
@@ -73,5 +76,5 @@ The live checklist is **concept notes Q7 §4**. The final file edit, PR descript
 1. Confirm the evidence link is publicly visible.
 2. Open the PR in `dotnet/AspNetCore.Docs` (web editor, one paragraph in `websockets.md`).
 3. Comment on #1764 with the PR link and the verified numbers.
-4. Handle review; after merge, get #1764 closed and update the trackers (root `README.md`, scouting tracker), then
+4. ✅ Merged 2026-10-07. Still to do: get #1764 closed and update the trackers (root `README.md`, scouting tracker), then
    Reflect (root `CLAUDE.md` §9.3).

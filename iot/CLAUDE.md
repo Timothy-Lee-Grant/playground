@@ -19,15 +19,18 @@ read that first.
 | [`2403_gpiopin-event-handler-assing-wrong-sender-value/`](2403_gpiopin-event-handler-assing-wrong-sender-value/) | [#2403](https://github.com/dotnet/iot/issues/2403): `GpioPin` event handlers receive the wrong `sender`. |
 | [`2600_libgpiodv2-edge-event-abort-on-arm32/`](2600_libgpiodv2-edge-event-abort-on-arm32/) | [#2600](https://github.com/dotnet/iot/issues/2600): `LibGpiodV2Driver` aborts the process on 32-bit ARM (`ulong` vs C `unsigned long`). |
 | [`2328_gpiobutton-ispressed-not-initialized/`](2328_gpiobutton-ispressed-not-initialized/) | [#2328](https://github.com/dotnet/iot/issues/2328): `GpioButton.IsPressed` wrong when held at startup. First issue on the desktop + CLI workflow ([`../ai-workflow/`](../ai-workflow/)). |
-| [`new-device-binding/`](new-device-binding/) | New **BMP390/BMP388 binding** (no upstream issue yet). Investigation 2026-10-04 (`001`–`003`); mode-P blueprint `shared/plan.md` v1 2026-10-05, waiting for G1. CLI workspace `~/Desktop/projects/oss-work/iot-bmp3xx/`. |
+| [`new-device-binding/`](new-device-binding/) | New **BMP390/BMP388 binding** (self-proposed, no issue). **PR [#2627](https://github.com/dotnet/iot/pull/2627) merged 2026-10-22.** Recap: `report/001-contribution-recap.md`. |
+| [`bmp3xx-followup/`](bmp3xx-followup/) | Follow-up fixes to the binding after review. **PR [#2631](https://github.com/dotnet/iot/pull/2631) merged 2026-11-05.** |
 
 ### Issues in this project
 
 | Issue | Folder | Scouting item | Status |
 |---|---|---|---|
-| [#2403](https://github.com/dotnet/iot/issues/2403) `GpioPin` handlers get the wrong `sender` | `2403_gpiopin-event-handler-assing-wrong-sender-value/` | G | Exploring since 2026-09-27 |
-| [#2600](https://github.com/dotnet/iot/issues/2600) LibGpiodV2 abort on 32-bit ARM | `2600_libgpiodv2-edge-event-abort-on-arm32/` | C | Exploring since 2026-09-29. Safety net already in PR #2601 (others); open slice is the `nuint` root-cause fix |
-| [#2328](https://github.com/dotnet/iot/issues/2328) `GpioButton.IsPressed` not initialized | `2328_gpiobutton-ispressed-not-initialized/` | scouting 002 #1 | **Active: first code PR, target 2026-10-04.** **PR #2611 merged 2026-10-08** ✅ (2026-10-02); commented 2026-10-01; awaiting reply |
+| [#2403](https://github.com/dotnet/iot/issues/2403) `GpioPin` handlers get the wrong `sender` | `2403_gpiopin-event-handler-assing-wrong-sender-value/` | G | Parked 2026-09-29; studied only, nothing posted |
+| [#2600](https://github.com/dotnet/iot/issues/2600) LibGpiodV2 abort on 32-bit ARM | `2600_libgpiodv2-edge-event-abort-on-arm32/` | C | Parked 2026-09-29; studied only, nothing posted. Safety net already in PR #2601 (others); open slice is the `nuint` root-cause fix |
+| [#2328](https://github.com/dotnet/iot/issues/2328) `GpioButton.IsPressed` not initialized | `2328_gpiobutton-ispressed-not-initialized/` | scouting 002 #1 | **Done: PR #2611 merged 2026-10-08** (pgrawehr); opened 2026-10-02, commented 2026-10-01 |
+| (no issue) new Bmp3xx binding | `new-device-binding/` | self-proposed | **Done: PR #2627 merged 2026-10-22** (raffaeler; approved by raffaeler + pgrawehr) |
+| (no issue) Bmp3xx follow-up | `bmp3xx-followup/` | review findings on #2627 | **Done: PR #2631 merged 2026-11-05** (pgrawehr) |
 
 Other dotnet/iot candidates in [`../scouting/001-issue_shortlist_sept_2026.md`](../scouting/001-issue_shortlist_sept_2026.md):
 B (#2297, Pi samples and `config.txt`), D (#2602, `GpiodException`

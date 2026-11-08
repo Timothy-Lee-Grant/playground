@@ -5,7 +5,7 @@
 
 ## Where we are now *(updated in place)*
 
-**Stage:** G1 open. CLI session 001 (2026-10-05) did Steps 0–11 without hardware: binding, 65/65 tests, sample + README; branch `feature/bmp3xx-binding` pushed to the fork @ `8d23d3d4`. **Open:** U4 gap (pressure when only temperature is out of range), fritzing diagram, hardware Steps 2/3/13 (no sensor yet). **Next:** CLI Step 12 (hygiene) + Step 15 (implementation summary); then desktop writes lecture 1. Last entry: #5. Lecture 1 written (`lectures/001-…`), not yet read.
+**Stage:** ✅ **Done: PR #2627 merged 2026-10-22** (raffaeler; approved by raffaeler and pgrawehr). Follow-up fixes are in `../bmp3xx-followup/` (PR #2631, merged 2026-11-05). **Next:** Reflect (root `CLAUDE.md` §9.3). Last entry: #7. Recap: `report/001-contribution-recap.md`.
 
 ## Index
 
@@ -16,6 +16,8 @@
 | 3 | 2026-10-05 | 🧭 Shared-clone project layout; pushing to the fork allowed (plan v2) |
 | 4 | 2026-10-05 | 📍 CLI session 001: Steps 0–11 done without hardware; pushed to the fork |
 | 5 | 2026-10-05 | 📍 Lecture 1 written: the binding end to end, testing with and without hardware |
+| 6 | 2026-10-18 | 📍 PR opened: dotnet/iot#2627 |
+| 7 | 2026-11-07 | 📍 Merged 2026-10-22 (recorded late) |
 
 ---
 
@@ -104,3 +106,10 @@ code against `Devices-conventions.md`: one deviation (`GetMeasurementDuration()`
 the description. Fork merged with upstream (`fc7d7b57`), 79/79, pushed. Timothy opened **#2627** himself.
 Next: review comments → plan Stage 8.
 
+## #7 · 2026-11-07 · 📍 Merged (recorded late)
+
+**PR #2627 was merged on 2026-10-22** by raffaeler (`4108607`), approved by raffaeler and pgrawehr after one Copilot
+review round (R1–R3 fixed test-first, hardware checks passed). The CLI's last status (2026-10-19) was never rewritten
+after the merge; found when checking every PR against GitHub on 2026-11-07. Three findings from a second automated
+review became the follow-up PR #2631 (`../bmp3xx-followup/`, merged 2026-11-05). Recap for the resume:
+`report/001-contribution-recap.md`. Next: Reflect (root `CLAUDE.md` §9.3).

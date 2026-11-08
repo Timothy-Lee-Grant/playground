@@ -30,6 +30,9 @@ don't use them). **Mac or Codespaces only** (SDK 11 RC1; the Linux desktop's CPU
 
 ## Status
 
+**2026-10-26: PR #3063 merged** by MihaZupan (squash `72f6bdf`, no changes requested). The Moq half of #275 is
+still open (possible follow-up, not planned). Recap: `report/001-contribution-recap.md`. History below.
+
 Set up 2026-09-30. **2026-10-01: switched to mode P** before any CLI session (plan v1 written; waiting for G1).
 Timothy already has an **old clone of his fork with earlier changes**; plan Steps 0–1 audit it and bring it to a
 standard state without losing anything. The PR waits for iot#2328's PR (one active PR at a time); building and

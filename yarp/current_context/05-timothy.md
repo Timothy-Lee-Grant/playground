@@ -15,7 +15,9 @@
   public record. He wants to understand each repo's **architecture** (patterns, how components talk), not just
   close issues.
 - **Upstream record so far:** docs PR dotnet/AspNetCore.Docs#37747 (YARP #1764, 2026-09-28); first code PR
-  dotnet/iot#2611 (2026-10-02). CLA signed. Since then: dotnet/iot#2611 merged (2026-10-08), BMP3xx binding PR dotnet/iot#2627 (2026-10-18).
+  dotnet/iot#2611 (2026-10-02). CLA signed. All merged: AspNetCore.Docs#37747 (2026-10-07), dotnet/iot#2611 (2026-10-08), BMP3xx binding dotnet/iot#2627
+  (2026-10-22), dotnet/yarp#3063 (2026-10-26), Bmp3xx follow-up dotnet/iot#2631 (2026-11-05). Full record:
+  `CONTRIBUTIONS.md` at the root of the exercises repo.
 - **Schedule:** studies on weeknights after work; works on issues on Saturdays and Sundays.
 - **Machines:** MacBook Air (builds YARP; an external SSD holds the project folder from October 2026); a Linux
   desktop that **can't run .NET 11**; Raspberry Pis for hardware work (not relevant to YARP).

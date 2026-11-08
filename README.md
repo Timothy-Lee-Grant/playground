@@ -22,13 +22,16 @@ run it themselves.
 
 | Upstream issue | Folder | What's here | Status |
 |---|---|---|---|
-| [dotnet/yarp#1764](https://github.com/dotnet/yarp/issues/1764): document the WebSocket keep-alive requirement | [`yarp/1764_websocket_idle_timeout/`](yarp/1764_websocket_idle_timeout/) | 3-process repro (client → YARP → echo server) of the idle-WebSocket abort at `ActivityTimeout`, and the `KeepAliveInterval` fix | PR [dotnet/AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747) open, issue commented (2026-09-28) · awaiting review |
-| [dotnet/iot#2403](https://github.com/dotnet/iot/issues/2403): `GpioPin` event handlers receive the wrong `sender` | [`iot/2403_gpiopin-event-handler-assing-wrong-sender-value/`](iot/2403_gpiopin-event-handler-assing-wrong-sender-value/) | Investigation of which object each GPIO driver passes as `sender` | Exploring (started 2026-09-27) · nothing verified or posted yet |
-| [dotnet/iot#2600](https://github.com/dotnet/iot/issues/2600): `LibGpiodV2Driver` aborts the process on 32-bit ARM | [`iot/2600_libgpiodv2-edge-event-abort-on-arm32/`](iot/2600_libgpiodv2-edge-event-abort-on-arm32/) | Test of the proposed root cause (C `unsigned long` declared as `ulong` in the P/Invoke binding) on 64-bit and 32-bit ARM | Exploring (started 2026-09-29) · nothing verified or posted yet |
-| [dotnet/iot#2328](https://github.com/dotnet/iot/issues/2328): `GpioButton.IsPressed` is wrong when the button is held at startup | [`iot/2328_gpiobutton-ispressed-not-initialized/`](iot/2328_gpiobutton-ispressed-not-initialized/) | Unit tests with a mocked GPIO driver proving the startup-state bug, then the fix | **PR [#2611](https://github.com/dotnet/iot/pull/2611) merged 2026-10-08** ✅ (2026-10-02); issue commented 2026-10-01 · awaiting maintainer reply, PR planned |
+| [dotnet/yarp#1764](https://github.com/dotnet/yarp/issues/1764): document the WebSocket keep-alive requirement | [`yarp/1764_websocket_idle_timeout/`](yarp/1764_websocket_idle_timeout/) | 3-process repro (client → YARP → echo server) of the idle-WebSocket abort at `ActivityTimeout`, and the `KeepAliveInterval` fix | **PR [dotnet/AspNetCore.Docs#37747](https://github.com/dotnet/AspNetCore.Docs/pull/37747) merged 2026-10-07** ✅ · issue #1764 still open (a PR in another repo doesn't close it) |
+| [dotnet/iot#2403](https://github.com/dotnet/iot/issues/2403): `GpioPin` event handlers receive the wrong `sender` | [`iot/2403_gpiopin-event-handler-assing-wrong-sender-value/`](iot/2403_gpiopin-event-handler-assing-wrong-sender-value/) | Investigation of which object each GPIO driver passes as `sender` | Parked 2026-09-29 · studied only, nothing posted |
+| [dotnet/iot#2600](https://github.com/dotnet/iot/issues/2600): `LibGpiodV2Driver` aborts the process on 32-bit ARM | [`iot/2600_libgpiodv2-edge-event-abort-on-arm32/`](iot/2600_libgpiodv2-edge-event-abort-on-arm32/) | Test of the proposed root cause (C `unsigned long` declared as `ulong` in the P/Invoke binding) on 64-bit and 32-bit ARM | Parked 2026-09-29 · studied only, nothing posted |
+| [dotnet/iot#2328](https://github.com/dotnet/iot/issues/2328): `GpioButton.IsPressed` is wrong when the button is held at startup | [`iot/2328_gpiobutton-ispressed-not-initialized/`](iot/2328_gpiobutton-ispressed-not-initialized/) | Unit tests with a mocked GPIO driver proving the startup-state bug, then the fix | **PR [#2611](https://github.com/dotnet/iot/pull/2611) merged 2026-10-08** ✅ · issue closed by the merge |
+| No issue (self-proposed): new Bmp3xx binding for the Bosch BMP390 / BMP388 sensors | [`iot/new-device-binding/`](iot/new-device-binding/) | Register-level I2C driver, sample app, 89 tests against a simulated chip, Raspberry Pi 4 bench checks, [demo video](https://www.youtube.com/watch?v=p0bjJdOGpkM) | **[PR dotnet/iot#2627](https://github.com/dotnet/iot/pull/2627) merged 2026-10-22** ✅ · recap: `report/001-contribution-recap.md` |
 | [dotnet/yarp#275](https://github.com/dotnet/yarp/issues/275): remove Autofac from YARP's tests | [`yarp/issues/275_remove-autofac-from-tests/`](yarp/issues/275_remove-autofac-from-tests/) | Behavior-preserving rewrite of 7 test classes, with evidence each test still guards what it did | [PR #3063](https://github.com/dotnet/yarp/pull/3063) **merged** 2026-10-26 by MihaZupan · recap: `report/001-contribution-recap.md` |
+| Follow-up to dotnet/iot#2627 (no issue) | [`iot/bmp3xx-followup/`](iot/bmp3xx-followup/) | Two binding fixes and one simulator fix (test-first, checked on the Pi), plus a controllable test clock that fixed a timing-flaky macOS CI leg | **[PR dotnet/iot#2631](https://github.com/dotnet/iot/pull/2631) merged 2026-11-05** ✅ |
 
-Candidate issues I'm still weighing are in [`scouting/`](scouting/). How I choose them, and what I'm aiming to learn, is in
+The full record of every contribution (dates, what each involved, where it stands) is in
+[`CONTRIBUTIONS.md`](CONTRIBUTIONS.md). Candidate issues I'm still weighing are in [`scouting/`](scouting/). How I choose them, and what I'm aiming to learn, is in
 [`open_source_persona.md`](open_source_persona.md).
 
 ---
@@ -38,6 +41,7 @@ Candidate issues I'm still weighing are in [`scouting/`](scouting/). How I choos
 ```
 .
 ├── README.md                   ← you are here (public index)
+├── CONTRIBUTIONS.md            ← every upstream contribution and its status (the source of truth)
 ├── CLAUDE.md                   ← workflow, conventions and templates (for me and for AI assistants)
 ├── open_source_persona.md      ← my contributor profile: goals, strengths, how I choose issues, record
 ├── persona.md                  ← how I learn (and how AI assistants should teach me)

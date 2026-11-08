@@ -2,6 +2,8 @@
 
 > Owner: CLI. Rewritten in place by `/handoff` every session. Desktop reads this first.
 
+> **Desktop note, 2026-11-07:** **PR #2611 was merged on 2026-10-08** (pgrawehr); #2328 closed by the merge. Work finished. The table below is the CLI's last status and is kept as history.
+
 | | |
 |---|---|
 | **Updated** | 2026-10-06 00:55 (session 005, CLI) |

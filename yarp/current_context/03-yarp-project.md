@@ -83,7 +83,7 @@ Add rows as people show up in your issues (name, role, what they cared about). D
 
 | Issue | Type | State |
 |---|---|---|
-| #1764 WebSocket idle timeout | docs (PR in dotnet/AspNetCore.Docs#37747) | Waiting for review. Folder: `link/1764_websocket_idle_timeout/` (legacy) |
+| #1764 WebSocket idle timeout | docs (PR in dotnet/AspNetCore.Docs#37747) | **Merged 2026-10-07** (MihaZupan); #1764 itself still open. Folder: `link/1764_websocket_idle_timeout/` (legacy) |
 | #275 Remove Autofac from tests | test refactor | Comment 2026-10-09; **PR #3063 merged 2026-10-26** (MihaZupan; Moq part of the issue still open). Folder: `link/issues/275_remove-autofac-from-tests/` |
 
 Branches: `04-branches.md`.

@@ -51,12 +51,18 @@ upstream = `dotnet/iot` fetch-only), this issue's mailbox appears there as `new-
 
 ## Status
 
+- 2026-10-22: **PR #2627 merged** by raffaeler (`4108607`), approved by raffaeler and pgrawehr after one review
+  round (R1–R3 fixed with regression tests and hardware checks). Follow-up fixes went to `../bmp3xx-followup/`
+  (PR #2631, merged 2026-11-05). Recap: `report/001-contribution-recap.md`. **Done.**
+- 2026-10-18: PR #2627 opened; demo video published.
 - 2026-10-04: investigation written (001–003). Recommendation: BMP390/BMP388 as the next ⚓ anchor.
 - 2026-10-05: **CLI session 001**: G1 granted; Steps 0–11 done without hardware (binding + 65/65 tests + sample + README), branch pushed to the fork @ `8d23d3d4`. Next: Step 12, 15; hardware steps wait for the sensor.
 - 2026-10-05: moved to the shared-clone project layout (`../cli-project/`); plan v2 (paths + pushing to the fork allowed).
 - 2026-10-05: folder scaffolded for mode P (templates); `shared/01-brief.md` and `shared/plan.md` v1 written. **Waiting for G1.** No hardware bought yet; nothing posted upstream. PR #2611 still open (one-active-PR rule applies to Step 17+).
 
 ## Next steps
+
+None: the PR is merged. Remaining: Reflect (root `CLAUDE.md` §9.3). The original steps are kept below.
 
 1. Timothy reads `shared/plan.md` Stage 2 + 3.4, changes anything he wants, grants **G1**.
 2. Buy the sensor (Adafruit #4816 or a BMP388 board) if not done; confirm the Pi model.
